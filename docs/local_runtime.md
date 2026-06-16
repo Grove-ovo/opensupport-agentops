@@ -24,7 +24,7 @@ AgentOps database.
 The repository includes a PostgreSQL and Redis dev compose file:
 
 ```bash
-docker compose -f infra/docker/compose.phase1.yml up -d
+npm run db:up
 ```
 
 Expected defaults:
@@ -46,10 +46,23 @@ REDIS_URL=redis://localhost:6379/0
 
 ## Applying The Foundation Migration
 
+Install the PostgreSQL client with Homebrew on macOS:
+
+```bash
+brew install libpq
+echo 'export PATH="/opt/homebrew/opt/libpq/bin:$PATH"' >> ~/.zshrc
+```
+
+Open a new terminal, or run this in the current shell:
+
+```bash
+export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
+```
+
 After PostgreSQL is running, apply the Phase 1A migration with:
 
 ```bash
-psql "$DATABASE_URL" -f infra/migrations/0001_phase1_foundation.sql
+npm run db:migrate
 ```
 
 The migration creates only the current foundation tables:
@@ -63,6 +76,12 @@ The migration creates only the current foundation tables:
 
 It does not create RAG, tool, approval, eval, release gate, billing, RBAC, or
 public user registration tables.
+
+Verify the live database table list with:
+
+```bash
+npm run db:verify
+```
 
 ## Local Chatwoot Expectations
 

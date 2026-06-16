@@ -17,12 +17,14 @@
 Database migration:
 
 ```text
-psql "$DATABASE_URL" -f infra/migrations/0001_phase1_foundation.sql
+npm run db:migrate
+psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f infra/migrations/0001_phase1_foundation.sql
 ```
 
 Local services:
 
 ```text
+npm run db:up
 docker compose -f infra/docker/compose.phase1.yml up -d
 docker compose -f infra/docker/compose.phase1.yml config
 ```
@@ -31,6 +33,7 @@ Validation:
 
 ```text
 npm run test
+npm run db:verify
 node scripts/validate-phase1a.mjs
 ```
 
@@ -60,6 +63,15 @@ Environment keys:
 | `AGENTOPS_REDIS_PORT` | Dev compose | Defaults to `6379` |
 | `AGENTOPS_MASTER_KEY` | Local MVP | Deployment-level local envelope encryption key |
 
+Tooling contract:
+
+- macOS local development uses Homebrew `libpq` for `psql`.
+- `psql` must be available on `PATH`; for Homebrew Apple Silicon this is
+  `/opt/homebrew/opt/libpq/bin`.
+- `npm run db:migrate` must run with `ON_ERROR_STOP=1`.
+- `npm run db:verify` must query the live PostgreSQL database and list public
+  base tables.
+
 Schema contracts:
 
 - Tenant-scoped tables must include `tenant_id`.
@@ -83,6 +95,8 @@ Schema contracts:
 | Trace version snapshot field missing | `scripts/validate-phase1a.mjs` fails |
 | Model config BYOK field missing | `scripts/validate-phase1a.mjs` fails |
 | Compose syntax invalid | `docker compose ... config` fails |
+| `psql` missing from `PATH` | `npm run db:migrate` and `npm run db:verify` fail |
+| Migration SQL error | `npm run db:migrate` fails because `ON_ERROR_STOP=1` is set |
 | Markdown or SQL has trailing whitespace in diff | `npm run lint` fails |
 
 ### 5. Good/Base/Bad Cases
@@ -105,6 +119,9 @@ Schema contracts:
   - BYOK model config fields exist;
   - runtime docs mention the required local commands and env keys.
 - `npm run lint` must run `git diff --check`.
+- `npm run db:migrate` must apply `0001_phase1_foundation.sql` to a live local
+  PostgreSQL database.
+- `npm run db:verify` must show the six Phase 1A tables in `public`.
 - `docker compose -f infra/docker/compose.phase1.yml config` must pass when
   compose files change.
 - Trellis task validation must pass for the active task.

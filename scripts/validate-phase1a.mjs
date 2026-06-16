@@ -88,7 +88,7 @@ for (const field of requiredModelConfigFields) {
   }
 }
 
-for (const value of ['DATABASE_URL', 'REDIS_URL', 'docker compose -f infra/docker/compose.phase1.yml up -d']) {
+for (const value of ['DATABASE_URL', 'REDIS_URL', 'npm run db:up', 'npm run db:migrate', 'npm run db:verify']) {
   if (!runtimeDoc.includes(value)) {
     failures.push(`${runtimeDocPath} must mention ${value}`);
   }
