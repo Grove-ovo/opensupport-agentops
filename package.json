@@ -1,0 +1,20 @@
+{
+  "name": "opensupport-agentops",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Tenant-ready ecommerce customer support AgentOps platform based on Chatwoot.",
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "trellis:context": "python3 ./.trellis/scripts/get_context.py",
+    "trellis:tasks": "python3 ./.trellis/scripts/task.py list --mine",
+    "lint": "git diff --check",
+    "test": "node scripts/validate-phase1a.mjs"
+  },
+  "keywords": [],
+  "author": "Grove-ovo",
+  "license": "MIT"
+}
