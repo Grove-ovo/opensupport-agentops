@@ -21,6 +21,12 @@ Phase 1A foundation:
 - [Database Schema](./docs/database_schema.md)
 - [Initial Migration](./infra/migrations/0001_phase1_foundation.sql)
 
+Phase 1B connector:
+
+- [Chatwoot Connector](./docs/chatwoot_connector.md)
+- `packages/chatwoot` framework-neutral connector handlers
+- `packages/shared` shared canonical event types
+
 Initial workspace layout:
 
 ```text
