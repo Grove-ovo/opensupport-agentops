@@ -19,8 +19,7 @@ export type ChatwootReasonCode =
   | 'self_outgoing_message';
 
 export interface DedupeStore {
-  has(key: string): boolean | Promise<boolean>;
-  add(key: string): void | Promise<void>;
+  claim(keys: readonly string[]): boolean | Promise<boolean>;
 }
 
 export interface ChatwootEndpointRequest {
@@ -35,7 +34,6 @@ export interface ChatwootEndpointRequest {
 
 export interface ChatwootEndpointOptions {
   dedupeStore?: DedupeStore | undefined;
-  now?: (() => Date) | undefined;
 }
 
 export interface ChatwootEndpointResponseBody {

@@ -84,6 +84,11 @@ When a Chatwoot delivery ID is available, both keys are claimed. This preserves
 delivery-level idempotency and still prevents Agent Bot plus account webhook
 from seeding the same message twice.
 
+The store must claim the complete key set atomically: it returns `true` only
+when every key was absent and has been reserved by the same operation. A Redis
+adapter must preserve this contract with a transaction or Lua script; separate
+read and write operations are not sufficient.
+
 Only canonical incoming customer messages can seed later pipeline work.
 
 ## Customer And Self-Outgoing Rules
@@ -109,4 +114,14 @@ seed the future pipeline.
 ## Current Storage Boundary
 
 Phase 1B uses the `DedupeStore` interface and `MemoryDedupeStore` for tests and
-local composition. Redis-backed dedupe belongs to a later runtime/storage task.
+local composition. The memory implementation provides process-local atomic
+claims but is not shared across replicas. Redis-backed dedupe belongs to a
+later runtime/storage task.
+
+## Chatwoot References
+
+- [Add a webhook](https://developers.chatwoot.com/api-reference/webhooks/add-a-webhook)
+  documents subscriptions, the signing secret, signature headers, HMAC format,
+  and delivery ID header.
+- [Create an Agent Bot](https://developers.chatwoot.com/api-reference/account-agentbots/create-an-agent-bot)
+  documents the Agent Bot webhook `outgoing_url` and webhook bot type.

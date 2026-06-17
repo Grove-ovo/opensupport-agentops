@@ -39,6 +39,10 @@ buildCanonicalDedupeKey(
   messageId: string,
   eventType: string,
 ): string
+
+interface DedupeStore {
+  claim(keys: readonly string[]): boolean | Promise<boolean>
+}
 ```
 
 Endpoint paths reserved for future API adapters:
@@ -86,7 +90,10 @@ Dedupe contracts:
 
 - Delivery key: `chatwoot_delivery:{tenant_id}:{x-chatwoot-delivery}`.
 - Canonical key: `{tenant_id}:{conversation_id}:{message_id}:{event_type}`.
-- When delivery ID is present, claim both delivery key and canonical key.
+- `DedupeStore.claim(keys)` must atomically reserve the complete key set and
+  return `false` when any key already exists.
+- When delivery ID is present, atomically claim both delivery key and canonical
+  key.
 - Same Chatwoot message through Agent Bot and account webhook must seed at most
   one future pipeline execution.
 
@@ -107,10 +114,14 @@ Dedupe contracts:
 
 - Good: handle Agent Bot and account webhook through the same normalization
   function, passing only the `source` difference.
+- Good: implement delivery and canonical key reservation as one atomic store
+  operation.
 - Good: keep signature verification based on raw body, not parsed JSON.
 - Base: use `MemoryDedupeStore` only for tests and local composition.
 - Bad: dedupe Agent Bot and webhook paths only by `X-Chatwoot-Delivery`; Agent
   Bot may not have the same delivery ID.
+- Bad: implement the store as separate `has` and `add` operations; concurrent
+  requests can both observe a missing key.
 - Bad: let outgoing AgentOps messages seed the future pipeline.
 
 ### 6. Tests Required
@@ -120,6 +131,7 @@ Dedupe contracts:
   - invalid signature returns `401`.
 - Dedupe:
   - Agent Bot then webhook for the same message produces one pipeline seed;
+  - concurrent Agent Bot and webhook requests produce one pipeline seed;
   - repeated webhook delivery ID returns duplicate.
 - Filtering:
   - AgentOps self-outgoing message is audit-only;
@@ -150,4 +162,5 @@ const canonicalKey = `${tenantId}:${conversationId}:${messageId}:${eventType}`;
 ```
 
 Claim both keys when delivery ID exists, and always expose the canonical key on
-`CanonicalInboundEvent`.
+`CanonicalInboundEvent`. The storage operation must be atomic; a separate
+`has` then `add` sequence permits concurrent requests to seed twice.

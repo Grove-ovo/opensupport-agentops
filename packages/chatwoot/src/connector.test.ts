@@ -82,6 +82,30 @@ test('dedupes the same customer message across Agent Bot and webhook paths', asy
   assert.equal(webhookResponse.body.dedupe_key, `${tenantId}:42:100:message_created`);
 });
 
+test('atomically dedupes concurrent Agent Bot and webhook requests', async () => {
+  const store = new MemoryDedupeStore();
+  const rawBody = JSON.stringify(messageCreatedPayload({ id: 102 }));
+  const request = {
+    tenantId,
+    headers: {},
+    rawBody,
+  };
+
+  const responses = await Promise.all([
+    handleAgentBotEndpoint(request, { dedupeStore: store }),
+    handleAccountWebhookEndpoint(request, { dedupeStore: store }),
+  ]);
+
+  assert.deepEqual(
+    responses.map((response) => response.body.decision).sort(),
+    ['duplicate', 'pipeline_seeded'],
+  );
+  assert.equal(
+    responses.filter((response) => response.body.should_seed_pipeline).length,
+    1,
+  );
+});
+
 test('dedupes repeated webhook deliveries by Chatwoot delivery id', async () => {
   const store = new MemoryDedupeStore();
   const rawBody = JSON.stringify(messageCreatedPayload({ id: 101 }));
