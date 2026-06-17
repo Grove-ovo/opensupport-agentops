@@ -1,1 +1,16 @@
 {"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python3 .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": "packages/chatwoot/src/endpoint.ts", "reason": "Agent Bot and account webhook endpoint handlers"}
+{"file": "docs/chatwoot_connector.md", "reason": "Phase 1B Chatwoot endpoint and canonical event contract"}
+{"file": "packages/chatwoot/src/index.ts", "reason": "Chatwoot connector public exports"}
+{"file": "packages/shared/src/chatwoot.ts", "reason": "CanonicalInboundEvent shared type"}
+{"file": "packages/chatwoot/src/signature.ts", "reason": "Chatwoot HMAC signature verification"}
+{"file": "packages/chatwoot/src/payload.ts", "reason": "Chatwoot payload normalization and dedupe key construction"}
+{"file": "packages/chatwoot/src/dedupe.ts", "reason": "DedupeStore interface implementation for connector tests"}
+{"file": "tsconfig.base.json", "reason": "Repository TypeScript compiler contract"}
+{"file": "package.json", "reason": "Root build typecheck and test scripts for TypeScript connector"}
+{"file": "packages/chatwoot/package.json", "reason": "Chatwoot workspace package manifest"}
+{"file": ".trellis/spec/integrations/chatwoot-connector.md", "reason": "Executable Chatwoot connector contract"}
+{"file": ".trellis/spec/integrations/index.md", "reason": "Integration spec index for connector work"}
+{"file": "package-lock.json", "reason": "Locked TypeScript workspace dependencies"}
+{"file": "tsconfig.json", "reason": "TypeScript project references"}
+{"file": "packages/shared/package.json", "reason": "Shared workspace package manifest"}
