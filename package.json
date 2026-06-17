@@ -1,0 +1,24 @@
+{
+  "name": "opensupport-agentops",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Tenant-ready ecommerce customer support AgentOps platform based on Chatwoot.",
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "trellis:context": "python3 ./.trellis/scripts/get_context.py",
+    "trellis:tasks": "python3 ./.trellis/scripts/task.py list --mine",
+    "db:up": "docker compose -f infra/docker/compose.phase1.yml up -d",
+    "db:psql": "psql \"${DATABASE_URL:-postgresql://agentops:agentops@localhost:5432/agentops}\"",
+    "db:migrate": "psql \"${DATABASE_URL:-postgresql://agentops:agentops@localhost:5432/agentops}\" -v ON_ERROR_STOP=1 -f infra/migrations/0001_phase1_foundation.sql",
+    "db:verify": "psql \"${DATABASE_URL:-postgresql://agentops:agentops@localhost:5432/agentops}\" -v ON_ERROR_STOP=1 -P pager=off -c \"select table_name from information_schema.tables where table_schema='public' and table_type='BASE TABLE' order by table_name;\"",
+    "lint": "git diff --check",
+    "test": "node scripts/validate-phase1a.mjs"
+  },
+  "keywords": [],
+  "author": "Grove-ovo",
+  "license": "MIT"
+}

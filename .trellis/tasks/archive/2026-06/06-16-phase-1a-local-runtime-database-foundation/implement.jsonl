@@ -1,0 +1,11 @@
+{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python3 .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": "docs/local_runtime.md", "reason": "Local runtime expectations"}
+{"file": "infra/migrations/0001_phase1_foundation.sql", "reason": "Phase 1A foundation migration"}
+{"file": "infra/docker/compose.phase1.yml", "reason": "Local PostgreSQL and Redis dev services"}
+{"file": "docs/database_schema.md", "reason": "Phase 1A database schema documentation"}
+{"file": "package.json", "reason": "Project scripts for Phase 1A validation"}
+{"file": ".env.example", "reason": "Local runtime environment defaults"}
+{"file": "README.md", "reason": "Phase 1A documentation entry points"}
+{"file": ".trellis/spec/infra/index.md", "reason": "Infra spec index for Phase 1A contracts"}
+{"file": ".trellis/spec/infra/phase-1a-database-foundation.md", "reason": "Executable infra and database contracts for Phase 1A"}
+{"file": ".gitignore", "reason": "Ignore local Trellis runtime and personal workspace state"}
