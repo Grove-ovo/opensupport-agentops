@@ -17,6 +17,5 @@ coverage/
 tmp/
 temp/
 
-# Trellis local runtime and personal workspace state
+# Trellis local runtime state
 .trellis/.runtime/
-.trellis/workspace/
