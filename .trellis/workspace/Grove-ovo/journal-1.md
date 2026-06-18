@@ -239,3 +239,36 @@ Implemented shared Agent pipeline contracts, deterministic Code Router, validati
 ### Next Steps
 
 - None - task complete
+
+
+## Session 8: Complete Phase 2B Tenant LLM Runtime
+
+**Date**: 2026-06-18
+**Task**: Complete Phase 2B Tenant LLM Runtime
+**Branch**: `feat/phase-2b-llm-runtime-conditional-triage`
+
+### Summary
+
+Implemented tenant-scoped BYOK model invocation, budget preflight, timeout and fallback control, per-attempt LLM logging, and conditional structured triage with mock-provider tests.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `c6d68ef` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
