@@ -4,6 +4,8 @@
     { "path": "./packages/shared" },
     { "path": "./packages/chatwoot" },
     { "path": "./packages/model-config" },
-    { "path": "./packages/llm-observability" }
+    { "path": "./packages/llm-observability" },
+    { "path": "./packages/pii" },
+    { "path": "./packages/trace" }
   ]
 }

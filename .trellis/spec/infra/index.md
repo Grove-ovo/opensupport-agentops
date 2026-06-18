@@ -10,6 +10,7 @@
 | [Phase 1A Database Foundation](./phase-1a-database-foundation.md) | Local runtime, migration, env, and validation contracts for the Phase 1A foundation | Active |
 | [Phase 1C Tenant Model Config](./phase-1c-tenant-model-config.md) | Versioned BYOK config, envelope encryption, validation, and database constraints | Active |
 | [Phase 1D LLM Observability](./phase-1d-llm-observability.md) | Immutable LLM call logs, micro-unit cost calculation, projected budgets, and reporting views | Active |
+| [Phase 1E PII And Trace](./phase-1e-pii-trace.md) | Deterministic PII masking, immutable trace snapshots, and execution-state schema seed | Active |
 
 ## Pre-Development Checklist
 
@@ -20,6 +21,8 @@ Before changing infra, database, or local runtime files:
   changing model configuration or BYOK secret handling.
 - Read [Phase 1D LLM Observability](./phase-1d-llm-observability.md) when
   changing LLM call logs, pricing snapshots, budget decisions, or cost views.
+- Read [Phase 1E PII And Trace](./phase-1e-pii-trace.md) when changing
+  provider-bound masking, trace contracts, execution states, or trace storage.
 - Confirm whether the change belongs to the active Trellis phase.
 - Search existing migrations and docs before adding duplicate table or env names.
 - Keep secret-bearing values as references, not plaintext persisted values.

@@ -67,8 +67,9 @@ npm run db:migrate
 
 The command applies `0001_phase1_foundation.sql`,
 `0002_tenant_model_config_versions.sql`, and
-`0003_llm_call_logging_cost_governance.sql`. The migrations create only the
-current foundation tables:
+`0003_llm_call_logging_cost_governance.sql`, and
+`0004_pii_mask_trace_schema.sql`. The migrations create only the current
+foundation tables:
 
 - `tenants`
 - `chatwoot_connections`
@@ -91,6 +92,13 @@ and currency-safe reporting with:
 
 ```bash
 npm run db:verify:llm-observability
+```
+
+Verify Phase 1E tenant-consistent model snapshots, immutable trace fields, PII
+audit metadata, and operational trace updates with:
+
+```bash
+npm run db:verify:trace
 ```
 
 ## Local Chatwoot Expectations
