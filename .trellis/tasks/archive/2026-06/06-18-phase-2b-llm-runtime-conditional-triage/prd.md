@@ -17,13 +17,13 @@ marks routing as ambiguous.
 
 ## Acceptance Criteria
 
-- Clear Code Router decisions skip triage.
-- Ambiguous decisions call the tenant fast model at most once plus configured
+- [x] Clear Code Router decisions skip triage.
+- [x] Ambiguous decisions call the tenant fast model at most once plus configured
   fallback when allowed.
-- Plaintext keys and prompt/completion content are not logged or persisted.
-- Timeout, provider error, invalid model output, budget exceedance, and fallback
+- [x] Plaintext keys and prompt/completion content are not logged or persisted.
+- [x] Timeout, provider error, invalid model output, budget exceedance, and fallback
   exhaustion return explicit degraded results.
-- Lint, type-check, tests, and Trellis validation pass.
+- [x] Lint, type-check, tests, and Trellis validation pass.
 
 ## Dependencies
 

@@ -10,6 +10,8 @@ export type {
   RouteDecision,
   RouteReasonCode,
   SensitiveSignal,
+  TriageDecision,
+  TriageRiskLevel,
 } from './agent.js';
 export type {
   BudgetReasonCode,

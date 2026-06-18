@@ -77,6 +77,20 @@ export interface RouteDecision {
   reason_codes: RouteReasonCode[];
 }
 
+export type TriageRiskLevel = 'low' | 'medium' | 'high';
+
+export interface TriageDecision {
+  intent: AgentIntent;
+  entities: AgentEntities;
+  risk_level: TriageRiskLevel;
+  clarification_needed: boolean;
+  clarification_question: string | null;
+  confidence: number;
+  prompt_version_id: string;
+  model_config_version_id: string;
+  model_name: string;
+}
+
 export type PipelineStepStatus = 'succeeded' | 'degraded' | 'failed';
 
 export interface PipelineStepResult<T> {
