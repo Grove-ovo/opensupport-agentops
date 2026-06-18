@@ -1,194 +1,128 @@
-# Technical Design: Phase 1 - Chatwoot + Tenant + BYOK Foundation
+# Technical Design: Phase 1 Foundation Integration
 
-Status: Proposed  
-Date: 2026-06-16  
+Status: Implemented and verified
+Date: 2026-06-18
 Source PRD: `OpenSupport_AgentOps_PRD.md`
 
-## Phase Boundary
+## Integration Boundary
 
-This task is the first executable foundation slice from the original PRD. It
-does not implement the complete AgentOps platform. It prepares the storage,
-integration, logging, masking, and trace contracts required by later phases.
+This task verifies the completed Phase 1A-1E foundation as one baseline. It
+does not add Agent runtime behavior. The integration layer is intentionally a
+repository validation command plus full quality and database checks.
 
-The user registration example discussed earlier is not part of this task.
+## Final Phase 1 Components
 
-## Phase 1 Components
+### Runtime and Database
 
-### Local Runtime + Database Foundation
+- Docker Compose: `infra/docker/compose.phase1.yml`
+- Canonical database: PostgreSQL with pgvector
+- Environment switch: `DATABASE_URL`
+- Ordered migrations:
+  1. `0001_phase1_foundation.sql`
+  2. `0002_tenant_model_config_versions.sql`
+  3. `0003_llm_call_logging_cost_governance.sql`
+  4. `0004_pii_mask_trace_schema.sql`
 
-Establish development runtime expectations for:
-
-- AgentOps API
-- PostgreSQL
-- Redis
-- local Chatwoot
-
-Database environment decision:
-
-- Development and local demo use local PostgreSQL with pgvector, ideally via
-  Docker Compose in the Phase 1A task.
-- Staging and production use managed cloud PostgreSQL with pgvector.
-- The app must not maintain separate local/cloud database implementations; it
-  should switch environments through `DATABASE_URL` and shared migrations.
-
-Minimum Phase 1 tables:
-
-- `tenants`
-- `chatwoot_connections`
-- `tenant_model_configs`
-- `agent_traces`
-- `llm_call_logs`
-- `audit_logs`
+The migration chain is idempotent and preserves one schema across local and
+managed PostgreSQL environments.
 
 ### Chatwoot Connector
 
-Define contracts for:
+Package: `packages/chatwoot`
 
-- Agent Bot endpoint
-- account webhook endpoint
-- webhook signature verification
-- delivery dedupe
-- event parsing
-- self outgoing message ignore
-- canonical inbound event generation
+- Agent Bot and account webhook endpoints share canonical normalization.
+- Signatures are verified before acceptance.
+- Self-outgoing events cannot seed future execution.
+- Fallback identity is based on tenant, conversation, message, and event type.
+- Cross-entry duplicates converge on one pipeline seed.
 
-Canonical inbound event semantics:
+### Tenant Model Config and BYOK
 
-```text
-CanonicalInboundEvent
-  tenant_id
-  source                  # agent_bot | account_webhook
-  conversation_id
-  message_id
-  event_type
-  dedupe_key
-  payload_hash
-  is_customer_message
-  is_self_outgoing
+Package: `packages/model-config`
+
+- Configuration is tenant-scoped and versioned.
+- Provider credentials are represented through encrypted references.
+- Envelope encryption is the Phase 1 storage strategy.
+- Model roles, timeout, fallback, ticket budget, and daily budget are fixed
+  contract fields.
+- Config versions are immutable after creation.
+
+### LLM Observability
+
+Package: `packages/llm-observability`
+
+- Logs include model/provider, prompt version, latency, token counts, estimated
+  cost, error code, and governance reason.
+- Costs use currency-safe decimal handling in PostgreSQL.
+- The module records budget decisions but does not implement full runtime mode
+  transitions.
+
+### PII and Trace
+
+Packages: `packages/pii`, `packages/trace`
+
+- PII categories: phone, email, address, government ID, and bank card.
+- Order identifiers remain available for customer-support workflows.
+- PII masking is designed to run before provider invocation.
+- Trace creation freezes these version identities:
+  - `agent_version_id`
+  - `prompt_version_id`
+  - `policy_version_id`
+  - `tool_manifest_version_id`
+  - `risk_rule_version_id`
+  - `retrieval_config_version_id`
+  - `model_config_version_id`
+- PostgreSQL constraints and application guards reject cross-tenant snapshot
+  references.
+
+## Parent Integration Validator
+
+Add `scripts/validate-phase1.mjs` and expose it as `npm run test:phase1`.
+
+The validator must fail when:
+
+- a required Phase 1 migration, package, document, verification script, or
+  child archive is missing
+- `db:migrate` omits or reorders Phase 1 migrations
+- the root `test` command omits a Phase 1 static or package suite
+- a child task is not archived with `status=completed`
+- the parent PRD loses the Phase 1 scope boundary
+
+The validator is a repository consistency check. Runtime behavior continues to
+be tested by package tests and PostgreSQL verification SQL.
+
+## Validation Commands
+
+```bash
+npm run lint
+npm run typecheck
+npm test
+docker compose -f infra/docker/compose.phase1.yml config
+PATH="/opt/homebrew/opt/libpq/bin:$PATH" npm run db:migrate
+PATH="/opt/homebrew/opt/libpq/bin:$PATH" npm run db:verify
+PATH="/opt/homebrew/opt/libpq/bin:$PATH" npm run db:verify:model-config
+PATH="/opt/homebrew/opt/libpq/bin:$PATH" npm run db:verify:llm-observability
+PATH="/opt/homebrew/opt/libpq/bin:$PATH" npm run db:verify:trace
+python3 ./.trellis/scripts/task.py validate 06-16-opensupport-agentops-architecture
 ```
 
-Only canonical incoming customer messages may seed later pipeline execution.
+## Deferred Work
 
-### Tenant Config + BYOK Model Config
-
-Define tenant-scoped model config:
-
-```text
-TenantModelConfig
-  tenant_id
-  provider
-  fast_model
-  strong_model
-  embedding_model
-  fallback_model
-  timeout_ms
-  max_cost_per_ticket
-  daily_budget
-  encrypted_api_key_ref
-```
-
-MVP uses local envelope encryption for encrypted API key references. Production
-secret manager integration remains future work.
-
-### LLM Call Logging + Cost Governance Seed
-
-Define logging fields for every future LLM call:
-
-```text
-LLMCallLog
-  tenant_id
-  ticket_id
-  trace_id
-  prompt_version_id
-  model_provider
-  model_name
-  input_tokens
-  output_tokens
-  estimated_cost
-  latency_ms
-  error_code
-  created_at
-```
-
-Phase 1 only seeds the cost governance fields and reason codes. Full runtime
-downgrade behavior belongs to later runtime mode work.
-
-### PII Mask + Trace Schema
-
-PII masking categories:
-
-- phone
-- email
-- address
-- ID number
-- bank card
-
-Trace schema seed:
-
-```text
-AgentTrace
-  trace_id
-  tenant_id
-  ticket_id
-  conversation_id
-  runtime_mode
-  agent_version_id
-  prompt_version_id
-  model_provider
-  model_name
-  intent
-  entities
-  route
-  retrieved_doc_ids
-  tool_call_ids
-  risk_level
-  risk_decision
-  final_action
-  latency_ms
-  input_tokens
-  output_tokens
-  estimated_cost
-  failure_bucket
-  created_at
-```
-
-Phase 1 should include version snapshot placeholders even before the full agent
-pipeline exists.
-
-## Child Task Execution Order
-
-1. `06-16-phase-1a-local-runtime-database-foundation`
-2. `06-16-phase-1b-chatwoot-connector`
-3. `06-16-phase-1c-tenant-byok-model-config`
-4. `06-16-phase-1d-llm-call-logging-cost-governance`
-5. `06-16-phase-1e-pii-mask-trace-schema`
-
-## Deferred From Current Task
-
-- RAG ingestion/retrieval
-- Agent pipeline
-- MCP-compatible tools
-- Runtime modes full execution
-- Approval queue
-- Replay Eval
-- Security Eval
-- Release Gate
-- Dashboard screens
-- Real ecommerce platform adapters
-- User registration and full SaaS account management
-
-## Validation Plan
-
-- Trellis task validation passes.
-- Parent task stays in `planning`.
-- Phase 1A-1E children are linked to the parent.
-- Current task PRD maps to original PRD Phase 1 deliverables.
-- Current task PRD does not include user registration, RAG, tools, eval, release
-  gate, or dashboard implementation.
+- RAG, Agent pipeline, tools, runtime modes, approvals
+- eval, release gates, benchmark/load testing
+- dashboard UI
+- user registration and complete SaaS account/RBAC
+- real ecommerce adapters
+- external secret manager and workflow engine
 
 ## References
 
-- Source PRD: `OpenSupport_AgentOps_PRD.md`
-- Architecture: `docs/architecture.md`
-- ADR-001: `docs/adr/ADR-001-opensupport-agentops-mvp-architecture.md`
-- ADR-002: `docs/adr/ADR-002-controlled-launch-architecture.md`
+- `docs/architecture.md`
+- `docs/adr/ADR-001-opensupport-agentops-mvp-architecture.md`
+- `docs/adr/ADR-002-controlled-launch-architecture.md`
+- `.trellis/spec/infra/phase-1a-database-foundation.md`
+- `.trellis/spec/integrations/chatwoot-connector.md`
+- `.trellis/spec/infra/phase-1c-tenant-model-config.md`
+- `.trellis/spec/infra/phase-1d-llm-observability.md`
+- `.trellis/spec/infra/phase-1e-pii-trace.md`
+- `.trellis/spec/infra/phase-1-foundation-integration.md`

@@ -1,144 +1,156 @@
 ---
 artifact: prd
-version: "1.0"
+version: "2.0"
 created: 2026-06-16
-status: proposed
+updated: 2026-06-18
+status: accepted
 source: ../../../../OpenSupport_AgentOps_PRD.md
 ---
 
-# PRD: Phase 1 - Chatwoot + Tenant + BYOK Foundation
+# PRD: Phase 1 Foundation Integration
 
 ## Goal
 
-Build the first executable foundation slice from the original OpenSupport
-AgentOps PRD: local runtime foundations, Chatwoot connector contracts,
-tenant-ready configuration, BYOK model configuration, LLM call logging, PII
-masking, and trace schema.
+Integrate and verify the five completed Phase 1 delivery slices from the
+original OpenSupport AgentOps PRD:
 
-This task intentionally narrows the project from the full AgentOps platform to
-the original PRD Phase 1 milestone. It does not implement user registration.
-The earlier registration example is explicitly out of scope.
+- local runtime and PostgreSQL foundation
+- Chatwoot canonical event ingestion
+- tenant-scoped BYOK model configuration
+- LLM call logging and cost governance seed
+- PII masking and immutable trace schema
+
+This parent task closes the Phase 1 foundation as one coherent, reproducible
+baseline. It does not add user registration or pull Phase 2-5 capabilities
+into the current release.
 
 ## Requirements
 
-- Provide local development foundation guidance for AgentOps API, PostgreSQL,
-  Redis, and Chatwoot.
-- Use PostgreSQL as the canonical database engine across environments: local
-  PostgreSQL with pgvector for development/demo, managed cloud PostgreSQL with
-  pgvector for deployed staging/production.
-- Define the tenant-ready minimum data model for Phase 1.
-- Define Chatwoot connection configuration and connector contracts.
-- Define canonical inbound event and dedupe behavior for Agent Bot and account
-  webhook inputs.
-- Define tenant-scoped BYOK model configuration with encrypted API key
-  references.
-- Define LLM call logging fields for latency, token usage, estimated cost,
-  prompt version, model name, and error code.
-- Define PII masking behavior that must run before future LLM calls.
-- Define trace schema that can seed later Agent pipeline steps.
-- Preserve controlled launch architecture decisions from ADR-002 as Phase 1
-  constraints where relevant.
-- Split Phase 1 into independent child tasks that can be implemented
-  iteratively.
+- Preserve a single ordered, idempotent PostgreSQL migration path for all
+  Phase 1 schema changes.
+- Verify the minimum tenant-ready tables and constraints required by Phase 1.
+- Verify that Agent Bot and account webhook inputs converge on one canonical
+  Chatwoot event contract and one pipeline seed.
+- Verify tenant-scoped model configuration, encrypted BYOK references,
+  immutable config versions, timeout, fallback, and budget fields.
+- Verify LLM call logs capture model, prompt version, latency, token usage,
+  estimated cost, error code, and cost-governance reason fields.
+- Verify PII masking is callable before any provider request and preserves
+  operational identifiers such as order IDs.
+- Verify trace creation freezes a tenant-consistent version snapshot for later
+  Agent pipeline execution.
+- Keep the Phase 1 documentation, package exports, tests, migration scripts,
+  database verification scripts, and Trellis task records consistent.
+- Add one parent-level integration validation command that detects missing or
+  disconnected Phase 1 artifacts.
 
 ## Acceptance Criteria
 
-- AC-1: Current task PRD no longer implies user registration as Phase 1 scope.
-- AC-2: Phase 1 maps directly to the original PRD milestone "Chatwoot + Tenant
-  + BYOK".
-- AC-3: Non-core requirements are explicitly deferred to later project phases.
-- AC-4: Chatwoot events can be designed to be verified, deduped, normalized,
-  and stored through a canonical inbound event contract.
-- AC-5: Tenant model config can represent BYOK provider, model roles, budget,
-  timeout, fallback model, and encrypted API key reference.
-- AC-6: LLM call logs can record latency, token usage, estimated cost, prompt
-  version, model name, and error code.
-- AC-7: PII masking can run before any future LLM call.
-- AC-8: Agent trace schema can seed later Agent pipeline steps.
-- AC-9: Trellis child tasks exist for Phase 1A through Phase 1E.
-- AC-10: Parent task remains in `planning` until the narrowed Phase 1 PRD is
-  accepted.
+- [x] AC-1: Phase 1 migrations `0001` through `0004` execute in order and are
+  idempotent on PostgreSQL with pgvector.
+- [x] AC-2: The Phase 1 base schema includes `tenants`,
+  `chatwoot_connections`, `tenant_model_configs`, `agent_traces`,
+  `llm_call_logs`, and `audit_logs`.
+- [x] AC-3: Chatwoot signatures are verified, self-outgoing events are
+  ignored, and Agent Bot/account webhook duplicates produce one canonical
+  pipeline seed.
+- [x] AC-4: `TenantModelConfig` supports provider and model roles, timeout,
+  fallback, ticket/daily budget, encrypted API-key reference, and immutable
+  version identity.
+- [x] AC-5: `LLMCallLog` persists model name, prompt version, latency, token
+  usage, estimated cost, error code, and currency-safe cost values.
+- [x] AC-6: PII masking covers phone, email, address, government ID, and bank
+  card categories before future LLM calls without masking order identifiers.
+- [x] AC-7: `AgentTrace` stores immutable version snapshot fields and rejects
+  cross-tenant version references.
+- [x] AC-8: Required Phase 1 documents exist and match the implemented
+  contracts: `docs/chatwoot_connector.md`, `docs/tenant_model_config.md`,
+  `docs/llm_observability.md`, and `docs/trace_schema.md`.
+- [x] AC-9: Phase 1A through Phase 1E Trellis children are archived as
+  completed and remain linked from this parent task.
+- [x] AC-10: `npm run lint`, `npm run typecheck`, `npm test`, Docker Compose
+  validation, Trellis validation, migration execution, and database
+  verification pass.
+- [x] AC-11: User registration, full SaaS account/RBAC, RAG, Agent runtime,
+  tools, approvals, eval, release gates, dashboard implementation, and real
+  ecommerce adapters remain outside this task.
 
 ## Phase 1 Child Tasks
 
-| Task | Scope | Trellis Task |
-|------|-------|--------------|
-| Phase 1A | Local runtime + database foundation | `06-16-phase-1a-local-runtime-database-foundation` |
-| Phase 1B | Chatwoot connector | `06-16-phase-1b-chatwoot-connector` |
-| Phase 1C | Tenant config + BYOK model config | `06-16-phase-1c-tenant-byok-model-config` |
-| Phase 1D | LLM call logging + cost governance seed | `06-16-phase-1d-llm-call-logging-cost-governance` |
-| Phase 1E | PII mask + trace schema | `06-16-phase-1e-pii-mask-trace-schema` |
+| Task | Scope | Trellis Task | Status |
+|------|-------|--------------|--------|
+| Phase 1A | Local runtime + database foundation | `06-16-phase-1a-local-runtime-database-foundation` | Completed |
+| Phase 1B | Chatwoot connector | `06-16-phase-1b-chatwoot-connector` | Completed |
+| Phase 1C | Tenant config + BYOK model config | `06-16-phase-1c-tenant-byok-model-config` | Completed |
+| Phase 1D | LLM call logging + cost governance seed | `06-16-phase-1d-llm-call-logging-cost-governance` | Completed |
+| Phase 1E | PII mask + trace schema | `06-16-phase-1e-pii-mask-trace-schema` | Completed |
+
+## Technical Approach
+
+The parent integration task does not introduce another runtime abstraction. It
+adds an executable repository-level validation that checks the Phase 1
+contract is connected end to end:
+
+1. required migrations and verification scripts exist
+2. root scripts execute all Phase 1 validation suites
+3. required packages and documentation are present
+4. all five child tasks are archived as completed
+5. the parent PRD retains the intended Phase 1 boundary
+
+Runtime and storage behavior continue to follow the child task implementations
+and ADR-001/ADR-002. PostgreSQL remains canonical, Redis is infrastructure for
+future online processing, and no workflow engine or external secret manager is
+introduced in Phase 1.
+
+## Decision (ADR-lite)
+
+**Context**: The Phase 1 capabilities were intentionally delivered as five
+small feature branches. Closing only the children would leave no executable
+proof that their scripts, schemas, packages, documents, and Trellis records
+form one release baseline.
+
+**Decision**: Use this parent task as a lightweight integration gate. Add a
+static Phase 1 repository validator, then run the full TypeScript, PostgreSQL,
+Docker Compose, and Trellis quality gates.
+
+**Consequences**: Phase 1 gains a repeatable acceptance command without adding
+production runtime complexity. The validator must be updated when a future
+migration or Phase 1 artifact is intentionally renamed.
 
 ## Project Roadmap
 
-The full source PRD remains the product blueprint. Later phases are deferred
-from the current execution task:
+The full source PRD remains the project blueprint. Later phases remain
+independent future Trellis tasks:
 
 1. Phase 2: Agent + RAG + Tools
 2. Phase 3: Runtime Modes + Approval
 3. Phase 4: Eval + Release Gate
 4. Phase 5: Benchmark + Load Test
 
-Each deferred phase should become its own Trellis task or task group after
-Phase 1 is accepted and implemented.
-
 ## Out of Scope
 
 - User registration API.
-- Full SaaS workspace/account system.
-- Complete RBAC.
+- Full SaaS workspace/account system and complete RBAC.
 - RAG ingestion and retrieval.
-- Agent pipeline and response generation.
-- MCP tools.
-- Runtime modes full execution.
-- Approval queue.
-- Replay Eval, Security Eval, and Release Gate implementation.
-- Dashboard page implementation.
-- Real Shopify, WooCommerce, Taobao, JD, or marketplace adapters.
-
-## Technical Approach
-
-Phase 1 establishes contracts and storage foundations, not the full agent
-runtime. Data and interfaces defined here must remain reusable by later phases.
-
-Core semantic shapes:
-
-- `Tenant`: tenant identity and lifecycle.
-- `ChatwootConnection`: tenant-scoped Chatwoot base URL, account ID, webhook
-  secret reference, API token reference, and Agent Bot config.
-- `TenantModelConfig`: provider, fast model, strong model, embedding model,
-  fallback model, timeout, per-ticket budget, daily budget, encrypted API key
-  reference.
-- `CanonicalInboundEvent`: tenant ID, source, conversation ID, message ID, event
-  type, dedupe key, payload hash, customer/self flags.
-- `AgentTrace`: trace ID, tenant ID, ticket/conversation IDs, runtime mode
-  placeholder, version snapshot, latency/cost fields, final action placeholder.
-- `LLMCallLog`: model, prompt version, token usage, latency, estimated cost,
-  error code.
-- `AuditLog`: actor, action, decision, input/output hash, timestamp.
-- `PIIMaskResult`: masked text plus detected PII categories.
-
-Database environment rule:
-
-- Local development and demo use local PostgreSQL with pgvector.
-- Staging and production use managed cloud PostgreSQL with pgvector.
-- The application must connect through `DATABASE_URL` and keep one schema,
-  migration path, and data access layer across both environments.
-
-Required Phase 1 artifacts:
-
-- `docs/chatwoot_connector.md`
-- `docs/tenant_model_config.md`
-- `docs/trace_schema.md`
+- Agent planning, routing, tool execution, and response generation.
+- Runtime modes and approval queue execution.
+- Replay Eval, Security Eval, Release Gate, and failure-bucket processing.
+- Dashboard pages.
+- Real Shopify, WooCommerce, Taobao, JD, or other marketplace adapters.
+- External secret manager and workflow engine adoption.
 
 ## Definition of Done
 
-- Phase 1A-1E child task PRDs exist.
-- Parent task PRD is narrowed to Phase 1 only.
-- User registration remains explicitly out of scope.
-- Original full PRD phase roadmap is retained as deferred work.
-- Trellis validation passes.
-- No implementation task is started until this narrowed PRD is accepted.
+- Parent integration validator is included in the root test suite.
+- All Phase 1 package and static validation tests pass.
+- TypeScript build/type-check and lint pass.
+- Docker Compose configuration resolves.
+- PostgreSQL migrations are idempotent and all Phase 1 database verification
+  scripts pass against the local database.
+- Trellis validation passes for this parent task.
+- Architecture, ADRs, Phase 1 docs, specs, and task metadata have no conflicting
+  technical direction.
+- Changes are committed on `feat/phase-1-foundation-integration` from `dev`.
 
 ## References
 
