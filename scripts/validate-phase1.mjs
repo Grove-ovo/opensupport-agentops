@@ -2,9 +2,9 @@ import { existsSync, readFileSync } from 'node:fs';
 
 const packageJsonPath = 'package.json';
 const parentPrdPath =
-  '.trellis/tasks/06-16-opensupport-agentops-architecture/prd.md';
+  '.trellis/tasks/archive/2026-06/06-16-opensupport-agentops-architecture/prd.md';
 const parentTaskPath =
-  '.trellis/tasks/06-16-opensupport-agentops-architecture/task.json';
+  '.trellis/tasks/archive/2026-06/06-16-opensupport-agentops-architecture/task.json';
 const parentTaskSlug = '06-16-opensupport-agentops-architecture';
 
 const requiredMigrations = [
@@ -80,17 +80,7 @@ validateOrderedEntries(
   requiredMigrations,
   'db:migrate',
 );
-if (
-  typeof scripts.test !== 'string' ||
-  JSON.stringify(scripts.test.split(' && ')) !==
-    JSON.stringify(requiredTestCommands)
-) {
-  failures.push(
-    `test must execute the complete Phase 1 suite in order: ${requiredTestCommands.join(
-      ' && ',
-    )}`,
-  );
-}
+validateOrderedEntries(scripts.test, requiredTestCommands, 'test');
 
 const parentTask = readJson(parentTaskPath);
 if (

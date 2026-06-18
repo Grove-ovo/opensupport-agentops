@@ -19,7 +19,8 @@
       "@opensupport/model-config": ["packages/model-config/src/index.ts"],
       "@opensupport/llm-observability": ["packages/llm-observability/src/index.ts"],
       "@opensupport/pii": ["packages/pii/src/index.ts"],
-      "@opensupport/trace": ["packages/trace/src/index.ts"]
+      "@opensupport/trace": ["packages/trace/src/index.ts"],
+      "@opensupport/agent-core": ["packages/agent-core/src/index.ts"]
     }
   }
 }

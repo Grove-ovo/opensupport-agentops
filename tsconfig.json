@@ -6,6 +6,7 @@
     { "path": "./packages/model-config" },
     { "path": "./packages/llm-observability" },
     { "path": "./packages/pii" },
-    { "path": "./packages/trace" }
+    { "path": "./packages/trace" },
+    { "path": "./packages/agent-core" }
   ]
 }

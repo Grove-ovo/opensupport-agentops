@@ -1,5 +1,17 @@
 export type { CanonicalInboundEvent, CanonicalInboundEventSource } from './chatwoot.js';
 export type {
+  AgentCapability,
+  AgentEntities,
+  AgentIntent,
+  AgentPipelineContext,
+  AgentRoute,
+  PipelineStepResult,
+  PipelineStepStatus,
+  RouteDecision,
+  RouteReasonCode,
+  SensitiveSignal,
+} from './agent.js';
+export type {
   BudgetReasonCode,
   LLMCallLog,
   LLMCallStatus,
