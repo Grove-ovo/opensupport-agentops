@@ -3,6 +3,7 @@
   "references": [
     { "path": "./packages/shared" },
     { "path": "./packages/chatwoot" },
-    { "path": "./packages/model-config" }
+    { "path": "./packages/model-config" },
+    { "path": "./packages/llm-observability" }
   ]
 }

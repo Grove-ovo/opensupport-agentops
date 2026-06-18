@@ -16,7 +16,8 @@
     "paths": {
       "@opensupport/shared": ["packages/shared/src/index.ts"],
       "@opensupport/chatwoot": ["packages/chatwoot/src/index.ts"],
-      "@opensupport/model-config": ["packages/model-config/src/index.ts"]
+      "@opensupport/model-config": ["packages/model-config/src/index.ts"],
+      "@opensupport/llm-observability": ["packages/llm-observability/src/index.ts"]
     }
   }
 }

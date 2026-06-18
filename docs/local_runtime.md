@@ -65,9 +65,10 @@ After PostgreSQL is running, apply the ordered Phase 1 migrations with:
 npm run db:migrate
 ```
 
-The command applies `0001_phase1_foundation.sql` followed by
-`0002_tenant_model_config_versions.sql`. The migrations create only the current
-foundation tables:
+The command applies `0001_phase1_foundation.sql`,
+`0002_tenant_model_config_versions.sql`, and
+`0003_llm_call_logging_cost_governance.sql`. The migrations create only the
+current foundation tables:
 
 - `tenants`
 - `chatwoot_connections`
@@ -83,6 +84,13 @@ Verify the live database table list with:
 
 ```bash
 npm run db:verify
+```
+
+Verify Phase 1D append-only logging, tenant ownership, generated token totals,
+and currency-safe reporting with:
+
+```bash
+npm run db:verify:llm-observability
 ```
 
 ## Local Chatwoot Expectations
