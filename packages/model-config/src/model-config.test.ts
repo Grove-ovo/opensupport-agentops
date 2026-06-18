@@ -122,6 +122,34 @@ test('produces the same fingerprint for equivalent non-secret config values', ()
   assert.notEqual(first.encrypted_api_key_ref, second.encrypted_api_key_ref);
 });
 
+test('uses unambiguous fingerprint serialization for model names containing separators', () => {
+  const first = createTenantModelConfig(
+    validInput({
+      fastModel: 'fast\u001fshifted',
+      strongModel: 'strong',
+    }),
+    { masterKey, keyId: 'local-dev-v1' },
+  );
+  const second = createTenantModelConfig(
+    validInput({
+      fastModel: 'fast',
+      strongModel: 'shifted\u001fstrong',
+    }),
+    { masterKey, keyId: 'local-dev-v1' },
+  );
+
+  assert.notEqual(first.config_fingerprint, second.config_fingerprint);
+});
+
+test('accepts UUIDv7 tenant identifiers supported by PostgreSQL uuid columns', () => {
+  const config = createTenantModelConfig(
+    validInput({ tenantId: '0192f2a0-9b4c-7def-8abc-1234567890ab' }),
+    { masterKey, keyId: 'local-dev-v1' },
+  );
+
+  assert.equal(config.tenant_id, '0192f2a0-9b4c-7def-8abc-1234567890ab');
+});
+
 test('rejects invalid model config fields together', () => {
   assert.throws(
     () => createTenantModelConfig(

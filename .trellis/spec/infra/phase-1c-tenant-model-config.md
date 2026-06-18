@@ -66,6 +66,9 @@ Envelope encryption contract:
 - Bind both encryption layers to tenant ID, normalized provider, and key ID
   through additional authenticated data.
 - Zero local data-key and master-key buffer copies after use.
+- Compute `config_fingerprint` from an ordered JSON tuple of normalized
+  non-secret values; delimiter-joined strings are ambiguous when values contain
+  the delimiter.
 - Persist only this versioned opaque reference:
 
 ```text
@@ -74,6 +77,9 @@ enc:v1:<key_id>:<wrap_iv>:<wrapped_key_tag>:<wrapped_key>:<data_iv>:<data_tag>:<
 
 `AGENTOPS_MASTER_KEY` must decode to exactly 32 bytes and use `base64:`,
 `base64url:`, or `hex:` encoding.
+
+Global provider variables such as `OPENAI_API_KEY` are forbidden in the
+AgentOps runtime configuration because they bypass tenant-scoped BYOK.
 
 Database version contract:
 
@@ -114,6 +120,8 @@ Database version contract:
   place; historical traces would no longer be reproducible.
 - Bad: include plaintext API keys or encrypted references in config
   fingerprints, logs, frontend responses, or test snapshots.
+- Bad: concatenate fingerprint fields with a delimiter that may also occur
+  inside a provider or model name.
 
 ### 6. Tests Required
 

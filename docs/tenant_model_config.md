@@ -114,6 +114,10 @@ The deployment master key and plaintext tenant API keys must not be committed,
 logged, returned to frontend code, included in fingerprints, or stored in
 PostgreSQL.
 
+Provider API keys are supplied only through the tenant config creation flow.
+The runtime does not use global provider variables such as `OPENAI_API_KEY`,
+because they bypass tenant ownership and audit boundaries.
+
 ## Immutable Versions
 
 Each row is an immutable model config version. New settings create a new
@@ -130,7 +134,8 @@ transaction:
 
 The row `id` is the value later recorded as `model_config_version_id` in trace
 snapshots. `config_fingerprint` is a SHA-256 digest of normalized non-secret
-configuration values and excludes the API key and encrypted reference.
+configuration values serialized as an ordered JSON tuple. It excludes the API
+key and encrypted reference.
 
 ## Deferred Production Work
 

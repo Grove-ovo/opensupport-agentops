@@ -5,12 +5,14 @@ const docPath = 'docs/tenant_model_config.md';
 const sharedTypePath = 'packages/shared/src/model-config.ts';
 const packagePath = 'packages/model-config/src/index.ts';
 const verificationPath = 'infra/verification/phase1c_tenant_model_config.sql';
+const envPath = '.env.example';
 
 const migration = readFileSync(migrationPath, 'utf8');
 const doc = readFileSync(docPath, 'utf8');
 const sharedType = readFileSync(sharedTypePath, 'utf8');
 const packageIndex = readFileSync(packagePath, 'utf8');
 const verification = readFileSync(verificationPath, 'utf8');
+const envExample = readFileSync(envPath, 'utf8');
 
 const failures = [];
 
@@ -83,6 +85,10 @@ for (const requirement of [
   if (!doc.includes(requirement)) {
     failures.push(`${docPath} must document ${requirement}`);
   }
+}
+
+if (envExample.includes('OPENAI_API_KEY')) {
+  failures.push(`${envPath} must not define a global provider key that bypasses tenant BYOK config`);
 }
 
 if (failures.length > 0) {

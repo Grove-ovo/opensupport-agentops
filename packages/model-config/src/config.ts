@@ -48,7 +48,7 @@ export function createTenantModelConfig(
 function createConfigFingerprint(
   input: ConfigFingerprintInput,
 ): string {
-  const canonical = [
+  const canonical = JSON.stringify([
     input.tenantId,
     input.provider,
     input.fastModel,
@@ -59,7 +59,7 @@ function createConfigFingerprint(
     String(input.maxCostPerTicket),
     String(input.dailyBudget),
     input.budgetCurrency,
-  ].join('\u001f');
+  ]);
 
   return createHash('sha256').update(canonical).digest('hex');
 }
@@ -88,7 +88,7 @@ function validateAndNormalizeInput(
 
   if (
     tenantId.length > 0 &&
-    !/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(tenantId)
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(tenantId)
   ) {
     issues.push({ field: 'tenantId', code: 'invalid_format' });
   }
