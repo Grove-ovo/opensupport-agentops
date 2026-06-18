@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import type { NewLLMCallLog } from '@opensupport/shared';
+import { isUuid, type NewLLMCallLog } from '@opensupport/shared';
 import { estimateLLMCallCost } from './cost.js';
 import { LLMObservabilityValidationError } from './errors.js';
 import type {
@@ -7,8 +7,6 @@ import type {
   LLMObservabilityValidationIssue,
 } from './types.js';
 
-const UUID_PATTERN =
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const CALL_STATUSES = new Set([
   'succeeded',
   'failed',
@@ -115,7 +113,7 @@ function validateUuid(
 
   if (normalized.length === 0) {
     issues.push({ field, code: 'required' });
-  } else if (!UUID_PATTERN.test(normalized)) {
+  } else if (!isUuid(normalized)) {
     issues.push({ field, code: 'invalid_uuid' });
   }
 

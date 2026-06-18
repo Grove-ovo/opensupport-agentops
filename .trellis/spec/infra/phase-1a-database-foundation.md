@@ -21,7 +21,8 @@ npm run db:migrate
 psql "$DATABASE_URL" -v ON_ERROR_STOP=1 \
   -f infra/migrations/0001_phase1_foundation.sql \
   -f infra/migrations/0002_tenant_model_config_versions.sql \
-  -f infra/migrations/0003_llm_call_logging_cost_governance.sql
+  -f infra/migrations/0003_llm_call_logging_cost_governance.sql \
+  -f infra/migrations/0004_pii_mask_trace_schema.sql
 ```
 
 Local services:

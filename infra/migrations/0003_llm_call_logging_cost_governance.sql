@@ -12,6 +12,9 @@ ALTER TABLE llm_call_logs
 DROP CONSTRAINT IF EXISTS llm_call_logs_tenant_model_config_fk;
 
 ALTER TABLE agent_traces
+DROP CONSTRAINT IF EXISTS agent_traces_tenant_model_config_fk;
+
+ALTER TABLE agent_traces
 DROP CONSTRAINT IF EXISTS agent_traces_tenant_trace_uniq;
 
 ALTER TABLE agent_traces

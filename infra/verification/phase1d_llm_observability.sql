@@ -77,7 +77,18 @@ BEGIN
     tenant_id,
     ticket_id,
     conversation_id,
-    model_config_version_id
+    message_id,
+    runtime_mode,
+    execution_state,
+    agent_version_id,
+    prompt_version_id,
+    policy_version_id,
+    tool_manifest_version_id,
+    risk_rule_version_id,
+    retrieval_config_version_id,
+    model_config_version_id,
+    pii_categories,
+    masked_input_hash
   )
   VALUES
     (
@@ -85,14 +96,36 @@ BEGIN
       first_tenant_id,
       'ticket-42',
       'conversation-42',
-      first_config_id::text
+      'message-42',
+      'shadow',
+      'received',
+      'agent-v1',
+      'prompt-v1',
+      'policy-v1',
+      'tools-v1',
+      'risk-v1',
+      'retrieval-v1',
+      first_config_id,
+      ARRAY[]::text[],
+      repeat('e', 64)
     ),
     (
       second_trace_id,
       second_tenant_id,
       'ticket-84',
       'conversation-84',
-      second_config_id::text
+      'message-84',
+      'shadow',
+      'received',
+      'agent-v1',
+      'prompt-v1',
+      'policy-v1',
+      'tools-v1',
+      'risk-v1',
+      'retrieval-v1',
+      second_config_id,
+      ARRAY[]::text[],
+      repeat('f', 64)
     );
 
   INSERT INTO llm_call_logs (

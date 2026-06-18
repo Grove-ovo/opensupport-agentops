@@ -1,11 +1,12 @@
 # Phase 1 Database Schema
 
-Status: Phase 1A foundation + Phase 1C model config versioning + Phase 1D LLM observability
+Status: Phase 1A foundation through Phase 1E trace security
 Migrations:
 
 - `infra/migrations/0001_phase1_foundation.sql`
 - `infra/migrations/0002_tenant_model_config_versions.sql`
 - `infra/migrations/0003_llm_call_logging_cost_governance.sql`
+- `infra/migrations/0004_pii_mask_trace_schema.sql`
 
 ## Design Rules
 
@@ -77,8 +78,8 @@ and trigger-maintained `updated_at` to change after insertion.
 
 ### agent_traces
 
-Seeds traceability for later agent pipeline work. The table includes version
-snapshot placeholders required by the controlled launch architecture.
+Stores tenant-scoped trace seeds for later agent pipeline work. Phase 1E makes
+the controlled-launch version and PII audit snapshot immutable.
 
 Key fields:
 
@@ -88,6 +89,7 @@ Key fields:
 - `conversation_id`
 - `message_id`
 - `runtime_mode`
+- `execution_state`
 - `agent_version_id`
 - `prompt_version_id`
 - `policy_version_id`
@@ -95,11 +97,29 @@ Key fields:
 - `risk_rule_version_id`
 - `retrieval_config_version_id`
 - `model_config_version_id`
+- `model_provider`
+- `model_name`
+- `intent`
+- `entities`
+- `route`
+- `retrieved_doc_ids`
+- `tool_call_ids`
+- `risk_level`
+- `risk_decision`
+- `final_action`
 - `latency_ms`
 - `input_tokens`
 - `output_tokens`
 - `estimated_cost`
 - `failure_bucket`
+- `pii_categories`
+- `pii_replacement_map_ref`
+- `masked_input_hash`
+
+`model_config_version_id` uses a tenant-consistent UUID foreign key. Trace
+identity, runtime mode, version fields, PII metadata, input hash, and creation
+timestamp cannot be changed after insertion. Operational result fields remain
+mutable for later pipeline phases.
 
 ### llm_call_logs
 

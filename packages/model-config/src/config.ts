@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from 'node:crypto';
-import type { TenantModelConfig } from '@opensupport/shared';
+import { isUuid, type TenantModelConfig } from '@opensupport/shared';
 import { encryptApiKey } from './envelope.js';
 import { ModelConfigValidationError } from './errors.js';
 import type {
@@ -88,7 +88,7 @@ function validateAndNormalizeInput(
 
   if (
     tenantId.length > 0 &&
-    !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(tenantId)
+    !isUuid(tenantId)
   ) {
     issues.push({ field: 'tenantId', code: 'invalid_format' });
   }
