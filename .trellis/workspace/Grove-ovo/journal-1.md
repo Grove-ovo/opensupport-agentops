@@ -107,3 +107,36 @@ Implemented tenant-scoped versioned model configuration with shared TypeScript c
 ### Next Steps
 
 - None - task complete
+
+
+## Session 4: Phase 1D LLM Call Logging and Cost Governance
+
+**Date**: 2026-06-18
+**Task**: Phase 1D LLM Call Logging and Cost Governance
+**Branch**: `feat/phase-1d-llm-call-logging-cost-governance`
+
+### Summary
+
+Implemented immutable tenant-scoped LLM call logs, micro-unit cost estimation, projected budget decisions, currency-safe reporting views, database constraints, live PostgreSQL verification, tests, docs, and Trellis infra specifications.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `86c5202` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
