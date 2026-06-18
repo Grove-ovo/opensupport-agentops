@@ -3,7 +3,7 @@
   "name": "phase-2b-llm-runtime-conditional-triage",
   "title": "Phase 2B: Tenant LLM Runtime + Conditional Triage",
   "description": "Add the tenant-scoped LLM invocation boundary and conditional Triage Agent with timeout, fallback, cost, and logging controls.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": "feature",
   "scope": "Provider-neutral LLM runtime adapter and conditional triage",
   "package": "llm-runtime",

@@ -8,6 +8,7 @@
 | Guide | Description | Status |
 |-------|-------------|--------|
 | [Phase 2A Agent Pipeline And Code Router](./phase-2a-agent-pipeline-code-router.md) | PII-safe pipeline context, deterministic routing, conditional-triage signals, and route safety | Active |
+| [Phase 2B LLM Runtime And Conditional Triage](./phase-2b-llm-runtime-triage.md) | Tenant BYOK invocation, budget preflight, timeout/fallback, call logging, and conditional triage | Active |
 
 ## Pre-Development Checklist
 
