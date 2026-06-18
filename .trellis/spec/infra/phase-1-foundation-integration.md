@@ -38,7 +38,7 @@ PATH="/opt/homebrew/opt/libpq/bin:$PATH" npm run db:verify:trace
 
 ### 3. Contracts
 
-The root `test` script executes these commands in order:
+The root `test` script contains these commands in relative order:
 
 ```text
 test:phase1
@@ -52,6 +52,9 @@ test:llm-observability
 test:pii
 test:trace
 ```
+
+Later phase tests may be appended. The Phase 1 validator must treat this list
+as an ordered required subsequence, not as the complete root test script.
 
 The root `db:migrate` script executes migrations `0001` through `0004` in
 numeric order.
@@ -74,7 +77,8 @@ the network.
 |-----------|-------------------|
 | Required artifact missing | `test:phase1` exits non-zero and prints its path |
 | Migration omitted or reordered | `test:phase1` exits non-zero |
-| Root test suite omitted or reordered | `test:phase1` exits non-zero |
+| Required Phase 1 test omitted or reordered | `test:phase1` exits non-zero |
+| Later phase test appended | Phase 1 validation continues to pass |
 | Child archive missing or not completed | `test:phase1` exits non-zero |
 | Parent/child task link differs | `test:phase1` exits non-zero |
 | Parent PRD loses deferred roadmap or scope | `test:phase1` exits non-zero |
@@ -88,6 +92,8 @@ the network.
 - Base: edit implementation internals without renaming a required artifact;
   the integration validator remains unchanged and package tests prove behavior.
 - Bad: add a package test but omit it from root `npm test`.
+- Bad: require root `npm test` to equal the Phase 1 command list exactly;
+  later phases must be able to append their own suites.
 - Bad: archive a child task without preserving its parent link.
 - Bad: treat the static integration gate as proof that PostgreSQL migrations
   execute successfully.

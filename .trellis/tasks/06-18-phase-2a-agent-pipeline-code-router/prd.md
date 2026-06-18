@@ -70,22 +70,22 @@ must not change.
 
 ## Acceptance Criteria
 
-- [ ] Clear order-status, logistics, refund, return-policy, invoice, and
+- [x] Clear order-status, logistics, refund, return-policy, invoice, and
   complaint examples route without an LLM call.
-- [ ] Unknown, conflicting, or underspecified messages require conditional
+- [x] Unknown, conflicting, or underspecified messages require conditional
   triage.
-- [ ] Labelled Chinese and English order IDs are extracted and normalized.
-- [ ] Sensitive signals are emitted independently of the selected intent.
-- [ ] Routing precedence is deterministic and repeated input produces deeply
+- [x] Labelled Chinese and English order IDs are extracted and normalized.
+- [x] Sensitive signals are emitted independently of the selected intent.
+- [x] Routing precedence is deterministic and repeated input produces deeply
   equal output.
-- [ ] Router output does not include the complete customer message, raw PII,
+- [x] Router output does not include the complete customer message, raw PII,
   replacement maps, secrets, or provider payloads.
-- [ ] Invalid IDs, blank masked text, invalid deadlines, and unsupported runtime
+- [x] Invalid IDs, blank masked text, invalid deadlines, and unsupported runtime
   modes return structured validation errors.
-- [ ] Shared exports and package exports compile without circular dependencies.
-- [ ] Unit tests cover Chinese/English examples, ambiguous/conflicting intent,
+- [x] Shared exports and package exports compile without circular dependencies.
+- [x] Unit tests cover Chinese/English examples, ambiguous/conflicting intent,
   multiple order IDs, sensitive terms, and validation failures.
-- [ ] `npm run lint`, `npm run typecheck`, `npm test`, and Trellis validation
+- [x] `npm run lint`, `npm run typecheck`, `npm test`, and Trellis validation
   pass.
 
 ## Technical Approach

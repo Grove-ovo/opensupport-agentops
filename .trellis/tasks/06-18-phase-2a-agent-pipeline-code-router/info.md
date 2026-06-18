@@ -1,6 +1,6 @@
 # Technical Design: Phase 2A
 
-Status: Ready for implementation
+Status: Implemented and verified
 Date: 2026-06-18
 
 ## Modules
@@ -28,3 +28,9 @@ business intent matched.
 The router receives PII-masked text. It may return normalized entities and
 reason codes, but not the full input text. It performs no side effect and no
 network or database access.
+
+## Verification
+
+- Phase 2A static validation passed.
+- Agent Core unit tests passed: 8/8.
+- Full repository tests, type-check, lint, and Trellis validation passed.
