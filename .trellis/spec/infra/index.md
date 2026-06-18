@@ -8,12 +8,15 @@
 | Guide | Description | Status |
 |-------|-------------|--------|
 | [Phase 1A Database Foundation](./phase-1a-database-foundation.md) | Local runtime, migration, env, and validation contracts for the Phase 1A foundation | Active |
+| [Phase 1C Tenant Model Config](./phase-1c-tenant-model-config.md) | Versioned BYOK config, envelope encryption, validation, and database constraints | Active |
 
 ## Pre-Development Checklist
 
 Before changing infra, database, or local runtime files:
 
 - Read [Phase 1A Database Foundation](./phase-1a-database-foundation.md).
+- Read [Phase 1C Tenant Model Config](./phase-1c-tenant-model-config.md) when
+  changing model configuration or BYOK secret handling.
 - Confirm whether the change belongs to the active Trellis phase.
 - Search existing migrations and docs before adding duplicate table or env names.
 - Keep secret-bearing values as references, not plaintext persisted values.

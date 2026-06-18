@@ -44,7 +44,7 @@ DATABASE_URL=postgresql://agentops:agentops@localhost:5432/agentops
 REDIS_URL=redis://localhost:6379/0
 ```
 
-## Applying The Foundation Migration
+## Applying Phase 1 Migrations
 
 Install the PostgreSQL client with Homebrew on macOS:
 
@@ -59,13 +59,15 @@ Open a new terminal, or run this in the current shell:
 export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
 ```
 
-After PostgreSQL is running, apply the Phase 1A migration with:
+After PostgreSQL is running, apply the ordered Phase 1 migrations with:
 
 ```bash
 npm run db:migrate
 ```
 
-The migration creates only the current foundation tables:
+The command applies `0001_phase1_foundation.sql` followed by
+`0002_tenant_model_config_versions.sql`. The migrations create only the current
+foundation tables:
 
 - `tenants`
 - `chatwoot_connections`

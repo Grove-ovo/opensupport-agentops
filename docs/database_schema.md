@@ -1,7 +1,10 @@
-# Phase 1A Database Schema
+# Phase 1 Database Schema
 
-Status: Phase 1A foundation  
-Migration: `infra/migrations/0001_phase1_foundation.sql`
+Status: Phase 1A foundation + Phase 1C model config versioning
+Migrations:
+
+- `infra/migrations/0001_phase1_foundation.sql`
+- `infra/migrations/0002_tenant_model_config_versions.sql`
 
 ## Design Rules
 
@@ -51,7 +54,9 @@ Stores tenant BYOK model configuration using encrypted key references.
 
 Key fields:
 
+- `id` as the future trace `model_config_version_id`
 - `tenant_id`
+- `version`
 - `provider`
 - `fast_model`
 - `strong_model`
@@ -62,6 +67,12 @@ Key fields:
 - `daily_budget`
 - `budget_currency`
 - `encrypted_api_key_ref`
+- `is_active`
+- `config_fingerprint`
+
+Phase 1C treats each row as an immutable version. The schema permits multiple
+versions per tenant, enforces one active version, and allows only `is_active`
+and trigger-maintained `updated_at` to change after insertion.
 
 ### agent_traces
 

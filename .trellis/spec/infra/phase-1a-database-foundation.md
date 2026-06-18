@@ -18,7 +18,9 @@ Database migration:
 
 ```text
 npm run db:migrate
-psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f infra/migrations/0001_phase1_foundation.sql
+psql "$DATABASE_URL" -v ON_ERROR_STOP=1 \
+  -f infra/migrations/0001_phase1_foundation.sql \
+  -f infra/migrations/0002_tenant_model_config_versions.sql
 ```
 
 Local services:
