@@ -2,6 +2,7 @@
   "files": [],
   "references": [
     { "path": "./packages/shared" },
-    { "path": "./packages/chatwoot" }
+    { "path": "./packages/chatwoot" },
+    { "path": "./packages/model-config" }
   ]
 }

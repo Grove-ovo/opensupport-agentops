@@ -73,3 +73,37 @@ Implemented the Chatwoot Agent Bot and account webhook connector foundation with
 ### Next Steps
 
 - None - task complete
+
+
+## Session 3: Phase 1C Tenant BYOK Model Config
+
+**Date**: 2026-06-18
+**Task**: Phase 1C Tenant BYOK Model Config
+**Branch**: `feat/phase-1c-tenant-byok-model-config`
+
+### Summary
+
+Implemented tenant-scoped versioned model configuration with shared TypeScript contracts, validation, deterministic non-secret fingerprints, AES-256-GCM envelope encryption, immutable PostgreSQL versions, single-active constraints, live database verification, documentation, and hardened tenant BYOK boundaries.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a1e9fb0` | (see git log) |
+| `150a33f` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
