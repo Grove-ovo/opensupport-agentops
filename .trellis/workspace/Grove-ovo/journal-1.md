@@ -140,3 +140,36 @@ Implemented immutable tenant-scoped LLM call logs, micro-unit cost estimation, p
 ### Next Steps
 
 - None - task complete
+
+
+## Session 5: Phase 1E PII Mask and Trace Schema
+
+**Date**: 2026-06-18
+**Task**: Phase 1E PII Mask and Trace Schema
+**Branch**: `feat/phase-1e-pii-mask-trace-schema`
+
+### Summary
+
+Implemented deterministic PII masking with order-ID preservation, safe ephemeral replacement maps, immutable tenant-scoped trace snapshots, TicketExecution schema seed, PostgreSQL constraints and migrations, live database verification, tests, docs, and Trellis specifications.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `d15f134` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
