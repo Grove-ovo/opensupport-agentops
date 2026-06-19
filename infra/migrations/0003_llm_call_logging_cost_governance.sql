@@ -17,6 +17,9 @@ DROP CONSTRAINT IF EXISTS agent_traces_tenant_model_config_fk;
 ALTER TABLE IF EXISTS ticket_execution_transitions
 DROP CONSTRAINT IF EXISTS ticket_execution_transitions_trace_fk;
 
+ALTER TABLE IF EXISTS runtime_mode_decisions
+DROP CONSTRAINT IF EXISTS runtime_mode_decisions_trace_fk;
+
 ALTER TABLE agent_traces
 DROP CONSTRAINT IF EXISTS agent_traces_tenant_trace_uniq;
 

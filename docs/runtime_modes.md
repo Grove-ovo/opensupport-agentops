@@ -52,3 +52,20 @@ matching audit row. Transition audit rows cannot be updated or deleted.
 
 This foundation performs no Chatwoot delivery and creates no approval. Shadow,
 Assist, and Auto decisions are implemented in later Phase 3 tasks.
+
+## Runtime Decision Engine
+
+Phase 3B evaluates the requested mode without mutating the trace snapshot:
+
+- Shadow selects a private note when proposal text exists, otherwise handoff.
+- Assist selects approval creation when proposal text exists, otherwise
+  handoff.
+- Auto selects public reply only when the intent is configured, grounding is
+  complete, risk is within the configured threshold, and ticket cost and
+  latency are within limits.
+- Daily budget exhaustion forces Shadow.
+- Other Auto failures use the configured Assist or Shadow downgrade mode.
+
+Each decision records requested/effective modes, action, stable reasons,
+runtime config version, blocking status, tenant, trace, and timestamp.
+Decision logic is pure; delivery and approval creation remain separate tasks.

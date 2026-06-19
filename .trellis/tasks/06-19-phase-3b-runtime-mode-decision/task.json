@@ -3,7 +3,7 @@
   "name": "phase-3b-runtime-mode-decision",
   "title": "Phase 3B: Runtime Mode Decision Engine",
   "description": "Resolve Shadow, Assist, Auto, downgrade, and handoff actions from response proposals, risk, evidence, tools, latency, and budget signals.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": "feature",
   "scope": "Versioned runtime mode configuration and deterministic effective action decisions",
   "package": "root",

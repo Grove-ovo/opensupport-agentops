@@ -18,10 +18,10 @@ deterministic policy and Phase 2 proposal/gate signals.
 
 ## Acceptance Criteria
 
-- [ ] Shadow, Assist, and Auto matrices are exhaustively tested.
-- [ ] P0 and grounding failures never return Auto public delivery.
-- [ ] Cost/latency failures record stable downgrade reasons.
-- [ ] Runtime config is tenant scoped, versioned, and immutable.
+- [x] Shadow, Assist, and Auto matrices are exhaustively tested.
+- [x] P0 and grounding failures never return Auto public delivery.
+- [x] Cost/latency failures record stable downgrade reasons.
+- [x] Runtime config is tenant scoped, versioned, and immutable.
 
 ## Out of Scope
 
