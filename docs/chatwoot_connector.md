@@ -138,6 +138,10 @@ of the credential reference. A claimed idempotency key is never sent twice;
 same-message retries return a duplicate receipt and changed-message reuse
 returns `idempotency_conflict`.
 
+Failed provider attempts are not permanently cached. Concurrent callers share
+the same failure result, while a later retry with the same semantic command
+may call Chatwoot again. Successful deliveries remain permanently deduped.
+
 `content_attributes.agentops_generated=true` plus trace/delivery identifiers
 marks messages created by AgentOps so the inbound connector treats them as
 audit-only.

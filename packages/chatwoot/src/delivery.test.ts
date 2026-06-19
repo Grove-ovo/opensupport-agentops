@@ -115,11 +115,24 @@ test('keeps credentials out of receipts and audit records', async () => {
   assert.match(result.audit.credential_ref_hash ?? '', /^[a-f0-9]{64}$/);
 });
 
+test('does not permanently cache retryable provider failures', async () => {
+  const transport = new FakeTransport(503);
+  const service = createService(transport);
+  const input = command('public_reply', 'retry-after-failure');
+  assert.equal((await service.deliver(input, connection, now)).status, 'failed');
+  transport.status = 200;
+  assert.equal(
+    (await service.deliver(input, connection, now)).status,
+    'succeeded',
+  );
+  assert.equal(transport.requests.length, 2);
+});
+
 class FakeTransport implements ChatwootTransport {
   readonly requests: ChatwootTransportRequest[] = [];
 
   constructor(
-    readonly status = 200,
+    public status = 200,
     readonly error?: 'timed_out' | 'retryable_error',
   ) {}
 

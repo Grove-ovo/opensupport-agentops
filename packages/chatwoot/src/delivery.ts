@@ -85,6 +85,16 @@ export class ChatwootDeliveryService {
         );
       }
       const original = await existing.result;
+      if (original.status === 'failed') {
+        return receipt(
+          command,
+          original.code,
+          null,
+          requestHash,
+          original.audit.credential_ref_hash,
+          createdAt,
+        );
+      }
       return receipt(
         command,
         'duplicate_delivery',
@@ -101,7 +111,16 @@ export class ChatwootDeliveryService {
       requestHash,
       createdAt,
     );
-    this.#records.set(scope, { input_hash: idempotencyInputHash, result });
+    const record = { input_hash: idempotencyInputHash, result };
+    this.#records.set(scope, record);
+    void result.then((resolved) => {
+      if (
+        resolved.status === 'failed' &&
+        this.#records.get(scope) === record
+      ) {
+        this.#records.delete(scope);
+      }
+    });
     return result;
   }
 

@@ -1,6 +1,6 @@
 # Approval Flow
 
-Status: Phase 3D snapshot persistence
+Status: Phase 3E terminal actions
 
 Assist mode creates an approval only from a grounded response proposal. The
 snapshot fixes the suggested reply, evidence and tool result references, risk
@@ -28,5 +28,23 @@ The following fields cannot change after insertion:
 - agent, prompt, policy, tool, risk, retrieval, and model versions;
 - expiry, idempotency key, input hash, and creation timestamp.
 
-State and action fields are reserved for the guarded Phase 3E approval state
-machine. Phase 3D performs no public Chatwoot delivery.
+## Terminal Actions
+
+Only a pending approval can receive one terminal action:
+
+| Action | Approval state | Ticket state | Public delivery |
+|--------|----------------|--------------|-----------------|
+| approve | approved | replied | required |
+| edit | edited | replied | required, edited text |
+| reject | rejected | private_noted | forbidden |
+| escalate | escalated | handed_off | forbidden |
+| expire | expired | handed_off | forbidden |
+
+Approve and edit first obtain a successful or duplicate Phase 3C Chatwoot
+receipt. A retryable delivery failure leaves the approval and ticket pending.
+Reject, escalate, and expire cannot even carry delivery parameters.
+
+Every action records actor type/ID, idempotency key, input hash, timestamp, and
+delivery identifiers when applicable. Edit actions retain the original
+suggested reply, edited reply, and normalized Unicode Levenshtein distance.
+Direct state updates and mutation of action audit rows are rejected.

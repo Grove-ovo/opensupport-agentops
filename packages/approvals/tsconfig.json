@@ -9,7 +9,8 @@
   },
   "references": [
     { "path": "../shared" },
-    { "path": "../runtime-control" }
+    { "path": "../runtime-control" },
+    { "path": "../chatwoot" }
   ],
   "include": ["src/**/*.ts"]
 }

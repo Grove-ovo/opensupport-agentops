@@ -49,6 +49,7 @@ export function createApprovalRequest(
     idempotency_key: command.idempotency_key,
     input_hash: hashApprovalInput(command),
     created_at: createdAt,
+    action: null,
   });
 }
 
@@ -118,6 +119,13 @@ export class MemoryApprovalRepository {
 
   findPending(tenantId: string, traceId: string): ApprovalRequest | undefined {
     return this.#byTrace.get(`${tenantId}:${traceId}`);
+  }
+
+  replace(request: ApprovalRequest): void {
+    this.#byTrace.set(
+      `${request.tenant_id}:${request.trace_id}`,
+      Object.freeze(request),
+    );
   }
 }
 
