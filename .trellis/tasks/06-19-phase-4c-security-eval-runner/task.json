@@ -3,7 +3,7 @@
   "name": "phase-4c-security-eval-runner",
   "title": "Phase 4C: Security Eval Runner",
   "description": "Implement security evaluation categories, P0 pass/fail, and zero-tolerance unsafe action, PII leak, and unauthorized-access metrics.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": "feature",
   "scope": "Security case execution, deterministic violation classification, P0 and zero-tolerance safety metrics",
   "package": "root",

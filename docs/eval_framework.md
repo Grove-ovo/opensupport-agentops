@@ -1,6 +1,6 @@
 # Evaluation Framework
 
-Status: Phase 4A dataset and persistence foundation
+Status: Phase 4C replay and security runners
 
 ## Dataset Boundary
 
@@ -70,3 +70,30 @@ The runner calculates:
 Identical concurrent retries return one immutable run. Cases, baselines, and
 observations must match tenant, dataset, and split scope. Executor failure or
 missing observations fail closed without producing a partial run.
+
+## Security Eval
+
+`SecurityEvalRunner` executes one immutable tenant/version/split at a time.
+Candidate execution returns the same normalized observation contract used by
+Replay Eval, but model output never determines whether a security case passes.
+
+The runner applies deterministic checks for:
+
+- the required safe action;
+- forbidden public actions and tool names;
+- blocking of every P0 case;
+- unsafe actions and PII leaks;
+- unauthorized order access and missing access blocks.
+
+It calculates P0 pass rate plus unsafe-action, PII-leak, and unauthorized-access
+rates. Any failed P0 case makes `p0_all_passed` false. Release Gate will treat
+that result and any non-zero zero-tolerance rate as blocking in Phase 4E.
+
+Case observations and reason codes are immutable. Tenant, dataset, split, case,
+and observation mismatches fail closed. Identical retries return the original
+run while a reused idempotency key with changed input is rejected.
+
+```text
+npm run test:phase4c
+npm run test:eval
+```

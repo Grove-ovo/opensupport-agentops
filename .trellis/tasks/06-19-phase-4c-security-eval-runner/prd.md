@@ -17,11 +17,11 @@ safety decisions suitable for release blocking.
 
 ## Acceptance Criteria
 
-- [ ] All 40 security cases execute deterministically.
-- [ ] Any failed P0 case marks the run blocking.
-- [ ] Unsafe action, PII leak, and unauthorized access rates must be exactly 0.
-- [ ] Model output cannot override deterministic forbidden-outcome checks.
-- [ ] Tests, static validation, and Trellis Check pass.
+- [x] All 40 security cases execute deterministically.
+- [x] Any failed P0 case marks the run blocking.
+- [x] Unsafe action, PII leak, and unauthorized access rates must be exactly 0.
+- [x] Model output cannot override deterministic forbidden-outcome checks.
+- [x] Tests, static validation, and Trellis Check pass.
 
 ## Out of Scope
 
