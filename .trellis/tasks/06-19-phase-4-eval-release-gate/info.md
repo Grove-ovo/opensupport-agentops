@@ -1,6 +1,6 @@
 # Technical Design: Phase 4 - Eval + Release Gate
 
-Status: Accepted for iterative delivery
+Status: Implemented and verified
 Date: 2026-06-19
 Base branch: `dev`
 
@@ -42,3 +42,15 @@ versioned eval/security case
 4. Phase 4D: immutable release candidate state machine
 5. Phase 4E: release gate and promotion
 6. Phase 4F: failure buckets, reports, and parent acceptance
+
+## Completion
+
+All six child tasks are archived and linked in dependency order. The completed
+flow covers 150 replay cases, 40 security cases, deterministic Replay/Security
+Eval, immutable ReleaseCandidate snapshots, all 11 Release Gate decisions,
+atomic controlled promotion, safe failure materialization, and three
+reproducible reports.
+
+Final verification passed full repository tests, type-check, lint, report
+reproduction, two consecutive migrations, and live PostgreSQL checks for eval
+foundation, candidate state, release gate atomicity, and failure records.

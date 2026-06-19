@@ -3,7 +3,7 @@
   "name": "phase-4-eval-release-gate",
   "title": "Phase 4: Eval + Release Gate",
   "description": "Deliver versioned replay and security datasets, deterministic eval runs, immutable release candidates, blocking release gates, failure buckets, and Phase 4 reports.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": "feature",
   "scope": "Phase 4 parent planning, dependency-ordered eval/release child delivery, and final acceptance integration",
   "package": "root",
