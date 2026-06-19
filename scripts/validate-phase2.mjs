@@ -23,22 +23,25 @@ const failures = [];
 for (const path of requiredArtifacts) {
   if (!existsSync(path)) failures.push(`missing Phase 2 artifact: ${path}`);
 }
-const parentPath = '.trellis/tasks/06-18-phase-2-agent-rag-tools/task.json';
+const parentPath = resolveTask('06-18-phase-2-agent-rag-tools');
 const parent = readJson(parentPath);
+if (parentPath === null) {
+  failures.push('missing Phase 2 parent task');
+}
 if (JSON.stringify(parent?.children) !== JSON.stringify(children)) {
   failures.push('Phase 2 parent must retain children in dependency order');
 }
-for (const [index, child] of children.entries()) {
+if (!['in_progress', 'completed'].includes(parent?.status)) {
+  failures.push('Phase 2 parent must be in progress or completed');
+}
+for (const child of children) {
   const taskPath = resolveTask(child);
   if (taskPath === null) {
     failures.push(`missing Phase 2 child task: ${child}`);
     continue;
   }
   const task = readJson(taskPath);
-  const allowed =
-    index === children.length - 1
-      ? ['in_progress', 'completed']
-      : ['completed'];
+  const allowed = ['completed'];
   if (!allowed.includes(task?.status)) {
     failures.push(`${child} must have status ${allowed.join(' or ')}`);
   }
@@ -62,6 +65,6 @@ function resolveTask(slug) {
 }
 
 function readJson(path) {
-  if (!existsSync(path)) return undefined;
+  if (path === null || !existsSync(path)) return undefined;
   return JSON.parse(readFileSync(path, 'utf8'));
 }
