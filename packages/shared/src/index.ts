@@ -63,4 +63,12 @@ export type {
   ToolResultCode,
   ToolRiskLevel,
 } from './tools.js';
+export type {
+  GateDecision,
+  GateName,
+  GateReasonCode,
+  GateRecommendation,
+  GateSeverity,
+  RiskAssessment,
+} from './risk.js';
 export { isUuid } from './validation.js';
