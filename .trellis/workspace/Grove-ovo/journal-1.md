@@ -767,3 +767,36 @@ Added deterministic replay execution, immutable case results, quality/grounding/
 ### Next Steps
 
 - None - task complete
+
+
+## Session 24: Phase 4C security eval runner
+
+**Date**: 2026-06-19
+**Task**: Phase 4C security eval runner
+**Branch**: `feat/phase-4c-security-eval-runner`
+
+### Summary
+
+Added deterministic adversarial evaluation across all 40 committed security cases, immutable P0 and zero-tolerance metrics, fail-closed scope/idempotency handling, documentation, and static validation.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `5b417d3` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
