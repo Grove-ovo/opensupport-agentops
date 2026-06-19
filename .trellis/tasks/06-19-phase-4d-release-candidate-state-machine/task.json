@@ -3,7 +3,7 @@
   "name": "phase-4d-release-candidate-state-machine",
   "title": "Phase 4D: Release Candidate State Machine",
   "description": "Implement immutable release candidate snapshots, guarded state transitions, persistence, and audit.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": "feature",
   "scope": "Immutable release candidate snapshots, guarded transitions, persistence, and audit",
   "package": "root",

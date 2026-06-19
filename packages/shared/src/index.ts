@@ -125,4 +125,14 @@ export type {
   SecurityEvalCase,
   SecurityEvalMetrics,
 } from './eval.js';
+export type {
+  ReleaseCandidate,
+  ReleaseCandidateActorType,
+  ReleaseCandidateReasonCode,
+  ReleaseCandidateSnapshot,
+  ReleaseCandidateState,
+  ReleaseCandidateTransition,
+  ReleaseCandidateTransitionCommand,
+  ReleaseCandidateTransitionResult,
+} from './release.js';
 export { isUuid } from './validation.js';

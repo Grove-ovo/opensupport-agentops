@@ -15,11 +15,11 @@ cannot change during evaluation or promotion.
 
 ## Acceptance Criteria
 
-- [ ] Valid candidate transitions pass in application and database layers.
-- [ ] Stale, invalid, terminal, cross-scope, and conflicting retries fail.
-- [ ] Snapshot and transition audit rows are immutable.
-- [ ] Migration runs twice and live verification passes.
-- [ ] Tests, static validation, and Trellis Check pass.
+- [x] Valid candidate transitions pass in application and database layers.
+- [x] Stale, invalid, terminal, cross-scope, and conflicting retries fail.
+- [x] Snapshot and transition audit rows are immutable.
+- [x] Migration runs twice and live verification passes.
+- [x] Tests, static validation, and Trellis Check pass.
 
 ## Out of Scope
 
