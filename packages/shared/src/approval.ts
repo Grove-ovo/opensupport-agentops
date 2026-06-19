@@ -49,6 +49,7 @@ export interface ApprovalRequest {
 export interface ApprovalCreationResult {
   status: 'created' | 'duplicate';
   approval: ApprovalRequest;
+  transition: import('./runtime-control.js').TicketExecutionTransition;
 }
 
 export type ApprovalAction =

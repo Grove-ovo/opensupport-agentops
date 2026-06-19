@@ -635,3 +635,36 @@ Implemented terminal approval actions, delivery-aware retries, actor audit, norm
 ### Next Steps
 
 - None - task complete
+
+
+## Session 20: Phase 3F runtime approval integration
+
+**Date**: 2026-06-19
+**Task**: Phase 3F runtime approval integration
+**Branch**: `feat/phase-3f-runtime-approval-integration`
+
+### Summary
+
+Integrated Shadow, Assist, and Auto runtime orchestration with trace-level idempotency, guarded Chatwoot delivery, immutable approval transition references, audit output, parent Phase 3 validation, full tests, and live PostgreSQL verification.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `aac2f33` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

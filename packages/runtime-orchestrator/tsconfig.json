@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true,
+    "rootDir": "src",
+    "outDir": "dist"
+  },
+  "references": [
+    { "path": "../shared" },
+    { "path": "../runtime-control" },
+    { "path": "../chatwoot" },
+    { "path": "../approvals" }
+  ],
+  "include": ["src/**/*.ts"]
+}

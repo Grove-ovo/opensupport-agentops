@@ -74,6 +74,16 @@ export function decideRuntimeMode(
     );
   }
   if (requested === 'assist') {
+    if (!hasRequiredGrounding(input) || !hasApprovalReferences(input)) {
+      return decision(
+        input,
+        'shadow',
+        hasProposalText(input) ? 'private_note' : 'handoff',
+        ['grounding_missing'],
+        !hasProposalText(input),
+        now,
+      );
+    }
     return decision(
       input,
       'assist',
@@ -119,7 +129,9 @@ export function decideRuntimeMode(
 
   const effective = input.daily_budget_exceeded
     ? 'shadow'
-    : input.config.auto_downgrade_mode;
+    : reasons.includes('grounding_missing') || !hasApprovalReferences(input)
+      ? 'shadow'
+      : input.config.auto_downgrade_mode;
   return decision(
     input,
     effective,
@@ -152,7 +164,32 @@ function hasRequiredGrounding(input: RuntimeModeDecisionInput): boolean {
   }
   return (
     pipeline.tool_requests.length === 0 ||
-    pipeline.response.tool_result_refs.length === pipeline.tool_requests.length
+    hasSuccessfulReferencedToolResults(input)
+  );
+}
+
+function hasApprovalReferences(input: RuntimeModeDecisionInput): boolean {
+  return (
+    input.pipeline.response.evidence_refs.length +
+      input.pipeline.response.tool_result_refs.length >
+    0
+  );
+}
+
+function hasSuccessfulReferencedToolResults(
+  input: RuntimeModeDecisionInput,
+): boolean {
+  const responseRefs = new Set(input.pipeline.response.tool_result_refs);
+  if (responseRefs.size !== input.pipeline.response.tool_result_refs.length) {
+    return false;
+  }
+  return input.pipeline.tool_requests.every((request) =>
+    input.pipeline.tool_results.some(
+      (result) =>
+        result.call_id === request.call_id &&
+        (result.status === 'succeeded' || result.status === 'duplicate') &&
+        responseRefs.has(result.result_id),
+    ),
   );
 }
 

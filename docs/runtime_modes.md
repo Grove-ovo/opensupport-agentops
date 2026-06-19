@@ -1,6 +1,6 @@
 # Runtime Modes
 
-Status: Phase 3A state-machine foundation implemented
+Status: Phase 3 runtime orchestration implemented
 
 ## Execution State Boundary
 
@@ -48,11 +48,6 @@ inserts one append-only `ticket_execution_transitions` row, and updates
 The trace trigger rejects direct state updates that do not reference the
 matching audit row. Transition audit rows cannot be updated or deleted.
 
-## Phase 3A Boundary
-
-This foundation performs no Chatwoot delivery and creates no approval. Shadow,
-Assist, and Auto decisions are implemented in later Phase 3 tasks.
-
 ## Runtime Decision Engine
 
 Phase 3B evaluates the requested mode without mutating the trace snapshot:
@@ -64,8 +59,35 @@ Phase 3B evaluates the requested mode without mutating the trace snapshot:
   complete, risk is within the configured threshold, and ticket cost and
   latency are within limits.
 - Daily budget exhaustion forces Shadow.
+- Missing grounding forces Shadow or handoff because no valid approval
+  snapshot can be created.
 - Other Auto failures use the configured Assist or Shadow downgrade mode.
 
 Each decision records requested/effective modes, action, stable reasons,
 runtime config version, blocking status, tenant, trace, and timestamp.
-Decision logic is pure; delivery and approval creation remain separate tasks.
+Decision logic is pure. `RuntimeOrchestrator` consumes the decision and owns
+the side-effect boundary:
+
+| Decision action | Runtime effect | Terminal/current state |
+|-----------------|----------------|------------------------|
+| `private_note` | idempotent Chatwoot private note | `private_noted` |
+| `create_approval` | immutable pending snapshot, no delivery | `waiting_approval` |
+| `public_reply` | idempotent Chatwoot public reply | `replied` |
+| `handoff` | no Chatwoot reply | `handed_off` |
+
+The complete execution command is scoped by tenant, trace, and idempotency
+key. Concurrent identical commands share one result; changed input with the
+same key is rejected. The narrower transition, approval, and delivery
+idempotency keys remain authoritative across service boundaries.
+Only one execution key may claim a tenant/trace. The orchestrator validates
+the expected state before provider I/O and retains uncertain claims for
+operator reconciliation instead of automatically risking a second delivery.
+
+Missing Chatwoot configuration, provider failure, stale state, P0 risk,
+missing grounding, and daily-budget exhaustion fail closed. Missing grounding
+also prevents Assist approval because the immutable approval snapshot must
+contain at least one evidence or successful tool-result reference.
+
+Each result links the runtime decision, ticket transition, optional approval,
+optional delivery receipt, latency, estimated cost, stable reason codes, and
+failure code through `RuntimeExecutionAudit`.
