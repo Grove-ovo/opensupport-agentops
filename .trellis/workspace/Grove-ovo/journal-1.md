@@ -305,3 +305,36 @@ Implemented tenant-scoped immutable policy versions, deterministic ingestion, Po
 ### Next Steps
 
 - None - task complete
+
+
+## Session 10: Phase 2D RAG Evidence Pipeline
+
+**Date**: 2026-06-19
+**Task**: Phase 2D RAG Evidence Pipeline
+**Branch**: `feat/phase-2d-rag-evidence-baseline`
+
+### Summary
+
+Implemented bounded query rewrite, hybrid candidate merge and deterministic rerank, evidence thresholds and citations, stale/injection/conflict/no-evidence gates, fixed retrieval baseline metrics, documentation, tests, and executable Agent spec.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `c1b5152` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
