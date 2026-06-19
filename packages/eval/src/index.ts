@@ -9,3 +9,14 @@ export type {
   EvalDatasetErrorCode,
   ParsedEvalDataset,
 } from './dataset.js';
+export {
+  ReplayEvalError,
+  ReplayEvalRunner,
+  calculateReplayMetrics,
+} from './replay.js';
+export type {
+  EvalCandidateExecutor,
+  ReplayEvalErrorCode,
+  ReplayEvalResult,
+  RunReplayEvalCommand,
+} from './replay.js';
