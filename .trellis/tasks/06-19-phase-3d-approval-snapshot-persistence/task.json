@@ -3,7 +3,7 @@
   "name": "phase-3d-approval-snapshot-persistence",
   "title": "Phase 3D: Approval Snapshot Persistence",
   "description": "Persist immutable Assist approval snapshots with suggested reply, evidence, tool results, risk context, expiration, and pending state.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": "feature",
   "scope": "Immutable approval snapshot contracts, persistence, and pending creation",
   "package": "root",

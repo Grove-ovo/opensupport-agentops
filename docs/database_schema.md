@@ -10,6 +10,7 @@ Migrations:
 - `infra/migrations/0005_policy_corpus_hybrid_retrieval.sql`
 - `infra/migrations/0006_ticket_execution_state_machine.sql`
 - `infra/migrations/0007_runtime_mode_decisions.sql`
+- `infra/migrations/0008_approval_snapshots.sql`
 
 ## Design Rules
 
@@ -241,6 +242,13 @@ Stores append-only requested/effective mode decisions for one trace and one
 immutable runtime policy version. The selected action and stable reason codes
 provide the audit boundary for later Chatwoot delivery and approval creation.
 
+### approval_requests
+
+Stores one immutable Assist approval snapshot per tenant/trace. The
+`create_pending_approval(...)` function verifies trace version IDs and
+atomically moves the ticket to `waiting_approval`. Snapshot fields cannot be
+updated; guarded terminal action fields are reserved for Phase 3E.
+
 ## Deferred Tables
 
 The following original PRD tables are intentionally deferred:
@@ -254,7 +262,6 @@ The following original PRD tables are intentionally deferred:
 - `intent_predictions`
 - `retrieval_events`
 - `tool_calls`
-- `approval_requests`
 - `eval_cases`
 - `security_eval_cases`
 - `eval_runs`
