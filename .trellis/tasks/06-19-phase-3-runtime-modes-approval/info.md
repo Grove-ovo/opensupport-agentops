@@ -1,6 +1,6 @@
 # Technical Design: Phase 3 - Runtime Modes + Approval
 
-Status: Accepted for iterative delivery
+Status: Implemented and verified
 Date: 2026-06-19
 Base branch: `dev`
 
@@ -41,3 +41,10 @@ AgentPipelineRun
 4. Phase 3D: approval snapshot persistence
 5. Phase 3E: approval actions and human edit tracking
 6. Phase 3F: integration and parent acceptance
+
+## Completion
+
+All six child tasks are archived in dependency order. The parent acceptance
+validator confirms their links and artifacts. Full TypeScript tests, static
+validators, two consecutive migration runs, and Phase 3A/3B/3D/3E live
+PostgreSQL verification pass.

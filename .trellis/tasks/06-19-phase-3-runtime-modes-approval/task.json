@@ -3,7 +3,7 @@
   "name": "phase-3-runtime-modes-approval",
   "title": "Phase 3: Runtime Modes + Approval",
   "description": "Deliver controlled Shadow, Assist, and Auto runtime behavior with explicit ticket and approval state machines, immutable approval snapshots, Chatwoot delivery boundaries, and human edit tracking.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": "feature",
   "scope": "Phase 3 parent planning, dependency-ordered child delivery, and final runtime/approval integration",
   "package": "root",
@@ -28,6 +28,6 @@
   ],
   "parent": null,
   "relatedFiles": [],
-  "notes": "",
+  "notes": "All six child tasks archived; parent integration, full tests, and live database verification passed.",
   "meta": {}
 }
