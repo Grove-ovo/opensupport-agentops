@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 22
+- **Total Sessions**: 23
 - **Last Active**: 2026-06-19
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~736 | Active |
+| `journal-1.md` | ~769 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 23 | 2026-06-19 | Phase 4B replay eval runner | `178206fcfc5d61cefd50480783598f73377997e5` | `feat/phase-4b-replay-eval-runner-metrics` |
 | 22 | 2026-06-19 | Phase 4A eval contracts and datasets | `136e71e` | `feat/phase-4a-eval-contracts-datasets` |
 | 21 | 2026-06-19 | Complete Phase 3 runtime modes and approval | `77290fb` | `feat/phase-3-runtime-modes-approval` |
 | 20 | 2026-06-19 | Phase 3F runtime approval integration | `aac2f33` | `feat/phase-3f-runtime-approval-integration` |

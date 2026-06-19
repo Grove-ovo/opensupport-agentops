@@ -734,3 +734,36 @@ Added 150 replay and 40 security cases, strict dataset loading, shared eval cont
 ### Next Steps
 
 - None - task complete
+
+
+## Session 23: Phase 4B replay eval runner
+
+**Date**: 2026-06-19
+**Task**: Phase 4B replay eval runner
+**Branch**: `feat/phase-4b-replay-eval-runner-metrics`
+
+### Summary
+
+Added deterministic replay execution, immutable case results, quality/grounding/latency/cost metrics, baseline regression, idempotency, and Phase 4B validation.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `178206fcfc5d61cefd50480783598f73377997e5` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
