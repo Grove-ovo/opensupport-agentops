@@ -404,3 +404,36 @@ Implemented immutable tenant/version-scoped GateDecision contracts, deterministi
 ### Next Steps
 
 - None - task complete
+
+
+## Session 13: Phase 2G Response Agent Integration
+
+**Date**: 2026-06-19
+**Task**: Phase 2G Response Agent Integration
+**Branch**: `feat/phase-2g-response-agent-integration`
+
+### Summary
+
+Integrated the deadline-bound grounded response pipeline with layered risk preflights, RAG/tool grounding, deterministic model routing and fallback, proposal-only output, trace append contracts, tests, docs, and Phase 2 validation.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `f2b937c` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
