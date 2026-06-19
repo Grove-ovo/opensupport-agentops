@@ -3,7 +3,7 @@
   "name": "phase-2g-response-agent-integration",
   "title": "Phase 2G: Response Agent + Pipeline Integration",
   "description": "Integrate Phase 2 routing, triage, RAG, tools, risk gates, and grounded response proposal generation.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": "feature",
   "scope": "Response Agent, pipeline orchestration, trace integration, and Phase 2 acceptance gate",
   "package": "agent-runtime",

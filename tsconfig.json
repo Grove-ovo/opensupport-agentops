@@ -12,6 +12,7 @@
     { "path": "./packages/retrieval" },
     { "path": "./packages/rag" },
     { "path": "./packages/tools" },
-    { "path": "./packages/guardrails" }
+    { "path": "./packages/guardrails" },
+    { "path": "./packages/agent-runtime" }
   ]
 }

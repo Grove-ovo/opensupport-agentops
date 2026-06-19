@@ -7,15 +7,15 @@ grounded response proposal without performing Phase 3 delivery side effects.
 
 ## Requirements
 
-- Orchestrate router, optional triage, RAG, tools, risk gates, and response
+- [x] Orchestrate router, optional triage, RAG, tools, risk gates, and response
   generation through typed step results.
-- Select fast/strong/fallback models by tenant config and risk.
-- Require evidence citations for policy claims and tool references for business
+- [x] Select fast/strong/fallback models by tenant config and risk.
+- [x] Require evidence citations for policy claims and tool references for business
   state claims.
-- Append route, evidence, tool, risk, latency, token, cost, and final
+- [x] Append route, evidence, tool, risk, latency, token, cost, and final
   recommendation fields to the trace boundary.
-- Return reply, clarify, private-note, or handoff proposals for Phase 3.
-- Add parent-level Phase 2 integration validation.
+- [x] Return reply, clarify, private-note, or handoff proposals for Phase 3.
+- [x] Add parent-level Phase 2 integration validation.
 
 ## Acceptance Criteria
 
