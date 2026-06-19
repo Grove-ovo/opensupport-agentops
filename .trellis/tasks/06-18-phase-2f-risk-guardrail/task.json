@@ -3,7 +3,7 @@
   "name": "phase-2f-risk-guardrail",
   "title": "Phase 2F: Rule-First Risk Guardrail",
   "description": "Implement rule-first layered safety gates for input, retrieval, tool, and proposed output decisions.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": "feature",
   "scope": "Layered GateDecision contracts and deterministic risk guardrails",
   "package": "guardrails",

@@ -7,13 +7,13 @@ rules that can block unsafe Phase 2 behavior.
 
 ## Requirements
 
-- Implement layered `GateDecision` contracts with reason code, severity, and
+- [x] Implement layered `GateDecision` contracts with reason code, severity, and
   blocking flag.
-- Detect prompt injection, approval bypass, credential/system-prompt requests,
+- [x] Detect prompt injection, approval bypass, credential/system-prompt requests,
   unauthorized order access, evidence conflicts/no-evidence, unsafe tool
   intent, and PII leakage.
-- Use rules first; optional model judgment remains an explicit bounded adapter.
-- Return sanitize, block, clarify, handoff, or allow recommendations.
+- [x] Use rules first; optional model judgment remains an explicit bounded adapter.
+- [x] Return sanitize, block, clarify, handoff, or allow recommendations.
 
 ## Acceptance Criteria
 

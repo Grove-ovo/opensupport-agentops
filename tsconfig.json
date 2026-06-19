@@ -11,6 +11,7 @@
     { "path": "./packages/llm-runtime" },
     { "path": "./packages/retrieval" },
     { "path": "./packages/rag" },
-    { "path": "./packages/tools" }
+    { "path": "./packages/tools" },
+    { "path": "./packages/guardrails" }
   ]
 }
