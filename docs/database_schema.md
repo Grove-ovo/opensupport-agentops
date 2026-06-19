@@ -1,6 +1,6 @@
 # AgentOps Database Schema
 
-Status: Phase 1 foundation plus Phase 2C policy retrieval
+Status: Phase 1 foundation through Phase 3B runtime mode decisions
 Migrations:
 
 - `infra/migrations/0001_phase1_foundation.sql`
@@ -8,6 +8,8 @@ Migrations:
 - `infra/migrations/0003_llm_call_logging_cost_governance.sql`
 - `infra/migrations/0004_pii_mask_trace_schema.sql`
 - `infra/migrations/0005_policy_corpus_hybrid_retrieval.sql`
+- `infra/migrations/0006_ticket_execution_state_machine.sql`
+- `infra/migrations/0007_runtime_mode_decisions.sql`
 
 ## Design Rules
 
@@ -226,11 +228,23 @@ Key fields:
 State changes must use `transition_ticket_execution(...)`; direct
 `execution_state` updates are rejected.
 
+### runtime_mode_configs
+
+Stores immutable, versioned tenant policy for Auto eligibility and downgrade
+behavior. It constrains allowed intents, maximum risk severity, latency and
+ticket cost thresholds, and the Shadow or Assist downgrade target. Only one
+version may be active per tenant.
+
+### runtime_mode_decisions
+
+Stores append-only requested/effective mode decisions for one trace and one
+immutable runtime policy version. The selected action and stable reason codes
+provide the audit boundary for later Chatwoot delivery and approval creation.
+
 ## Deferred Tables
 
 The following original PRD tables are intentionally deferred:
 
-- `runtime_mode_configs`
 - `prompt_versions`
 - `tool_manifests`
 - `risk_rules`

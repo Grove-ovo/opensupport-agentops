@@ -41,6 +41,13 @@ export type {
   TicketExecutionTransitionResult,
 } from './runtime-control.js';
 export type {
+  RuntimeModeAction,
+  RuntimeModeConfig,
+  RuntimeModeDecision,
+  RuntimeModeDecisionInput,
+  RuntimeModeReasonCode,
+} from './runtime-mode.js';
+export type {
   PolicyChunk,
   PolicyDocumentRecord,
   PolicyIngestionPlan,
