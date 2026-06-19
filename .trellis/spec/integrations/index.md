@@ -7,6 +7,7 @@
 | Guide | Description | Status |
 |-------|-------------|--------|
 | [Chatwoot Connector](./chatwoot-connector.md) | Agent Bot, account webhook, signature, dedupe, and canonical event contracts | Active |
+| [Phase 3C Chatwoot Delivery](./phase-3c-chatwoot-delivery.md) | Tenant-scoped outbound notes/replies, credential references, receipts, and idempotency | Active |
 
 ## Pre-Development Checklist
 

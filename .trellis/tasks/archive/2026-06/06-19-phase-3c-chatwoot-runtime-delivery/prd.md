@@ -17,10 +17,10 @@ replies without coupling HTTP/provider payloads to runtime policy.
 
 ## Acceptance Criteria
 
-- [ ] Private/public payloads are mapped correctly.
-- [ ] Duplicate commands do not duplicate messages.
-- [ ] Timeout, retryable, auth, and validation failures are stable.
-- [ ] Delivery receipts are tenant/trace scoped and auditable.
+- [x] Private/public payloads are mapped correctly.
+- [x] Duplicate commands do not duplicate messages.
+- [x] Timeout, retryable, auth, and validation failures are stable.
+- [x] Delivery receipts are tenant/trace scoped and auditable.
 
 ## Out of Scope
 

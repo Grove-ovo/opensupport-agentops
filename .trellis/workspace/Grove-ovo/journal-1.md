@@ -536,3 +536,36 @@ Implemented deterministic Shadow, Assist, and Auto decisions with immutable tena
 ### Next Steps
 
 - None - task complete
+
+
+## Session 17: Phase 3C Chatwoot Runtime Delivery
+
+**Date**: 2026-06-19
+**Task**: Phase 3C Chatwoot Runtime Delivery
+**Branch**: `feat/phase-3c-chatwoot-runtime-delivery`
+
+### Summary
+
+Implemented provider-neutral, tenant-scoped Chatwoot private-note and public-reply delivery with credential references, pre-send idempotency, stable failures, trace-scoped receipts, and audit hashes.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `fd8761d` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

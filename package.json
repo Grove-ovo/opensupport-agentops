@@ -23,7 +23,7 @@
     "db:verify:runtime-control": "psql \"${DATABASE_URL:-postgresql://agentops:agentops@localhost:5432/agentops}\" -v ON_ERROR_STOP=1 -f infra/verification/phase3a_ticket_execution_state_machine.sql",
     "db:verify:runtime-mode": "psql \"${DATABASE_URL:-postgresql://agentops:agentops@localhost:5432/agentops}\" -v ON_ERROR_STOP=1 -f infra/verification/phase3b_runtime_mode_decisions.sql",
     "lint": "git diff --check",
-    "test": "npm run test:phase1 && npm run test:phase1a && npm run test:phase1c && npm run test:phase1d && npm run test:phase1e && npm run test:chatwoot && npm run test:model-config && npm run test:llm-observability && npm run test:pii && npm run test:trace && npm run test:phase2a && npm run test:agent-core && npm run test:phase2b && npm run test:llm-runtime && npm run test:phase2c && npm run test:retrieval && npm run test:phase2d && npm run test:rag && npm run test:phase2e && npm run test:tools && npm run test:phase2f && npm run test:guardrails && npm run test:phase2g && npm run test:agent-runtime && npm run test:phase2 && npm run test:phase3a && npm run test:phase3b && npm run test:runtime-control",
+    "test": "npm run test:phase1 && npm run test:phase1a && npm run test:phase1c && npm run test:phase1d && npm run test:phase1e && npm run test:chatwoot && npm run test:model-config && npm run test:llm-observability && npm run test:pii && npm run test:trace && npm run test:phase2a && npm run test:agent-core && npm run test:phase2b && npm run test:llm-runtime && npm run test:phase2c && npm run test:retrieval && npm run test:phase2d && npm run test:rag && npm run test:phase2e && npm run test:tools && npm run test:phase2f && npm run test:guardrails && npm run test:phase2g && npm run test:agent-runtime && npm run test:phase2 && npm run test:phase3a && npm run test:phase3b && npm run test:runtime-control && npm run test:phase3c",
     "test:chatwoot": "npm run build && node --test packages/chatwoot/dist/*.test.js",
     "test:model-config": "npm run build && node --test packages/model-config/dist/*.test.js",
     "test:llm-observability": "npm run build && node --test packages/llm-observability/dist/*.test.js",
@@ -52,6 +52,7 @@
     "test:phase2": "node scripts/validate-phase2.mjs",
     "test:phase3a": "node scripts/validate-phase3a.mjs",
     "test:phase3b": "node scripts/validate-phase3b.mjs",
+    "test:phase3c": "node scripts/validate-phase3c.mjs",
     "typecheck": "tsc -b --pretty false"
   },
   "keywords": [],
