@@ -61,6 +61,7 @@ export interface EvalCandidateObservation {
   tenant_id: string;
   intent: AgentIntent;
   action: ResponseAction;
+  effective_runtime_mode: RuntimeMode;
   evidence_ids: readonly string[];
   tool_names: readonly ToolName[];
   risk_severity: GateSeverity;

@@ -47,3 +47,26 @@ npm run test:eval
 npm run db:migrate
 npm run db:verify:eval
 ```
+
+## Replay Eval
+
+`ReplayEvalRunner` selects cases from one immutable dataset version/split and
+invokes an injected candidate executor. The adapter returns a normalized
+observation containing intent, action, effective runtime mode, evidence/tool
+references, risk/blocking status, safety flags, latency, cost, and completion
+status. It cannot directly set aggregate metrics.
+
+The runner calculates:
+
+- task success rate;
+- task-success delta against an optional completed baseline;
+- high-risk escalation recall;
+- unsafe action rate;
+- no-evidence answer rate;
+- retrieval Recall@5;
+- p95 latency;
+- average cost per ticket.
+
+Identical concurrent retries return one immutable run. Cases, baselines, and
+observations must match tenant, dataset, and split scope. Executor failure or
+missing observations fail closed without producing a partial run.

@@ -15,6 +15,7 @@
 | [Phase 2G Agent Runtime](./phase-2g-agent-runtime.md) | Deadline-bound route/triage/RAG/tool/risk/response orchestration, grounding, model fallback, and trace append | Active |
 | [Phase 3F Runtime Orchestration](./phase-3f-runtime-orchestration.md) | Controlled Shadow, Assist, and Auto side effects with complete idempotency and audit references | Active |
 | [Phase 4A Eval Contracts And Datasets](./phase-4a-eval-contracts-datasets.md) | Versioned safe replay/security cases, strict JSONL loading, and immutable eval persistence | Active |
+| [Phase 4B Replay Eval](./phase-4b-replay-eval.md) | Injected candidate replay with deterministic quality, grounding, latency, cost, and regression metrics | Active |
 
 ## Pre-Development Checklist
 
@@ -33,6 +34,8 @@ Before changing Agent pipeline code:
   when composing proposals with runtime decisions, delivery, or approvals.
 - Read [Phase 4A Eval Contracts And Datasets](./phase-4a-eval-contracts-datasets.md)
   when changing evaluation schemas, fixtures, loaders, runs, or results.
+- Read [Phase 4B Replay Eval](./phase-4b-replay-eval.md) when changing replay
+  execution, normalized observations, aggregate metrics, or baselines.
 - Preserve tenant, trace, deadline, and immutable version context.
 - Keep provider-specific payloads behind adapters.
 - Confirm whether a value is transient or safe to persist.

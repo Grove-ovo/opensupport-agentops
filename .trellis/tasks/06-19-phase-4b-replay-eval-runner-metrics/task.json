@@ -3,7 +3,7 @@
   "name": "phase-4b-replay-eval-runner-metrics",
   "title": "Phase 4B: Replay Eval Runner + Metrics",
   "description": "Implement deterministic replay evaluation runs, case results, PRD metrics, regression comparison, and idempotency.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": "feature",
   "scope": "Replay execution adapter, immutable case results, aggregate metrics, regression, and idempotency",
   "package": "root",

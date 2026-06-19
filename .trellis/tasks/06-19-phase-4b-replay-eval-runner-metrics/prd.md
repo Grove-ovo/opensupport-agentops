@@ -17,11 +17,11 @@ produce reproducible quality, grounding, latency, cost, and regression metrics.
 
 ## Acceptance Criteria
 
-- [ ] All metrics are deterministic and covered by boundary tests.
-- [ ] Empty, mismatched, incomplete, or cross-tenant runs fail closed.
-- [ ] Regression delta is calculated from the immutable baseline.
-- [ ] No replay execution performs Chatwoot or approval side effects.
-- [ ] Tests, static validation, and Trellis Check pass.
+- [x] All metrics are deterministic and covered by boundary tests.
+- [x] Empty, mismatched, incomplete, or cross-tenant runs fail closed.
+- [x] Regression delta is calculated from the immutable baseline.
+- [x] No replay execution performs Chatwoot or approval side effects.
+- [x] Tests, static validation, and Trellis Check pass.
 
 ## Out of Scope
 
