@@ -800,3 +800,36 @@ Added deterministic adversarial evaluation across all 40 committed security case
 ### Next Steps
 
 - None - task complete
+
+
+## Session 25: Phase 4D release candidate state machine
+
+**Date**: 2026-06-19
+**Task**: Phase 4D release candidate state machine
+**Branch**: `feat/phase-4d-release-candidate-state-machine`
+
+### Summary
+
+Added immutable seven-version release candidate snapshots, exact replay/security Eval Run scope, guarded idempotent state transitions, PostgreSQL enforcement, live verification, documentation, and static checks.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `04703cc` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
