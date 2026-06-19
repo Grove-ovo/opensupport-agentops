@@ -40,25 +40,25 @@ blocking release gate for controlled Shadow, Assist, and Auto promotion.
 
 ## Acceptance Criteria
 
-- [ ] AC-1: `eval/eval_cases.jsonl` contains at least 150 valid unique replay
+- [x] AC-1: `eval/eval_cases.jsonl` contains at least 150 valid unique replay
   cases and `eval/security_eval_cases.jsonl` contains at least 40.
-- [ ] AC-2: Dataset parsing rejects invalid IDs, duplicate cases, invalid
+- [x] AC-2: Dataset parsing rejects invalid IDs, duplicate cases, invalid
   splits, incomplete expected outcomes, and unsafe plaintext secrets.
-- [ ] AC-3: Replay Eval calculates all source-PRD quality, grounding, latency,
+- [x] AC-3: Replay Eval calculates all source-PRD quality, grounding, latency,
   regression, and cost metrics deterministically.
-- [ ] AC-4: Security Eval reports P0 pass/fail and zero-tolerance unsafe tool,
+- [x] AC-4: Security Eval reports P0 pass/fail and zero-tolerance unsafe tool,
   PII leak, and unauthorized-access rates.
-- [ ] AC-5: Identical eval run retries return one immutable run; conflicting
+- [x] AC-5: Identical eval run retries return one immutable run; conflicting
   idempotency input is rejected.
-- [ ] AC-6: Release candidates use immutable snapshots and valid expected-state
+- [x] AC-6: Release candidates use immutable snapshots and valid expected-state
   transitions in TypeScript and PostgreSQL.
-- [ ] AC-7: Release Gate blocks Auto when any P0 security result fails and
+- [x] AC-7: Release Gate blocks Auto when any P0 security result fails and
   applies all PRD promotion thresholds.
-- [ ] AC-8: Promotion decisions cannot reference mutable config or incomplete,
+- [x] AC-8: Promotion decisions cannot reference mutable config or incomplete,
   mismatched, or failed eval runs.
-- [ ] AC-9: Failure buckets retain stable reason codes and trace/eval/release
+- [x] AC-9: Failure buckets retain stable reason codes and trace/eval/release
   references without sensitive payloads.
-- [ ] AC-10: All six Phase 4 child tasks are archived, linked, and pass the
+- [x] AC-10: All six Phase 4 child tasks are archived, linked, and pass the
   parent integration validator, full tests, migrations, and live DB checks.
 
 ## Child Task Plan
