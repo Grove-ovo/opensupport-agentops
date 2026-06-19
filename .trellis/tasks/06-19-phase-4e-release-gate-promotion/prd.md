@@ -17,11 +17,11 @@ and move a release candidate to the maximum safe runtime state.
 
 ## Acceptance Criteria
 
-- [ ] Every required gate decision is present exactly once.
-- [ ] All PRD threshold boundary values are tested.
-- [ ] P0 failures cannot be overridden or promoted to Auto.
-- [ ] Candidate state transition and gate results remain consistent.
-- [ ] Database verification, tests, and Trellis Check pass.
+- [x] Every required gate decision is present exactly once.
+- [x] All PRD threshold boundary values are tested.
+- [x] P0 failures cannot be overridden or promoted to Auto.
+- [x] Candidate state transition and gate results remain consistent.
+- [x] Database verification, tests, and Trellis Check pass.
 
 ## Out of Scope
 

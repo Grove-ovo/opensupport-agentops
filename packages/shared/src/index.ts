@@ -134,5 +134,11 @@ export type {
   ReleaseCandidateTransition,
   ReleaseCandidateTransitionCommand,
   ReleaseCandidateTransitionResult,
+  ReleaseGateDecision,
+  ReleaseGateName,
+  ReleaseGateOperator,
+  ReleaseGateReasonCode,
+  ReleaseGateResult,
+  ReleasePromotionState,
 } from './release.js';
 export { isUuid } from './validation.js';

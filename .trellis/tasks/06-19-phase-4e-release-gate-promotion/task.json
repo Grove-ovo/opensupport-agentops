@@ -3,7 +3,7 @@
   "name": "phase-4e-release-gate-promotion",
   "title": "Phase 4E: Release Gate + Promotion",
   "description": "Evaluate completed replay/security runs against PRD thresholds and enforce controlled Shadow, Assist, and Auto promotion.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": "feature",
   "scope": "Release gate threshold decisions, immutable results, and controlled promotion state",
   "package": "root",

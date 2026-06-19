@@ -41,3 +41,14 @@ export type {
   CreateReleaseCandidateCommand,
   ReleaseCandidateErrorCode,
 } from './release-candidate.js';
+export {
+  ReleaseGateError,
+  ReleaseGateService,
+  derivePromotionState,
+} from './release-gate.js';
+export type {
+  EvaluateReleaseCandidateCommand,
+  ReleaseCandidateTransitionPort,
+  ReleaseGateErrorCode,
+  ReleaseGateEvaluation,
+} from './release-gate.js';
