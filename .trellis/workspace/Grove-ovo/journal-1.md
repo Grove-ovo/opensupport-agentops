@@ -371,3 +371,36 @@ Implemented versioned MCP-compatible tool manifests, schema/permission/deadline/
 ### Next Steps
 
 - None - task complete
+
+
+## Session 12: Phase 2F Rule-First Risk Guardrails
+
+**Date**: 2026-06-19
+**Task**: Phase 2F Rule-First Risk Guardrails
+**Branch**: `feat/phase-2f-risk-guardrail`
+
+### Summary
+
+Implemented immutable tenant/version-scoped GateDecision contracts, deterministic input/retrieval/tool/output rules, P0 precedence, PII and no-evidence output checks, bounded append-only model judgment, trace-safe hashes, documentation, tests, and executable Agent spec.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `0c98155` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
