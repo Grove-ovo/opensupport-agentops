@@ -53,4 +53,14 @@ export type {
   RAGBaselineMetrics,
   RAGPipelineConfig,
 } from './evidence.js';
+export type {
+  ToolAuditRecord,
+  ToolCallRequest,
+  ToolCallResult,
+  ToolJsonSchema,
+  ToolManifest,
+  ToolName,
+  ToolResultCode,
+  ToolRiskLevel,
+} from './tools.js';
 export { isUuid } from './validation.js';
