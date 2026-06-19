@@ -866,3 +866,36 @@ Added all 11 source-PRD gate decisions, inclusive threshold boundaries, determin
 ### Next Steps
 
 - None - task complete
+
+
+## Session 27: Phase 4F failure buckets reports and integration
+
+**Date**: 2026-06-19
+**Task**: Phase 4F failure buckets reports and integration
+**Branch**: `feat/phase-4f-failure-buckets-reports-integration`
+
+### Summary
+
+Added safe deterministic failure buckets, append-only failure persistence, three reproducible Phase 4 reports, report drift checks, child linkage validation, and parent Phase 4 integration checks.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b8b063b` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
