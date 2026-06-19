@@ -31,3 +31,13 @@ export type {
   ReplayEvalResult,
   RunReplayEvalCommand,
 } from './replay.js';
+export {
+  MemoryReleaseCandidateStateMachine,
+  ReleaseCandidateError,
+  applyReleaseCandidateTransition,
+  createReleaseCandidate,
+} from './release-candidate.js';
+export type {
+  CreateReleaseCandidateCommand,
+  ReleaseCandidateErrorCode,
+} from './release-candidate.js';

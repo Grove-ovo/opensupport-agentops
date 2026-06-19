@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 24
+- **Total Sessions**: 25
 - **Last Active**: 2026-06-19
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~802 | Active |
+| `journal-1.md` | ~835 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 25 | 2026-06-19 | Phase 4D release candidate state machine | `04703cc` | `feat/phase-4d-release-candidate-state-machine` |
 | 24 | 2026-06-19 | Phase 4C security eval runner | `5b417d3` | `feat/phase-4c-security-eval-runner` |
 | 23 | 2026-06-19 | Phase 4B replay eval runner | `178206fcfc5d61cefd50480783598f73377997e5` | `feat/phase-4b-replay-eval-runner-metrics` |
 | 22 | 2026-06-19 | Phase 4A eval contracts and datasets | `136e71e` | `feat/phase-4a-eval-contracts-datasets` |
