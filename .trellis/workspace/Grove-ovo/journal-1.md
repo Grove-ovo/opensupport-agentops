@@ -503,3 +503,36 @@ Implemented guarded ticket execution transitions with exact edge/reason rules, i
 ### Next Steps
 
 - None - task complete
+
+
+## Session 16: Phase 3B Runtime Mode Decision
+
+**Date**: 2026-06-19
+**Task**: Phase 3B Runtime Mode Decision
+**Branch**: `feat/phase-3b-runtime-mode-decision`
+
+### Summary
+
+Implemented deterministic Shadow, Assist, and Auto decisions with immutable tenant runtime policy versions, stable downgrade reasons, append-only PostgreSQL decisions, and live migration verification.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e3ff0b5` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
