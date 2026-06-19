@@ -1,5 +1,23 @@
 export type { CanonicalInboundEvent, CanonicalInboundEventSource } from './chatwoot.js';
 export type {
+  ChatwootDeliveryAudit,
+  ChatwootDeliveryCode,
+  ChatwootDeliveryCommand,
+  ChatwootDeliveryMessageType,
+  ChatwootDeliveryReceipt,
+} from './chatwoot-delivery.js';
+export type {
+  ApprovalAction,
+  ApprovalActionCommand,
+  ApprovalActionRecord,
+  ApprovalActionResult,
+  ApprovalCreationResult,
+  ApprovalRequest,
+  ApprovalSnapshot,
+  ApprovalState,
+  CreateApprovalCommand,
+} from './approval.js';
+export type {
   AgentCapability,
   AgentEntities,
   AgentIntent,
@@ -32,6 +50,21 @@ export type {
   TicketExecutionState,
   TraceVersionSnapshot,
 } from './trace.js';
+export type {
+  TicketExecutionActorType,
+  TicketExecutionReasonCode,
+  TicketExecutionSnapshot,
+  TicketExecutionTransition,
+  TicketExecutionTransitionCommand,
+  TicketExecutionTransitionResult,
+} from './runtime-control.js';
+export type {
+  RuntimeModeAction,
+  RuntimeModeConfig,
+  RuntimeModeDecision,
+  RuntimeModeDecisionInput,
+  RuntimeModeReasonCode,
+} from './runtime-mode.js';
 export type {
   PolicyChunk,
   PolicyDocumentRecord,

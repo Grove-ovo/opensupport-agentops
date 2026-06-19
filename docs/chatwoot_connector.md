@@ -1,6 +1,6 @@
 # Chatwoot Connector
 
-Status: Phase 1B foundation  
+Status: Phase 1B inbound foundation plus Phase 3C outbound delivery
 Package: `packages/chatwoot`
 
 ## Scope
@@ -118,6 +118,34 @@ local composition. The memory implementation provides process-local atomic
 claims but is not shared across replicas. Redis-backed dedupe belongs to a
 later runtime/storage task.
 
+## Outbound Runtime Delivery
+
+Phase 3C adds `ChatwootDeliveryService` for two explicit side effects:
+
+- `private_note` maps to an outgoing message with `private=true`;
+- `public_reply` maps to an outgoing message with `private=false`.
+
+Both call
+`POST /api/v1/accounts/{account_id}/conversations/{conversation_id}/messages`
+with `content_type=text`. The command contains tenant, trace, conversation,
+content hash, idempotency key, and deadline, but no provider URL, account
+credential, or plaintext token.
+
+Tenant connection configuration is supplied separately. The adapter resolves
+`api_token_ref` only immediately before provider I/O. Delivery receipts retain
+stable result codes, provider message ID, request/response hashes, and a hash
+of the credential reference. A claimed idempotency key is never sent twice;
+same-message retries return a duplicate receipt and changed-message reuse
+returns `idempotency_conflict`.
+
+Failed provider attempts are not permanently cached. Concurrent callers share
+the same failure result, while a later retry with the same semantic command
+may call Chatwoot again. Successful deliveries remain permanently deduped.
+
+`content_attributes.agentops_generated=true` plus trace/delivery identifiers
+marks messages created by AgentOps so the inbound connector treats them as
+audit-only.
+
 ## Chatwoot References
 
 - [Add a webhook](https://developers.chatwoot.com/api-reference/webhooks/add-a-webhook)
@@ -125,3 +153,6 @@ later runtime/storage task.
   and delivery ID header.
 - [Create an Agent Bot](https://developers.chatwoot.com/api-reference/account-agentbots/create-an-agent-bot)
   documents the Agent Bot webhook `outgoing_url` and webhook bot type.
+- [Create New Message](https://developers.chatwoot.com/api-reference/messages/create-new-message)
+  documents the outbound URL, `api_access_token` header, outgoing message type,
+  and private-note flag.

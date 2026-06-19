@@ -13,6 +13,7 @@
 | [Phase 2E Tool Contracts](./phase-2e-tool-contracts.md) | Versioned manifests, schema/permission/ownership validation, deterministic mock tools, audit hashes, and idempotency | Active |
 | [Phase 2F Risk Guardrail](./phase-2f-risk-guardrail.md) | Rule-first input/retrieval/tool/output decisions, deterministic precedence, immutable hashes, and bounded model judgment | Active |
 | [Phase 2G Agent Runtime](./phase-2g-agent-runtime.md) | Deadline-bound route/triage/RAG/tool/risk/response orchestration, grounding, model fallback, and trace append | Active |
+| [Phase 3F Runtime Orchestration](./phase-3f-runtime-orchestration.md) | Controlled Shadow, Assist, and Auto side effects with complete idempotency and audit references | Active |
 
 ## Pre-Development Checklist
 
@@ -27,6 +28,8 @@ Before changing Agent pipeline code:
   layered safety rules, gate decisions, severity, or recommendations.
 - Read [Phase 2G Agent Runtime](./phase-2g-agent-runtime.md) when changing
   orchestration, response proposals, grounding, model routing, or trace append.
+- Read [Phase 3F Runtime Orchestration](./phase-3f-runtime-orchestration.md)
+  when composing proposals with runtime decisions, delivery, or approvals.
 - Preserve tenant, trace, deadline, and immutable version context.
 - Keep provider-specific payloads behind adapters.
 - Confirm whether a value is transient or safe to persist.

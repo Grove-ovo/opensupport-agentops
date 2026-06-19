@@ -104,9 +104,10 @@ immutable model config row.
 
 PostgreSQL rejects updates to trace identity, runtime mode, version snapshot,
 PII categories, replacement map reference, masked-input hash, and creation
-timestamp. Operational fields such as intent, route, risk decision,
-`execution_state`, latency, tokens, cost, final action, and failure bucket
-remain mutable for later pipeline work.
+timestamp. Operational fields such as intent, route, risk decision, latency,
+tokens, cost, final action, and failure bucket remain mutable.
+`execution_state` changes must use `transition_ticket_execution(...)`, which
+performs expected-state validation and writes an append-only transition audit.
 
 ## TicketExecution Seed
 
@@ -124,8 +125,8 @@ handed_off
 failed
 ```
 
-Phase 1E defines the storage enum only. Transition guards and runtime behavior
-belong to the later Runtime Modes + Approval phase.
+Phase 1E defines the storage enum. Phase 3A implements its transition guard and
+audit boundary; runtime mode decisions and delivery remain later Phase 3 work.
 
 ## JSON And Security Constraints
 

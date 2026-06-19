@@ -1,6 +1,6 @@
 # AgentOps Database Schema
 
-Status: Phase 1 foundation plus Phase 2C policy retrieval
+Status: Phase 1 foundation through Phase 3B runtime mode decisions
 Migrations:
 
 - `infra/migrations/0001_phase1_foundation.sql`
@@ -8,6 +8,10 @@ Migrations:
 - `infra/migrations/0003_llm_call_logging_cost_governance.sql`
 - `infra/migrations/0004_pii_mask_trace_schema.sql`
 - `infra/migrations/0005_policy_corpus_hybrid_retrieval.sql`
+- `infra/migrations/0006_ticket_execution_state_machine.sql`
+- `infra/migrations/0007_runtime_mode_decisions.sql`
+- `infra/migrations/0008_approval_snapshots.sql`
+- `infra/migrations/0009_approval_actions.sql`
 
 ## Design Rules
 
@@ -204,11 +208,59 @@ chunk. Composite foreign keys prevent cross-tenant policy or chunk references.
 Stores immutable lexical/vector weights, candidate limits, score thresholds,
 embedding configuration, and one active version per tenant.
 
+### ticket_execution_transitions
+
+Phase 3A append-only audit for guarded changes to
+`agent_traces.execution_state`.
+
+Key fields:
+
+- `transition_id`
+- `tenant_id`
+- `trace_id`
+- `from_state`
+- `to_state`
+- `reason_code`
+- `actor_type`
+- `actor_id`
+- `idempotency_key`
+- `input_hash`
+- `created_at`
+
+State changes must use `transition_ticket_execution(...)`; direct
+`execution_state` updates are rejected.
+
+### runtime_mode_configs
+
+Stores immutable, versioned tenant policy for Auto eligibility and downgrade
+behavior. It constrains allowed intents, maximum risk severity, latency and
+ticket cost thresholds, and the Shadow or Assist downgrade target. Only one
+version may be active per tenant.
+
+### runtime_mode_decisions
+
+Stores append-only requested/effective mode decisions for one trace and one
+immutable runtime policy version. The selected action and stable reason codes
+provide the audit boundary for later Chatwoot delivery and approval creation.
+
+### approval_requests
+
+Stores one immutable Assist approval snapshot per tenant/trace. The
+`create_pending_approval(...)` function verifies trace version IDs and
+atomically moves the ticket to `waiting_approval`. Snapshot fields cannot be
+updated; guarded terminal action fields are reserved for Phase 3E.
+
+### approval_action_records
+
+Append-only terminal operator/scheduler decisions. Approve and edit records
+must reference a successful or duplicate public-delivery receipt. Reject,
+escalate, and expire records forbid delivery fields. The guarded function also
+updates the ticket state and stores normalized edit distance where applicable.
+
 ## Deferred Tables
 
 The following original PRD tables are intentionally deferred:
 
-- `runtime_mode_configs`
 - `prompt_versions`
 - `tool_manifests`
 - `risk_rules`
@@ -218,7 +270,6 @@ The following original PRD tables are intentionally deferred:
 - `intent_predictions`
 - `retrieval_events`
 - `tool_calls`
-- `approval_requests`
 - `eval_cases`
 - `security_eval_cases`
 - `eval_runs`

@@ -14,6 +14,21 @@ DROP CONSTRAINT IF EXISTS llm_call_logs_tenant_model_config_fk;
 ALTER TABLE agent_traces
 DROP CONSTRAINT IF EXISTS agent_traces_tenant_model_config_fk;
 
+ALTER TABLE IF EXISTS ticket_execution_transitions
+DROP CONSTRAINT IF EXISTS ticket_execution_transitions_trace_fk;
+
+ALTER TABLE IF EXISTS runtime_mode_decisions
+DROP CONSTRAINT IF EXISTS runtime_mode_decisions_trace_fk;
+
+ALTER TABLE IF EXISTS approval_requests
+DROP CONSTRAINT IF EXISTS approval_requests_trace_fk;
+
+ALTER TABLE IF EXISTS approval_requests
+DROP CONSTRAINT IF EXISTS approval_requests_model_config_fk;
+
+ALTER TABLE IF EXISTS approval_action_records
+DROP CONSTRAINT IF EXISTS approval_action_records_approval_scope_fk;
+
 ALTER TABLE agent_traces
 DROP CONSTRAINT IF EXISTS agent_traces_tenant_trace_uniq;
 

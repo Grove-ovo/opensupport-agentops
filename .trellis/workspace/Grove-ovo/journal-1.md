@@ -470,3 +470,201 @@ Completed and verified the Phase 2 parent after integrating all seven child task
 ### Next Steps
 
 - None - task complete
+
+
+## Session 15: Phase 3A Execution State Machine
+
+**Date**: 2026-06-19
+**Task**: Phase 3A Execution State Machine
+**Branch**: `feat/phase-3a-execution-state-machine`
+
+### Summary
+
+Implemented guarded ticket execution transitions with exact edge/reason rules, idempotent retries, append-only audit records, PostgreSQL compare-and-set enforcement, migration-chain compatibility, live verification, docs, and code-specs.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a275c59` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 16: Phase 3B Runtime Mode Decision
+
+**Date**: 2026-06-19
+**Task**: Phase 3B Runtime Mode Decision
+**Branch**: `feat/phase-3b-runtime-mode-decision`
+
+### Summary
+
+Implemented deterministic Shadow, Assist, and Auto decisions with immutable tenant runtime policy versions, stable downgrade reasons, append-only PostgreSQL decisions, and live migration verification.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e3ff0b5` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 17: Phase 3C Chatwoot Runtime Delivery
+
+**Date**: 2026-06-19
+**Task**: Phase 3C Chatwoot Runtime Delivery
+**Branch**: `feat/phase-3c-chatwoot-runtime-delivery`
+
+### Summary
+
+Implemented provider-neutral, tenant-scoped Chatwoot private-note and public-reply delivery with credential references, pre-send idempotency, stable failures, trace-scoped receipts, and audit hashes.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `fd8761d` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 18: Phase 3D Approval Snapshot Persistence
+
+**Date**: 2026-06-19
+**Task**: Phase 3D Approval Snapshot Persistence
+**Branch**: `feat/phase-3d-approval-snapshot-persistence`
+
+### Summary
+
+Implemented immutable approval snapshots, atomic waiting_approval transition, semantic idempotency, trace version verification, cross-tenant constraints, and live PostgreSQL migration verification.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `da5fe12` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 19: Phase 3E Approval Actions And Edit Tracking
+
+**Date**: 2026-06-19
+**Task**: Phase 3E Approval Actions And Edit Tracking
+**Branch**: `feat/phase-3e-approval-actions-edit-tracking`
+
+### Summary
+
+Implemented terminal approval actions, delivery-aware retries, actor audit, normalized edit distance, guarded PostgreSQL transitions, and fixed retryable Chatwoot delivery caching.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `98dd20c` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 20: Phase 3F runtime approval integration
+
+**Date**: 2026-06-19
+**Task**: Phase 3F runtime approval integration
+**Branch**: `feat/phase-3f-runtime-approval-integration`
+
+### Summary
+
+Integrated Shadow, Assist, and Auto runtime orchestration with trace-level idempotency, guarded Chatwoot delivery, immutable approval transition references, audit output, parent Phase 3 validation, full tests, and live PostgreSQL verification.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `aac2f33` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
