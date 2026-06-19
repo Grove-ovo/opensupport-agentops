@@ -3,7 +3,7 @@
   "name": "phase-3f-runtime-approval-integration",
   "title": "Phase 3F: Runtime Modes + Approval Integration",
   "description": "Integrate pipeline proposals, state transitions, runtime decisions, Chatwoot delivery, approval lifecycle, trace/audit updates, and Phase 3 acceptance validation.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": "feature",
   "scope": "End-to-end runtime modes, approvals, delivery, trace, and parent acceptance integration",
   "package": "root",

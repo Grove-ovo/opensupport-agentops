@@ -1,6 +1,6 @@
 # Approval Flow
 
-Status: Phase 3E terminal actions
+Status: Phase 3 runtime integration implemented
 
 Assist mode creates an approval only from a grounded response proposal. The
 snapshot fixes the suggested reply, evidence and tool result references, risk
@@ -17,6 +17,9 @@ snapshot and a snapshot cannot exist while the ticket remains `planned`.
 
 The trace permits exactly one approval. Same-input retries return the original
 row; a changed snapshot for the same idempotency key or trace is rejected.
+The application repository also returns the exact `approval_required`
+transition audit, allowing the runtime execution audit to reference the
+atomic move to `waiting_approval`.
 
 ## Immutable Boundary
 
@@ -48,3 +51,16 @@ Every action records actor type/ID, idempotency key, input hash, timestamp, and
 delivery identifiers when applicable. Edit actions retain the original
 suggested reply, edited reply, and normalized Unicode Levenshtein distance.
 Direct state updates and mutation of action audit rows are rejected.
+
+## Runtime Integration
+
+`RuntimeOrchestrator` is the only pipeline-facing approval creation boundary.
+It first evaluates the requested runtime mode, verifies tenant/trace/version
+scope, and then creates the immutable approval only for an eligible Assist
+decision. No Chatwoot delivery occurs during creation.
+
+The later `ApprovalActionService` remains a separate operator or scheduler
+boundary. Approve/edit use the stored snapshot (or the recorded edited reply)
+for one idempotent public delivery. Reject, escalate, and expire transition to
+terminal states without delivery, so a later command cannot publish the
+suggested response.

@@ -5,6 +5,7 @@ import {
   type ApprovalRequest,
   type ApprovalSnapshot,
   type CreateApprovalCommand,
+  type TicketExecutionTransition,
   type TraceVersionSnapshot,
 } from '@opensupport/shared';
 import {
@@ -56,6 +57,7 @@ export function createApprovalRequest(
 export class MemoryApprovalRepository {
   readonly #byTrace = new Map<string, ApprovalRequest>();
   readonly #byIdempotency = new Map<string, ApprovalRequest>();
+  readonly #transitions = new Map<string, TicketExecutionTransition>();
 
   constructor(readonly stateMachine: MemoryTicketExecutionStateMachine) {}
 
@@ -73,14 +75,22 @@ export class MemoryApprovalRepository {
           'approval idempotency key was reused with a different snapshot',
         );
       }
-      return { status: 'duplicate', approval: existingByKey };
+      return {
+        status: 'duplicate',
+        approval: existingByKey,
+        transition: this.requiredTransition(approvalTraceScope(command)),
+      };
     }
 
     const traceScope = `${command.tenant_id}:${command.trace_id}`;
     const active = this.#byTrace.get(traceScope);
     if (active !== undefined) {
       if (active.input_hash === candidate.input_hash) {
-        return { status: 'duplicate', approval: active };
+        return {
+          status: 'duplicate',
+          approval: active,
+          transition: this.requiredTransition(approvalTraceScope(command)),
+        };
       }
       throw new ApprovalCreationError(
         'active_approval_conflict',
@@ -89,7 +99,7 @@ export class MemoryApprovalRepository {
     }
 
     try {
-      this.stateMachine.transition(
+      const transitionResult = this.stateMachine.transition(
         {
           tenant_id: command.tenant_id,
           trace_id: command.trace_id,
@@ -103,6 +113,10 @@ export class MemoryApprovalRepository {
         },
         candidate.created_at,
       );
+      this.#transitions.set(
+        approvalTraceScope(command),
+        transitionResult.transition,
+      );
     } catch (error) {
       throw new ApprovalCreationError(
         'ticket_transition_failed',
@@ -114,7 +128,11 @@ export class MemoryApprovalRepository {
 
     this.#byTrace.set(traceScope, candidate);
     this.#byIdempotency.set(idempotencyScope, candidate);
-    return { status: 'created', approval: candidate };
+    return {
+      status: 'created',
+      approval: candidate,
+      transition: this.requiredTransition(approvalTraceScope(command)),
+    };
   }
 
   findPending(tenantId: string, traceId: string): ApprovalRequest | undefined {
@@ -127,6 +145,23 @@ export class MemoryApprovalRepository {
       Object.freeze(request),
     );
   }
+
+  private requiredTransition(scope: string): TicketExecutionTransition {
+    const transition = this.#transitions.get(scope);
+    if (transition === undefined) {
+      throw new ApprovalCreationError(
+        'ticket_transition_failed',
+        'approval transition audit is missing',
+      );
+    }
+    return transition;
+  }
+}
+
+function approvalTraceScope(
+  command: Pick<CreateApprovalCommand, 'tenant_id' | 'trace_id'>,
+): string {
+  return `${command.tenant_id}:${command.trace_id}`;
 }
 
 function validateCommand(

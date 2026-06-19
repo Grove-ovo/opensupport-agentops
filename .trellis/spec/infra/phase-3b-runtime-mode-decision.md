@@ -28,6 +28,8 @@ decideRuntimeMode(
   grounding, non-blocking risk within threshold, latency within limit, and
   ticket cost within limit.
 - Daily budget exhaustion always forces Shadow.
+- Missing grounding forces Shadow or handoff because Assist cannot create a
+  valid immutable approval snapshot.
 - Config versions and decision rows are immutable; only config activation may
   change.
 - The pure decision function performs no Chatwoot or approval side effect.
@@ -39,7 +41,7 @@ decideRuntimeMode(
 | P0/blocking risk | Shadow handoff |
 | Missing proposal | handoff |
 | Unsupported Auto intent | configured downgrade |
-| Missing evidence/tool refs | configured downgrade |
+| Missing evidence/tool refs | Shadow or handoff |
 | Ticket cost exceeded | configured downgrade |
 | Daily budget exceeded | Shadow |
 | Latency exceeded | configured downgrade |

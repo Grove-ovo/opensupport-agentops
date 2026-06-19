@@ -16,11 +16,11 @@ services into the controlled runtime behavior required by the source PRD.
 
 ## Acceptance Criteria
 
-- [ ] Source PRD AC-02, AC-03, AC-04, AC-06, and AC-08 pass.
-- [ ] Duplicate execution produces no duplicate side effect.
-- [ ] Blocking paths never produce an Auto public reply.
-- [ ] Required Phase 3 docs and all child tasks are connected.
-- [ ] Full tests, migrations, database verification, and Trellis Check pass.
+- [x] Source PRD AC-02, AC-03, AC-04, AC-06, and AC-08 pass.
+- [x] Duplicate execution produces no duplicate side effect.
+- [x] Blocking paths never produce an Auto public reply.
+- [x] Required Phase 3 docs and all child tasks are connected.
+- [x] Full tests, migrations, database verification, and Trellis Check pass.
 
 ## Out of Scope
 

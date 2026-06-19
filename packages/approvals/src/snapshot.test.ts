@@ -15,6 +15,8 @@ test('creates one immutable pending approval and moves ticket atomically', () =>
   const result = approvals.create(command(), now);
   assert.equal(result.status, 'created');
   assert.equal(result.approval.state, 'pending');
+  assert.equal(result.transition.reason_code, 'approval_required');
+  assert.equal(result.transition.to_state, 'waiting_approval');
   assert.equal(
     stateMachine.getSnapshot(traceId)?.execution_state,
     'waiting_approval',
@@ -39,6 +41,14 @@ test('returns the same approval for idempotent and semantic duplicates', () => {
   assert.equal(semanticRetry.status, 'duplicate');
   assert.equal(sameKey.approval.approval_id, first.approval.approval_id);
   assert.equal(semanticRetry.approval.approval_id, first.approval.approval_id);
+  assert.equal(
+    sameKey.transition.transition_id,
+    first.transition.transition_id,
+  );
+  assert.equal(
+    semanticRetry.transition.transition_id,
+    first.transition.transition_id,
+  );
 });
 
 test('rejects changed snapshots and invalid tenant scope without transition', () => {

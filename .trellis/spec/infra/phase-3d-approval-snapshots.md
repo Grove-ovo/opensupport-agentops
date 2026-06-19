@@ -12,6 +12,9 @@
   generated action, version context, expiry, idempotency key, input hash, and
   creation time are immutable.
 - Action fields exist for Phase 3E but are not written by Phase 3D.
+- Application creation results return the exact `approval_required`
+  transition audit so later orchestration can reference the atomic state
+  change without reconstructing it.
 
 ## Validation
 

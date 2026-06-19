@@ -30,7 +30,7 @@ test('blocks risk P0 and missing proposals from Auto', () => {
   assert.ok(result.reason_codes.includes('proposal_unavailable'));
 });
 
-test('downgrades unsupported and ungrounded Auto work to Assist', () => {
+test('downgrades unsupported grounded Auto work to Assist', () => {
   const unsupported = pipeline();
   unsupported.route = { ...unsupported.route, intent: 'refund_request' };
   const result = decide('auto', unsupported);
@@ -59,6 +59,21 @@ test('daily budget forces Shadow', () => {
   assert.equal(result.effective_mode, 'shadow');
   assert.equal(result.action, 'private_note');
   assert.deepEqual(result.reason_codes, ['daily_budget_exceeded']);
+});
+
+test('keeps ungrounded Assist and Auto proposals out of approval and public reply', () => {
+  const ungrounded = pipeline();
+  ungrounded.response = {
+    ...ungrounded.response,
+    evidence_refs: [],
+    grounded: false,
+  };
+  for (const requested of ['assist', 'auto'] as const) {
+    const result = decide(requested, ungrounded);
+    assert.equal(result.effective_mode, 'shadow');
+    assert.equal(result.action, 'private_note');
+    assert.ok(result.reason_codes.includes('grounding_missing'));
+  }
 });
 
 test('rejects cross-tenant config', () => {
