@@ -17,6 +17,7 @@
 | [Phase 4A Eval Contracts And Datasets](./phase-4a-eval-contracts-datasets.md) | Versioned safe replay/security cases, strict JSONL loading, and immutable eval persistence | Active |
 | [Phase 4B Replay Eval](./phase-4b-replay-eval.md) | Injected candidate replay with deterministic quality, grounding, latency, cost, and regression metrics | Active |
 | [Phase 4C Security Eval](./phase-4c-security-eval.md) | Deterministic P0, forbidden outcome, PII, and unauthorized-access evaluation | Active |
+| [Phase 4E Release Gate](./phase-4e-release-gate.md) | Exact PRD thresholds, immutable gate decisions, and controlled promotion ceilings | Active |
 
 ## Pre-Development Checklist
 
@@ -39,6 +40,9 @@ Before changing Agent pipeline code:
   execution, normalized observations, aggregate metrics, or baselines.
 - Read [Phase 4C Security Eval](./phase-4c-security-eval.md) when changing
   adversarial execution, P0 outcomes, or zero-tolerance security metrics.
+- Read [Phase 4E Release Gate](./phase-4e-release-gate.md) when changing
+  release thresholds, decision severity, promotion ceilings, or gate
+  idempotency.
 - Preserve tenant, trace, deadline, and immutable version context.
 - Keep provider-specific payloads behind adapters.
 - Confirm whether a value is transient or safe to persist.
