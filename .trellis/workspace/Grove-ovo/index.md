@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 8
-- **Last Active**: 2026-06-18
+- **Total Sessions**: 9
+- **Last Active**: 2026-06-19
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~274 | Active |
+| `journal-1.md` | ~307 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 9 | 2026-06-19 | Phase 2C Policy Corpus And Hybrid Retrieval | `ded7e67` | `feat/phase-2c-policy-corpus-hybrid-retrieval` |
 | 8 | 2026-06-18 | Complete Phase 2B Tenant LLM Runtime | `c6d68ef` | `feat/phase-2b-llm-runtime-conditional-triage` |
 | 7 | 2026-06-18 | Complete Phase 2A Agent Pipeline Router | `bf9f98f` | `feat/phase-2a-agent-pipeline-code-router` |
 | 6 | 2026-06-18 | Complete Phase 1 Foundation Integration | `81e2c4b` | `feat/phase-1-foundation-integration` |
