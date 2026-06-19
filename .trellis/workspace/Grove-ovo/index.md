@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 17
+- **Total Sessions**: 18
 - **Last Active**: 2026-06-19
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~571 | Active |
+| `journal-1.md` | ~604 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 18 | 2026-06-19 | Phase 3D Approval Snapshot Persistence | `da5fe12` | `feat/phase-3d-approval-snapshot-persistence` |
 | 17 | 2026-06-19 | Phase 3C Chatwoot Runtime Delivery | `fd8761d` | `feat/phase-3c-chatwoot-runtime-delivery` |
 | 16 | 2026-06-19 | Phase 3B Runtime Mode Decision | `e3ff0b5` | `feat/phase-3b-runtime-mode-decision` |
 | 15 | 2026-06-19 | Phase 3A Execution State Machine | `a275c59` | `feat/phase-3a-execution-state-machine` |
