@@ -6,6 +6,13 @@
     { "path": "./packages/model-config" },
     { "path": "./packages/llm-observability" },
     { "path": "./packages/pii" },
-    { "path": "./packages/trace" }
+    { "path": "./packages/trace" },
+    { "path": "./packages/agent-core" },
+    { "path": "./packages/llm-runtime" },
+    { "path": "./packages/retrieval" },
+    { "path": "./packages/rag" },
+    { "path": "./packages/tools" },
+    { "path": "./packages/guardrails" },
+    { "path": "./packages/agent-runtime" }
   ]
 }

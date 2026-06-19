@@ -19,7 +19,14 @@
       "@opensupport/model-config": ["packages/model-config/src/index.ts"],
       "@opensupport/llm-observability": ["packages/llm-observability/src/index.ts"],
       "@opensupport/pii": ["packages/pii/src/index.ts"],
-      "@opensupport/trace": ["packages/trace/src/index.ts"]
+      "@opensupport/trace": ["packages/trace/src/index.ts"],
+      "@opensupport/agent-core": ["packages/agent-core/src/index.ts"],
+      "@opensupport/llm-runtime": ["packages/llm-runtime/src/index.ts"],
+      "@opensupport/retrieval": ["packages/retrieval/src/index.ts"],
+      "@opensupport/rag": ["packages/rag/src/index.ts"],
+      "@opensupport/tools": ["packages/tools/src/index.ts"],
+      "@opensupport/guardrails": ["packages/guardrails/src/index.ts"],
+      "@opensupport/agent-runtime": ["packages/agent-runtime/src/index.ts"]
     }
   }
 }
