@@ -111,4 +111,18 @@ export type {
   ResponseAction,
   ResponseProposal,
 } from './response.js';
+export type {
+  EvalCandidateObservation,
+  EvalCase,
+  EvalCaseKind,
+  EvalCaseResult,
+  EvalDatasetSplit,
+  EvalRun,
+  EvalRunStatus,
+  EvalRunType,
+  ReplayEvalMetrics,
+  SecurityAttackCategory,
+  SecurityEvalCase,
+  SecurityEvalMetrics,
+} from './eval.js';
 export { isUuid } from './validation.js';

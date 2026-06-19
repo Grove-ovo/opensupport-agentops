@@ -14,6 +14,7 @@
 | [Phase 2F Risk Guardrail](./phase-2f-risk-guardrail.md) | Rule-first input/retrieval/tool/output decisions, deterministic precedence, immutable hashes, and bounded model judgment | Active |
 | [Phase 2G Agent Runtime](./phase-2g-agent-runtime.md) | Deadline-bound route/triage/RAG/tool/risk/response orchestration, grounding, model fallback, and trace append | Active |
 | [Phase 3F Runtime Orchestration](./phase-3f-runtime-orchestration.md) | Controlled Shadow, Assist, and Auto side effects with complete idempotency and audit references | Active |
+| [Phase 4A Eval Contracts And Datasets](./phase-4a-eval-contracts-datasets.md) | Versioned safe replay/security cases, strict JSONL loading, and immutable eval persistence | Active |
 
 ## Pre-Development Checklist
 
@@ -30,6 +31,8 @@ Before changing Agent pipeline code:
   orchestration, response proposals, grounding, model routing, or trace append.
 - Read [Phase 3F Runtime Orchestration](./phase-3f-runtime-orchestration.md)
   when composing proposals with runtime decisions, delivery, or approvals.
+- Read [Phase 4A Eval Contracts And Datasets](./phase-4a-eval-contracts-datasets.md)
+  when changing evaluation schemas, fixtures, loaders, runs, or results.
 - Preserve tenant, trace, deadline, and immutable version context.
 - Keep provider-specific payloads behind adapters.
 - Confirm whether a value is transient or safe to persist.

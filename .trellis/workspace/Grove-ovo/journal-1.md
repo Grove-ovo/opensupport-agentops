@@ -701,3 +701,36 @@ Completed and archived the Phase 3 parent after all six child tasks passed integ
 ### Next Steps
 
 - None - task complete
+
+
+## Session 22: Phase 4A eval contracts and datasets
+
+**Date**: 2026-06-19
+**Task**: Phase 4A eval contracts and datasets
+**Branch**: `feat/phase-4a-eval-contracts-datasets`
+
+### Summary
+
+Added 150 replay and 40 security cases, strict dataset loading, shared eval contracts, immutable eval persistence, live database verification, and Phase 4A specifications.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `136e71e` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

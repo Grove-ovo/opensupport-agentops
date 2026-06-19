@@ -18,12 +18,12 @@ datasets required by every later Phase 4 task.
 
 ## Acceptance Criteria
 
-- [ ] Replay dataset has exactly 150 valid unique cases.
-- [ ] Security dataset has exactly 40 valid unique cases.
-- [ ] Invalid or duplicate JSONL data is rejected.
-- [ ] Dataset content contains no plaintext credentials or direct PII fixtures.
-- [ ] Migration runs twice and live verification passes.
-- [ ] Lint, typecheck, package tests, static validation, and Trellis Check pass.
+- [x] Replay dataset has exactly 150 valid unique cases.
+- [x] Security dataset has exactly 40 valid unique cases.
+- [x] Invalid or duplicate JSONL data is rejected.
+- [x] Dataset content contains no plaintext credentials or direct PII fixtures.
+- [x] Migration runs twice and live verification passes.
+- [x] Lint, typecheck, package tests, static validation, and Trellis Check pass.
 
 ## Out of Scope
 
