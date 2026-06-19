@@ -10,6 +10,7 @@
 | [Phase 2A Agent Pipeline And Code Router](./phase-2a-agent-pipeline-code-router.md) | PII-safe pipeline context, deterministic routing, conditional-triage signals, and route safety | Active |
 | [Phase 2B LLM Runtime And Conditional Triage](./phase-2b-llm-runtime-triage.md) | Tenant BYOK invocation, budget preflight, timeout/fallback, call logging, and conditional triage | Active |
 | [Phase 2D RAG Evidence Pipeline](./phase-2d-rag-evidence.md) | Hybrid merge, deterministic rerank, evidence citations, blocking retrieval gates, and baseline metrics | Active |
+| [Phase 2E Tool Contracts](./phase-2e-tool-contracts.md) | Versioned manifests, schema/permission/ownership validation, deterministic mock tools, audit hashes, and idempotency | Active |
 
 ## Pre-Development Checklist
 
@@ -18,6 +19,8 @@ Before changing Agent pipeline code:
 - Read the guide that owns the pipeline step.
 - Read [Phase 2D RAG Evidence Pipeline](./phase-2d-rag-evidence.md) when
   changing evidence merge, rerank, thresholds, citations, or retrieval gates.
+- Read [Phase 2E Tool Contracts](./phase-2e-tool-contracts.md) when changing
+  manifests, tool execution, mock business services, audit, or idempotency.
 - Preserve tenant, trace, deadline, and immutable version context.
 - Keep provider-specific payloads behind adapters.
 - Confirm whether a value is transient or safe to persist.

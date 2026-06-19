@@ -338,3 +338,36 @@ Implemented bounded query rewrite, hybrid candidate merge and deterministic rera
 ### Next Steps
 
 - None - task complete
+
+
+## Session 11: Phase 2E Tool Contracts And Mock Services
+
+**Date**: 2026-06-19
+**Task**: Phase 2E Tool Contracts And Mock Services
+**Branch**: `feat/phase-2e-tool-contracts-mock-services`
+
+### Summary
+
+Implemented versioned MCP-compatible tool manifests, schema/permission/deadline/ownership validation, deterministic order/logistics/refund/handoff mock services, dry-run refund idempotency, audit-safe hashes, stable error codes, documentation, tests, and executable Agent spec.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `795314b` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

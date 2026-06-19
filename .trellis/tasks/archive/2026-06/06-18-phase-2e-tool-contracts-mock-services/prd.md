@@ -7,14 +7,14 @@ order, logistics, refund, and handoff services.
 
 ## Requirements
 
-- Define tool manifest/version, JSON schema, risk, timeout, retry, permission,
+- [x] Define tool manifest/version, JSON schema, risk, timeout, retry, permission,
   idempotency, audit, and error contracts.
-- Implement `get_order_status`, `get_logistics_status`,
+- [x] Implement `get_order_status`, `get_logistics_status`,
   `check_refund_eligibility`, `create_refund_request_dry_run`, and
   `escalate_to_human`.
-- Validate tenant/contact ownership before returning business state.
-- Return existing dry-run status for duplicate refund requests.
-- Add `docs/tool_contract.md`.
+- [x] Validate tenant/contact ownership before returning business state.
+- [x] Return existing dry-run status for duplicate refund requests.
+- [x] Add `docs/tool_contract.md`.
 
 ## Acceptance Criteria
 
