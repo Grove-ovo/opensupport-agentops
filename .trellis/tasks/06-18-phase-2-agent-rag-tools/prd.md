@@ -58,32 +58,32 @@ unknown
 
 ## Acceptance Criteria
 
-- [ ] AC-1: A canonical customer message and trace seed can enter a typed Agent
+- [x] AC-1: A canonical customer message and trace seed can enter a typed Agent
   pipeline context without raw PII or plaintext credentials.
-- [ ] AC-2: The Code Router produces deterministic intent, entities, route,
+- [x] AC-2: The Code Router produces deterministic intent, entities, route,
   sensitive flags, and triage-required decisions.
-- [ ] AC-3: Ambiguous cases may use tenant-scoped conditional triage; clear
+- [x] AC-3: Ambiguous cases may use tenant-scoped conditional triage; clear
   cases do not incur an LLM call.
-- [ ] AC-4: Every model call applies timeout/fallback rules and records the
+- [x] AC-4: Every model call applies timeout/fallback rules and records the
   Phase 1 LLM observability contract.
-- [ ] AC-5: Policy retrieval is tenant-scoped, versioned, hybrid
+- [x] AC-5: Policy retrieval is tenant-scoped, versioned, hybrid
   full-text/vector, and returns traceable evidence IDs and scores.
-- [ ] AC-6: No-evidence and conflicting-evidence cases cannot produce a
+- [x] AC-6: No-evidence and conflicting-evidence cases cannot produce a
   definitive policy claim.
-- [ ] AC-7: Tool execution is schema-validated, permission-checked,
+- [x] AC-7: Tool execution is schema-validated, permission-checked,
   tenant-scoped, idempotent, audited, and deterministic.
-- [ ] AC-8: Refund operations are dry-run only and duplicate requests return
+- [x] AC-8: Refund operations are dry-run only and duplicate requests return
   the existing result/status.
-- [ ] AC-9: Risk rules can block, sanitize, clarify, or recommend handoff for
+- [x] AC-9: Risk rules can block, sanitize, clarify, or recommend handoff for
   prompt injection, unauthorized order access, unsafe tool intent, and
   evidence failures.
-- [ ] AC-10: The Response Agent proposal cites required evidence and tool
+- [x] AC-10: The Response Agent proposal cites required evidence and tool
   result references and cannot bypass a blocking gate.
-- [ ] AC-11: Pipeline steps append traceable results and respect explicit
+- [x] AC-11: Pipeline steps append traceable results and respect explicit
   deadlines without implementing Phase 3 runtime-mode delivery.
-- [ ] AC-12: Required artifacts exist: `docs/rag_pipeline.md`,
+- [x] AC-12: Required artifacts exist: `docs/rag_pipeline.md`,
   `docs/tool_contract.md`, and `reports/rag_eval_baseline.md`.
-- [ ] AC-13: Phase 2A through Phase 2G exist as independently executable
+- [x] AC-13: Phase 2A through Phase 2G exist as independently executable
   Trellis child tasks.
 
 ## Child Task Plan
@@ -98,18 +98,15 @@ unknown
 | Phase 2F | Rule-first Risk Guardrail and layered gate decisions | 2A, 2D, 2E |
 | Phase 2G | Response Agent + Phase 2 pipeline integration | 2B, 2D, 2E, 2F |
 
-## Current Execution Focus
+## Delivery Status
 
-Only **Phase 2A** is the first implementation task:
+Phase 2A through Phase 2G are complete and archived. The integrated result
+includes deterministic routing, conditional tenant LLM triage, versioned
+PostgreSQL hybrid retrieval, evidence gating, deterministic mock tools,
+rule-first guardrails, and a grounded proposal-only runtime.
 
-- shared intent/entity/route/result contracts
-- deterministic order ID and sensitive-term extraction
-- Code Router decision rules
-- conditional-triage flag
-- trace-safe route result
-
-Phase 2A must not add model provider calls, RAG storage/retrieval, tools,
-runtime modes, approvals, or Chatwoot message sending.
+Phase 2 preserves its boundary: it does not perform runtime-mode delivery,
+create approvals, or send Chatwoot messages.
 
 ## Technical Approach
 

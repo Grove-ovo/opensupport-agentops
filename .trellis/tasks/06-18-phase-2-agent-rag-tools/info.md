@@ -1,6 +1,6 @@
 # Technical Design: Phase 2 - Agent + RAG + Tools
 
-Status: Accepted for iterative delivery
+Status: Completed and verified
 Date: 2026-06-18
 Base branch: `dev`
 
@@ -63,11 +63,15 @@ PipelineStepResult<T>
 - Blocking gate decisions prevent response proposals from claiming success.
 - Phase 2 emits a recommended action; Phase 3 performs runtime-mode delivery.
 
-## Initial Task Boundary
+## Final Delivery
 
-Phase 2A creates no migration and performs no network I/O. It should add shared
-contracts and a deterministic router package with unit tests and documentation.
-Its output must be reusable by every later Phase 2 child.
+All seven child tasks are archived and integrated. The parent verification
+covers shared contracts, router, LLM runtime, retrieval storage, RAG evidence,
+mock tools, layered guardrails, response orchestration, documentation, tests,
+Compose configuration, idempotent migrations, and live PostgreSQL checks.
+
+The Phase 2 output remains proposal-only. Phase 3 owns Shadow/Assist/Auto
+delivery, approvals, and Chatwoot side effects.
 
 ## References
 

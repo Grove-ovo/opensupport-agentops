@@ -3,7 +3,7 @@
   "name": "phase-2-agent-rag-tools",
   "title": "Phase 2: Agent + RAG + Tools",
   "description": "Deliver the PRD Phase 2 selective Agent pipeline through deterministic routing, conditional triage, evidence-gated RAG, typed mock tools, rule-first risk controls, and a grounded response proposal.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": "feature",
   "scope": "Phase 2 parent planning, dependency-ordered child delivery, and final Agent/RAG/tool integration",
   "package": "root",
