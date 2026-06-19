@@ -1,6 +1,6 @@
 # AgentOps Database Schema
 
-Status: Phase 1 foundation through Phase 3B runtime mode decisions
+Status: Phase 1 foundation through Phase 4A eval persistence
 Migrations:
 
 - `infra/migrations/0001_phase1_foundation.sql`
@@ -12,6 +12,7 @@ Migrations:
 - `infra/migrations/0007_runtime_mode_decisions.sql`
 - `infra/migrations/0008_approval_snapshots.sql`
 - `infra/migrations/0009_approval_actions.sql`
+- `infra/migrations/0010_eval_foundation.sql`
 
 ## Design Rules
 
@@ -257,6 +258,20 @@ must reference a successful or duplicate public-delivery receipt. Reject,
 escalate, and expire records forbid delivery fields. The guarded function also
 updates the ticket state and stores normalized edit distance where applicable.
 
+### eval_cases / security_eval_cases
+
+Phase 4A immutable dataset metadata. Rows store tenant scope, dataset
+version/split, a masked-input hash, normalized expected JSON, and tags. The
+committed masked fixture text remains in JSONL and is not copied into the
+database.
+
+### eval_runs / eval_case_results
+
+Immutable completed replay/security run summaries and normalized per-case
+observations. Runs are scoped by tenant, dataset, candidate snapshot hash, and
+idempotency key. Results reference the run and retain hashes/reason codes
+without provider or customer payloads.
+
 ## Deferred Tables
 
 The following original PRD tables are intentionally deferred:
@@ -270,10 +285,6 @@ The following original PRD tables are intentionally deferred:
 - `intent_predictions`
 - `retrieval_events`
 - `tool_calls`
-- `eval_cases`
-- `security_eval_cases`
-- `eval_runs`
-- `eval_case_results`
 - `release_candidates`
 - `release_gate_results`
 - `failure_cases`

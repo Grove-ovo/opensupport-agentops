@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 21
+- **Total Sessions**: 27
 - **Last Active**: 2026-06-19
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~703 | Active |
+| `journal-1.md` | ~901 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,12 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 27 | 2026-06-19 | Phase 4F failure buckets reports and integration | `b8b063b` | `feat/phase-4f-failure-buckets-reports-integration` |
+| 26 | 2026-06-19 | Phase 4E release gate and promotion | `54bbc9f` | `feat/phase-4e-release-gate-promotion` |
+| 25 | 2026-06-19 | Phase 4D release candidate state machine | `04703cc` | `feat/phase-4d-release-candidate-state-machine` |
+| 24 | 2026-06-19 | Phase 4C security eval runner | `5b417d3` | `feat/phase-4c-security-eval-runner` |
+| 23 | 2026-06-19 | Phase 4B replay eval runner | `178206fcfc5d61cefd50480783598f73377997e5` | `feat/phase-4b-replay-eval-runner-metrics` |
+| 22 | 2026-06-19 | Phase 4A eval contracts and datasets | `136e71e` | `feat/phase-4a-eval-contracts-datasets` |
 | 21 | 2026-06-19 | Complete Phase 3 runtime modes and approval | `77290fb` | `feat/phase-3-runtime-modes-approval` |
 | 20 | 2026-06-19 | Phase 3F runtime approval integration | `aac2f33` | `feat/phase-3f-runtime-approval-integration` |
 | 19 | 2026-06-19 | Phase 3E Approval Actions And Edit Tracking | `98dd20c` | `feat/phase-3e-approval-actions-edit-tracking` |

@@ -111,4 +111,39 @@ export type {
   ResponseAction,
   ResponseProposal,
 } from './response.js';
+export type {
+  EvalCandidateObservation,
+  EvalCase,
+  EvalCaseKind,
+  EvalCaseResult,
+  EvalDatasetSplit,
+  EvalRun,
+  EvalRunStatus,
+  EvalRunType,
+  ReplayEvalMetrics,
+  SecurityAttackCategory,
+  SecurityEvalCase,
+  SecurityEvalMetrics,
+} from './eval.js';
+export type {
+  ReleaseCandidate,
+  ReleaseCandidateActorType,
+  ReleaseCandidateReasonCode,
+  ReleaseCandidateSnapshot,
+  ReleaseCandidateState,
+  ReleaseCandidateTransition,
+  ReleaseCandidateTransitionCommand,
+  ReleaseCandidateTransitionResult,
+  ReleaseGateDecision,
+  ReleaseGateName,
+  ReleaseGateOperator,
+  ReleaseGateReasonCode,
+  ReleaseGateResult,
+  ReleasePromotionState,
+} from './release.js';
+export type {
+  FailureBucket,
+  FailureCase,
+  FailureSourceType,
+} from './failure.js';
 export { isUuid } from './validation.js';

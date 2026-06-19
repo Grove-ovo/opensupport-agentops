@@ -701,3 +701,201 @@ Completed and archived the Phase 3 parent after all six child tasks passed integ
 ### Next Steps
 
 - None - task complete
+
+
+## Session 22: Phase 4A eval contracts and datasets
+
+**Date**: 2026-06-19
+**Task**: Phase 4A eval contracts and datasets
+**Branch**: `feat/phase-4a-eval-contracts-datasets`
+
+### Summary
+
+Added 150 replay and 40 security cases, strict dataset loading, shared eval contracts, immutable eval persistence, live database verification, and Phase 4A specifications.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `136e71e` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 23: Phase 4B replay eval runner
+
+**Date**: 2026-06-19
+**Task**: Phase 4B replay eval runner
+**Branch**: `feat/phase-4b-replay-eval-runner-metrics`
+
+### Summary
+
+Added deterministic replay execution, immutable case results, quality/grounding/latency/cost metrics, baseline regression, idempotency, and Phase 4B validation.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `178206fcfc5d61cefd50480783598f73377997e5` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 24: Phase 4C security eval runner
+
+**Date**: 2026-06-19
+**Task**: Phase 4C security eval runner
+**Branch**: `feat/phase-4c-security-eval-runner`
+
+### Summary
+
+Added deterministic adversarial evaluation across all 40 committed security cases, immutable P0 and zero-tolerance metrics, fail-closed scope/idempotency handling, documentation, and static validation.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `5b417d3` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 25: Phase 4D release candidate state machine
+
+**Date**: 2026-06-19
+**Task**: Phase 4D release candidate state machine
+**Branch**: `feat/phase-4d-release-candidate-state-machine`
+
+### Summary
+
+Added immutable seven-version release candidate snapshots, exact replay/security Eval Run scope, guarded idempotent state transitions, PostgreSQL enforcement, live verification, documentation, and static checks.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `04703cc` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 26: Phase 4E release gate and promotion
+
+**Date**: 2026-06-19
+**Task**: Phase 4E release gate and promotion
+**Branch**: `feat/phase-4e-release-gate-promotion`
+
+### Summary
+
+Added all 11 source-PRD gate decisions, inclusive threshold boundaries, deterministic Failed/Shadow/Assist/Auto ceilings, atomic immutable PostgreSQL gate persistence, P0 rollback enforcement, documentation, and static validation.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `54bbc9f` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 27: Phase 4F failure buckets reports and integration
+
+**Date**: 2026-06-19
+**Task**: Phase 4F failure buckets reports and integration
+**Branch**: `feat/phase-4f-failure-buckets-reports-integration`
+
+### Summary
+
+Added safe deterministic failure buckets, append-only failure persistence, three reproducible Phase 4 reports, report drift checks, child linkage validation, and parent Phase 4 integration checks.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `b8b063b` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

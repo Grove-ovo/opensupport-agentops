@@ -65,11 +65,8 @@ After PostgreSQL is running, apply the ordered Phase 1 migrations with:
 npm run db:migrate
 ```
 
-The command applies `0001_phase1_foundation.sql`,
-`0002_tenant_model_config_versions.sql`, and
-`0003_llm_call_logging_cost_governance.sql`, and
-`0004_pii_mask_trace_schema.sql`, and
-`0005_policy_corpus_hybrid_retrieval.sql`.
+The command applies the complete ordered migration chain from
+`0001_phase1_foundation.sql` through `0010_eval_foundation.sql`.
 
 Phase 2C uses the `pgvector/pgvector:pg16` image. If the local PostgreSQL
 container predates Phase 2C, recreate that service before migration:
@@ -78,22 +75,16 @@ container predates Phase 2C, recreate that service before migration:
 docker compose -f infra/docker/compose.phase1.yml up -d --force-recreate postgres
 ```
 
-The migrations create the foundation and policy retrieval tables:
+The migrations create the foundation, retrieval, runtime, approval, and eval
+tables. The Phase 4A additions are:
 
-- `tenants`
-- `chatwoot_connections`
-- `tenant_model_configs`
-- `agent_traces`
-- `llm_call_logs`
-- `audit_logs`
-- `policy_versions`
-- `policy_documents`
-- `policy_chunks`
-- `policy_chunk_embeddings`
-- `retrieval_config_versions`
+- `eval_cases`
+- `security_eval_cases`
+- `eval_runs`
+- `eval_case_results`
 
-It does not create tool, approval, eval, release gate, billing, RBAC, or public
-user registration tables.
+It does not create release gate, billing, RBAC, or public user registration
+tables.
 
 Verify the live database table list with:
 
@@ -122,6 +113,12 @@ and active retrieval config rules with:
 npm run db:verify:retrieval
 ```
 
+Verify immutable evaluation case, run, and result persistence with:
+
+```bash
+npm run db:verify:eval
+```
+
 ## Local Chatwoot Expectations
 
 Use a local Chatwoot instance from the official Chatwoot development or
@@ -144,4 +141,4 @@ Phase 1A prepares the local runtime and database only. It does not implement:
 - Tenant model config API routes.
 - LLM provider calls.
 - PII masking implementation.
-- Agent pipeline, RAG, tools, runtime modes, approval, eval, or release gates.
+- Dashboard UI, release deployment control, billing, RBAC, or public accounts.

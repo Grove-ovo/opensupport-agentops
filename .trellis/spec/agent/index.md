@@ -14,6 +14,11 @@
 | [Phase 2F Risk Guardrail](./phase-2f-risk-guardrail.md) | Rule-first input/retrieval/tool/output decisions, deterministic precedence, immutable hashes, and bounded model judgment | Active |
 | [Phase 2G Agent Runtime](./phase-2g-agent-runtime.md) | Deadline-bound route/triage/RAG/tool/risk/response orchestration, grounding, model fallback, and trace append | Active |
 | [Phase 3F Runtime Orchestration](./phase-3f-runtime-orchestration.md) | Controlled Shadow, Assist, and Auto side effects with complete idempotency and audit references | Active |
+| [Phase 4A Eval Contracts And Datasets](./phase-4a-eval-contracts-datasets.md) | Versioned safe replay/security cases, strict JSONL loading, and immutable eval persistence | Active |
+| [Phase 4B Replay Eval](./phase-4b-replay-eval.md) | Injected candidate replay with deterministic quality, grounding, latency, cost, and regression metrics | Active |
+| [Phase 4C Security Eval](./phase-4c-security-eval.md) | Deterministic P0, forbidden outcome, PII, and unauthorized-access evaluation | Active |
+| [Phase 4E Release Gate](./phase-4e-release-gate.md) | Exact PRD thresholds, immutable gate decisions, and controlled promotion ceilings | Active |
+| [Phase 4F Failure Buckets And Reports](./phase-4f-failure-buckets-reports.md) | Safe failure references, deterministic classification, reproducible reports, and Phase 4 integration | Active |
 
 ## Pre-Development Checklist
 
@@ -30,6 +35,18 @@ Before changing Agent pipeline code:
   orchestration, response proposals, grounding, model routing, or trace append.
 - Read [Phase 3F Runtime Orchestration](./phase-3f-runtime-orchestration.md)
   when composing proposals with runtime decisions, delivery, or approvals.
+- Read [Phase 4A Eval Contracts And Datasets](./phase-4a-eval-contracts-datasets.md)
+  when changing evaluation schemas, fixtures, loaders, runs, or results.
+- Read [Phase 4B Replay Eval](./phase-4b-replay-eval.md) when changing replay
+  execution, normalized observations, aggregate metrics, or baselines.
+- Read [Phase 4C Security Eval](./phase-4c-security-eval.md) when changing
+  adversarial execution, P0 outcomes, or zero-tolerance security metrics.
+- Read [Phase 4E Release Gate](./phase-4e-release-gate.md) when changing
+  release thresholds, decision severity, promotion ceilings, or gate
+  idempotency.
+- Read [Phase 4F Failure Buckets And Reports](./phase-4f-failure-buckets-reports.md)
+  when changing failure classification, safe record fields, report fixtures,
+  or Phase 4 integration checks.
 - Preserve tenant, trace, deadline, and immutable version context.
 - Keep provider-specific payloads behind adapters.
 - Confirm whether a value is transient or safe to persist.
