@@ -22,7 +22,8 @@
       "@opensupport/trace": ["packages/trace/src/index.ts"],
       "@opensupport/agent-core": ["packages/agent-core/src/index.ts"],
       "@opensupport/llm-runtime": ["packages/llm-runtime/src/index.ts"],
-      "@opensupport/retrieval": ["packages/retrieval/src/index.ts"]
+      "@opensupport/retrieval": ["packages/retrieval/src/index.ts"],
+      "@opensupport/rag": ["packages/rag/src/index.ts"]
     }
   }
 }

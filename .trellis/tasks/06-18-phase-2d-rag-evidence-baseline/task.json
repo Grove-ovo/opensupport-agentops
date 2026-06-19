@@ -3,7 +3,7 @@
   "name": "phase-2d-rag-evidence-baseline",
   "title": "Phase 2D: RAG Evidence Pipeline + Baseline Eval",
   "description": "Implement hybrid retrieval merge, rerank, threshold, conflict detection, evidence gates, and the initial RAG quality baseline.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": "feature",
   "scope": "RAG evidence pipeline, evidence gate, docs, and baseline report",
   "package": "rag",
