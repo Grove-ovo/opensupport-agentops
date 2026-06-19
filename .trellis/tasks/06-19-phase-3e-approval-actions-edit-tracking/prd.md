@@ -17,11 +17,11 @@ guard any approved/edited Chatwoot delivery.
 
 ## Acceptance Criteria
 
-- [ ] Every terminal action is tested.
-- [ ] Duplicate actions return the original result.
-- [ ] Conflicting/late actions are rejected.
-- [ ] Edit distance and both reply versions are retained.
-- [ ] Reject/escalate/expire cannot produce public delivery.
+- [x] Every terminal action is tested.
+- [x] Duplicate actions return the original result.
+- [x] Conflicting/late actions are rejected.
+- [x] Edit distance and both reply versions are retained.
+- [x] Reject/escalate/expire cannot produce public delivery.
 
 ## Out of Scope
 

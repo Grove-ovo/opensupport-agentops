@@ -11,6 +11,7 @@ Migrations:
 - `infra/migrations/0006_ticket_execution_state_machine.sql`
 - `infra/migrations/0007_runtime_mode_decisions.sql`
 - `infra/migrations/0008_approval_snapshots.sql`
+- `infra/migrations/0009_approval_actions.sql`
 
 ## Design Rules
 
@@ -248,6 +249,13 @@ Stores one immutable Assist approval snapshot per tenant/trace. The
 `create_pending_approval(...)` function verifies trace version IDs and
 atomically moves the ticket to `waiting_approval`. Snapshot fields cannot be
 updated; guarded terminal action fields are reserved for Phase 3E.
+
+### approval_action_records
+
+Append-only terminal operator/scheduler decisions. Approve and edit records
+must reference a successful or duplicate public-delivery receipt. Reject,
+escalate, and expire records forbid delivery fields. The guarded function also
+updates the ticket state and stores normalized edit distance where applicable.
 
 ## Deferred Tables
 

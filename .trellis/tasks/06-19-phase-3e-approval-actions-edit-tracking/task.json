@@ -3,7 +3,7 @@
   "name": "phase-3e-approval-actions-edit-tracking",
   "title": "Phase 3E: Approval Actions + Human Edit Tracking",
   "description": "Implement approve, edit, reject, escalate, and expire transitions with actor audit, edit distance, and guarded approved delivery.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": "feature",
   "scope": "Approval terminal actions, actor audit, edit distance, and guarded delivery",
   "package": "root",

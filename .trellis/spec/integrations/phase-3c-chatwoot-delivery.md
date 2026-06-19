@@ -17,6 +17,9 @@ package.
 - Reusing an idempotency key with the same semantic message returns a duplicate
   receipt. Reusing it with changed tenant, trace, conversation, type, or
   content returns `idempotency_conflict`.
+- Successful deliveries remain reserved. Failed provider attempts are shared
+  across concurrent callers but evicted afterward so the same command can be
+  retried.
 - Receipts and audits retain tenant, trace, conversation, message type, stable
   decisions, request/response hashes, and credential reference hash only.
 

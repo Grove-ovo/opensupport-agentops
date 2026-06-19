@@ -7,6 +7,10 @@ export type {
   ChatwootDeliveryReceipt,
 } from './chatwoot-delivery.js';
 export type {
+  ApprovalAction,
+  ApprovalActionCommand,
+  ApprovalActionRecord,
+  ApprovalActionResult,
   ApprovalCreationResult,
   ApprovalRequest,
   ApprovalSnapshot,

@@ -12,6 +12,7 @@
     }
   },
   "dependencies": {
+    "@opensupport/chatwoot": "0.1.0",
     "@opensupport/runtime-control": "0.1.0",
     "@opensupport/shared": "0.1.0"
   }
