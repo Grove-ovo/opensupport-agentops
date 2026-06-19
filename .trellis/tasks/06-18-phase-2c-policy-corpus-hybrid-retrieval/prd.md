@@ -7,13 +7,13 @@ PostgreSQL full-text search plus pgvector retrieval.
 
 ## Requirements
 
-- Enable pgvector in the local PostgreSQL runtime.
-- Add idempotent migrations for policy versions, documents, chunks, embeddings,
+- [x] Enable pgvector in the local PostgreSQL runtime.
+- [x] Add idempotent migrations for policy versions, documents, chunks, embeddings,
   and retrieval config versions.
-- Add deterministic chunking and ingestion contracts with content hashes.
-- Enforce tenant isolation, immutable published versions, embedding dimensions,
+- [x] Add deterministic chunking and ingestion contracts with content hashes.
+- [x] Enforce tenant isolation, immutable published versions, embedding dimensions,
   and active-version rules.
-- Add lexical and vector candidate retrieval interfaces.
+- [x] Add lexical and vector candidate retrieval interfaces.
 
 ## Acceptance Criteria
 

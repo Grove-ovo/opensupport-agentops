@@ -3,7 +3,7 @@
   "name": "phase-2c-policy-corpus-hybrid-retrieval",
   "title": "Phase 2C: Policy Corpus + Hybrid Retrieval Foundation",
   "description": "Add versioned tenant policy storage, pgvector runtime support, deterministic ingestion, and lexical/vector retrieval candidates.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": "feature",
   "scope": "Policy corpus schema, ingestion, pgvector, and hybrid retrieval candidates",
   "package": "retrieval",

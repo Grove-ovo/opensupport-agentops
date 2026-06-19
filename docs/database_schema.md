@@ -1,12 +1,13 @@
-# Phase 1 Database Schema
+# AgentOps Database Schema
 
-Status: Phase 1A foundation through Phase 1E trace security
+Status: Phase 1 foundation plus Phase 2C policy retrieval
 Migrations:
 
 - `infra/migrations/0001_phase1_foundation.sql`
 - `infra/migrations/0002_tenant_model_config_versions.sql`
 - `infra/migrations/0003_llm_call_logging_cost_governance.sql`
 - `infra/migrations/0004_pii_mask_trace_schema.sql`
+- `infra/migrations/0005_policy_corpus_hybrid_retrieval.sql`
 
 ## Design Rules
 
@@ -178,12 +179,36 @@ Key fields:
 - `metadata`
 - `created_at`
 
+### policy_versions
+
+Stores numbered tenant policy snapshots. Only one version can be published for
+a tenant. Published and archived versions are immutable.
+
+### policy_documents
+
+Stores normalized source content, source identity, media type, and SHA-256
+content hash for one tenant policy version.
+
+### policy_chunks
+
+Stores deterministic character ranges with stable hashes and a generated
+PostgreSQL full-text search vector.
+
+### policy_chunk_embeddings
+
+Stores one model-specific 1536-dimensional pgvector embedding for a policy
+chunk. Composite foreign keys prevent cross-tenant policy or chunk references.
+
+### retrieval_config_versions
+
+Stores immutable lexical/vector weights, candidate limits, score thresholds,
+embedding configuration, and one active version per tenant.
+
 ## Deferred Tables
 
 The following original PRD tables are intentionally deferred:
 
 - `runtime_mode_configs`
-- `policy_documents`
 - `prompt_versions`
 - `tool_manifests`
 - `risk_rules`

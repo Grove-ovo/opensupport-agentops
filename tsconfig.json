@@ -8,6 +8,7 @@
     { "path": "./packages/pii" },
     { "path": "./packages/trace" },
     { "path": "./packages/agent-core" },
-    { "path": "./packages/llm-runtime" }
+    { "path": "./packages/llm-runtime" },
+    { "path": "./packages/retrieval" }
   ]
 }
