@@ -8,8 +8,8 @@ Scope: AgentOps API, PostgreSQL, Redis, and local Chatwoot expectations
 Phase 1A keeps the runtime intentionally small:
 
 - AgentOps API: future TypeScript service in `apps/api`.
-- PostgreSQL: tenant config, Chatwoot connection config, traces, LLM logs, and
-  audit logs.
+- PostgreSQL with pgvector: tenant config, policy corpus, traces, LLM logs,
+  retrieval vectors, and audit logs.
 - Redis: future dedupe TTLs, idempotency locks, async job coordination, and
   rate limiting.
 - Chatwoot: local/self-hosted Chatwoot instance used as the conversation
@@ -68,8 +68,17 @@ npm run db:migrate
 The command applies `0001_phase1_foundation.sql`,
 `0002_tenant_model_config_versions.sql`, and
 `0003_llm_call_logging_cost_governance.sql`, and
-`0004_pii_mask_trace_schema.sql`. The migrations create only the current
-foundation tables:
+`0004_pii_mask_trace_schema.sql`, and
+`0005_policy_corpus_hybrid_retrieval.sql`.
+
+Phase 2C uses the `pgvector/pgvector:pg16` image. If the local PostgreSQL
+container predates Phase 2C, recreate that service before migration:
+
+```bash
+docker compose -f infra/docker/compose.phase1.yml up -d --force-recreate postgres
+```
+
+The migrations create the foundation and policy retrieval tables:
 
 - `tenants`
 - `chatwoot_connections`
@@ -77,9 +86,14 @@ foundation tables:
 - `agent_traces`
 - `llm_call_logs`
 - `audit_logs`
+- `policy_versions`
+- `policy_documents`
+- `policy_chunks`
+- `policy_chunk_embeddings`
+- `retrieval_config_versions`
 
-It does not create RAG, tool, approval, eval, release gate, billing, RBAC, or
-public user registration tables.
+It does not create tool, approval, eval, release gate, billing, RBAC, or public
+user registration tables.
 
 Verify the live database table list with:
 
@@ -99,6 +113,13 @@ audit metadata, and operational trace updates with:
 
 ```bash
 npm run db:verify:trace
+```
+
+Verify pgvector, tenant isolation, policy immutability, embedding dimensions,
+and active retrieval config rules with:
+
+```bash
+npm run db:verify:retrieval
 ```
 
 ## Local Chatwoot Expectations

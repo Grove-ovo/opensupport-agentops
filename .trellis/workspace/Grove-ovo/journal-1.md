@@ -272,3 +272,36 @@ Implemented tenant-scoped BYOK model invocation, budget preflight, timeout and f
 ### Next Steps
 
 - None - task complete
+
+
+## Session 9: Phase 2C Policy Corpus And Hybrid Retrieval
+
+**Date**: 2026-06-19
+**Task**: Phase 2C Policy Corpus And Hybrid Retrieval
+**Branch**: `feat/phase-2c-policy-corpus-hybrid-retrieval`
+
+### Summary
+
+Implemented tenant-scoped immutable policy versions, deterministic ingestion, PostgreSQL FTS and pgvector candidate retrieval, retrieval config versioning, live database verification, documentation, and executable Trellis infra contracts.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ded7e67` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

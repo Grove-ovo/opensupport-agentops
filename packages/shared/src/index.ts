@@ -32,4 +32,15 @@ export type {
   TicketExecutionState,
   TraceVersionSnapshot,
 } from './trace.js';
+export type {
+  PolicyChunk,
+  PolicyDocumentRecord,
+  PolicyIngestionPlan,
+  PolicySourceDocument,
+  PolicyVersionStatus,
+  RetrievalCandidate,
+  RetrievalCandidateSource,
+  RetrievalChunkRecord,
+  RetrievalConfigVersion,
+} from './retrieval.js';
 export { isUuid } from './validation.js';
