@@ -14,6 +14,17 @@ export {
   ReplayEvalRunner,
   calculateReplayMetrics,
 } from './replay.js';
+export {
+  SecurityEvalError,
+  SecurityEvalRunner,
+  calculateSecurityMetrics,
+} from './security.js';
+export type {
+  RunSecurityEvalCommand,
+  SecurityCandidateExecutor,
+  SecurityEvalErrorCode,
+  SecurityEvalResult,
+} from './security.js';
 export type {
   EvalCandidateExecutor,
   ReplayEvalErrorCode,
