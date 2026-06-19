@@ -204,6 +204,28 @@ chunk. Composite foreign keys prevent cross-tenant policy or chunk references.
 Stores immutable lexical/vector weights, candidate limits, score thresholds,
 embedding configuration, and one active version per tenant.
 
+### ticket_execution_transitions
+
+Phase 3A append-only audit for guarded changes to
+`agent_traces.execution_state`.
+
+Key fields:
+
+- `transition_id`
+- `tenant_id`
+- `trace_id`
+- `from_state`
+- `to_state`
+- `reason_code`
+- `actor_type`
+- `actor_id`
+- `idempotency_key`
+- `input_hash`
+- `created_at`
+
+State changes must use `transition_ticket_execution(...)`; direct
+`execution_state` updates are rejected.
+
 ## Deferred Tables
 
 The following original PRD tables are intentionally deferred:

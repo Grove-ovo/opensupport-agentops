@@ -33,6 +33,14 @@ export type {
   TraceVersionSnapshot,
 } from './trace.js';
 export type {
+  TicketExecutionActorType,
+  TicketExecutionReasonCode,
+  TicketExecutionSnapshot,
+  TicketExecutionTransition,
+  TicketExecutionTransitionCommand,
+  TicketExecutionTransitionResult,
+} from './runtime-control.js';
+export type {
   PolicyChunk,
   PolicyDocumentRecord,
   PolicyIngestionPlan,

@@ -3,7 +3,7 @@
   "name": "phase-3a-execution-state-machine",
   "title": "Phase 3A: Execution State Machine Foundation",
   "description": "Define runtime mode and ticket execution transition contracts, PostgreSQL transition enforcement, and append-only transition audit records.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": "feature",
   "scope": "Ticket execution transition contracts, PostgreSQL enforcement, and append-only audit",
   "package": "root",

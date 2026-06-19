@@ -13,6 +13,7 @@
 | [Phase 1E PII And Trace](./phase-1e-pii-trace.md) | Deterministic PII masking, immutable trace snapshots, and execution-state schema seed | Active |
 | [Phase 1 Foundation Integration](./phase-1-foundation-integration.md) | Repository-level acceptance gate for migrations, tests, docs, packages, and Trellis child records | Active |
 | [Phase 2C Policy Retrieval](./phase-2c-policy-retrieval.md) | Immutable tenant policy corpus, deterministic ingestion, PostgreSQL FTS, and pgvector candidate retrieval | Active |
+| [Phase 3A Ticket Execution State Machine](./phase-3a-ticket-execution-state-machine.md) | Guarded expected-state transitions, idempotency, append-only audit, and PostgreSQL enforcement | Active |
 
 ## Pre-Development Checklist
 
@@ -29,6 +30,9 @@ Before changing infra, database, or local runtime files:
   when adding, renaming, removing, or reordering a Phase 1 artifact.
 - Read [Phase 2C Policy Retrieval](./phase-2c-policy-retrieval.md) when changing
   policy versions, document ingestion, embeddings, or candidate retrieval.
+- Read [Phase 3A Ticket Execution State Machine](./phase-3a-ticket-execution-state-machine.md)
+  when changing execution states, transition reasons, idempotency, or
+  transition persistence.
 - Confirm whether the change belongs to the active Trellis phase.
 - Search existing migrations and docs before adding duplicate table or env names.
 - Keep secret-bearing values as references, not plaintext persisted values.

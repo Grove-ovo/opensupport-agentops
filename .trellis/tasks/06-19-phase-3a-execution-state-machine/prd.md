@@ -19,13 +19,13 @@ auditable before any Phase 3 delivery side effect is introduced.
 
 ## Acceptance Criteria
 
-- [ ] Valid transitions return deterministic decisions.
-- [ ] Invalid, stale, terminal, and cross-scope transitions are rejected.
-- [ ] Duplicate idempotency keys return the original transition result.
-- [ ] Direct invalid SQL updates are rejected.
-- [ ] Valid SQL transition and audit insertion are atomic.
-- [ ] Migration is idempotent and live verification passes.
-- [ ] No Chatwoot delivery or approval record is created.
+- [x] Valid transitions return deterministic decisions.
+- [x] Invalid, stale, terminal, and cross-scope transitions are rejected.
+- [x] Duplicate idempotency keys return the original transition result.
+- [x] Direct invalid SQL updates are rejected.
+- [x] Valid SQL transition and audit insertion are atomic.
+- [x] Migration is idempotent and live verification passes.
+- [x] No Chatwoot delivery or approval record is created.
 
 ## Out of Scope
 

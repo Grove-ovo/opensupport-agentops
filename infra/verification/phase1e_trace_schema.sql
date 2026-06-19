@@ -107,10 +107,20 @@ BEGIN
     repeat('a', 64)
   );
 
+  PERFORM transition_ticket_execution(
+    first_tenant_id,
+    test_trace_id,
+    'received',
+    'normalized',
+    'pii_normalized',
+    'system',
+    NULL,
+    'phase1e-operational-update',
+    repeat('f', 64)
+  );
+
   UPDATE agent_traces
-  SET
-    execution_state = 'normalized',
-    intent = 'order_status'
+  SET intent = 'order_status'
   WHERE agent_traces.trace_id = test_trace_id;
 
   IF (

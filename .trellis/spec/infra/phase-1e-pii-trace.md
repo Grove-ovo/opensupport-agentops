@@ -55,7 +55,8 @@ Trace:
 - `model_config_version_id` is a tenant-consistent UUID foreign key.
 - Identity, runtime mode, version snapshot, PII audit fields, hash, and
   creation timestamp are immutable.
-- `execution_state` is mutable storage only; transition guards are deferred.
+- Migration `0004` seeds `execution_state`; after migration `0006`, state
+  changes must use `transition_ticket_execution(...)`.
 
 Migration ordering:
 
@@ -64,6 +65,9 @@ Migration ordering:
 - When the full chain is rerun, `0003` must drop
   `agent_traces_tenant_model_config_fk` before rebuilding that unique
   constraint; `0004` restores the trace foreign key.
+- After Phase 3A exists, `0003` also drops
+  `ticket_execution_transitions_trace_fk` before rebuilding the tenant/trace
+  unique constraint; `0006` restores it.
 - `0004` fails when legacy traces lack version or PII audit data. Backfill them
   explicitly; never invent placeholder versions.
 
@@ -79,7 +83,9 @@ Migration ordering:
 | Duplicate/unsupported PII category | PostgreSQL `check_violation` |
 | Invalid JSON trace shape or input hash | PostgreSQL `check_violation` |
 | Immutable trace snapshot update | PostgreSQL `check_violation` |
-| Operational execution/intent update | Allowed |
+| Intent or other non-state operational update | Allowed |
+| Direct `execution_state` update after `0006` | PostgreSQL `check_violation` |
+| Guarded `execution_state` update | Allowed with append-only audit |
 | Legacy trace lacks required snapshot during `0004` | PostgreSQL `not_null_violation` |
 
 > **Warning**: Test migration idempotency against the complete ordered chain.
@@ -108,9 +114,9 @@ Migration ordering:
 - Static validation must assert shared fields, all TicketExecution states,
   package exports, migration constraints, live verification assertions, docs,
   and root scripts.
-- Live PostgreSQL verification must assert operational updates, immutable
-  snapshot rejection, tenant FK isolation, PII uniqueness, JSON shapes, and
-  hash format.
+- Live PostgreSQL verification must assert guarded state updates, other
+  operational updates, immutable snapshot rejection, tenant FK isolation, PII
+  uniqueness, JSON shapes, and hash format.
 - Run the full ordered migration twice, then run Phase 1C, 1D, and 1E live
   verification to catch cross-migration dependency drift.
 
