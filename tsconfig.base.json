@@ -29,7 +29,8 @@
       "@opensupport/agent-runtime": ["packages/agent-runtime/src/index.ts"],
       "@opensupport/runtime-control": ["packages/runtime-control/src/index.ts"],
       "@opensupport/approvals": ["packages/approvals/src/index.ts"],
-      "@opensupport/runtime-orchestrator": ["packages/runtime-orchestrator/src/index.ts"]
+      "@opensupport/runtime-orchestrator": ["packages/runtime-orchestrator/src/index.ts"],
+      "@opensupport/eval": ["packages/eval/src/index.ts"]
     }
   }
 }

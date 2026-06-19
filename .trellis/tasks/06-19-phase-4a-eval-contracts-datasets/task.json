@@ -3,7 +3,7 @@
   "name": "phase-4a-eval-contracts-datasets",
   "title": "Phase 4A: Eval Contracts + Datasets",
   "description": "Define eval/security contracts, generate 150 replay and 40 security cases, add dataset loader, and create eval persistence foundation.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": "feature",
   "scope": "Shared eval/security schemas, committed datasets, loader validation, and eval persistence foundation",
   "package": "root",

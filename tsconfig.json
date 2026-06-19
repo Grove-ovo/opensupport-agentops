@@ -16,6 +16,7 @@
     { "path": "./packages/agent-runtime" },
     { "path": "./packages/runtime-control" },
     { "path": "./packages/approvals" },
-    { "path": "./packages/runtime-orchestrator" }
+    { "path": "./packages/runtime-orchestrator" },
+    { "path": "./packages/eval" }
   ]
 }
