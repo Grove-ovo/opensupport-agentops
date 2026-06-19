@@ -52,3 +52,12 @@ export type {
   ReleaseGateErrorCode,
   ReleaseGateEvaluation,
 } from './release-gate.js';
+export {
+  FailureMaterializationError,
+  classifyFailureBucket,
+  materializeFailureCases,
+} from './failure.js';
+export type {
+  FailureMaterializationErrorCode,
+  MaterializeFailuresCommand,
+} from './failure.js';

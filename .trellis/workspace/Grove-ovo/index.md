@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 26
+- **Total Sessions**: 27
 - **Last Active**: 2026-06-19
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~868 | Active |
+| `journal-1.md` | ~901 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 27 | 2026-06-19 | Phase 4F failure buckets reports and integration | `b8b063b` | `feat/phase-4f-failure-buckets-reports-integration` |
 | 26 | 2026-06-19 | Phase 4E release gate and promotion | `54bbc9f` | `feat/phase-4e-release-gate-promotion` |
 | 25 | 2026-06-19 | Phase 4D release candidate state machine | `04703cc` | `feat/phase-4d-release-candidate-state-machine` |
 | 24 | 2026-06-19 | Phase 4C security eval runner | `5b417d3` | `feat/phase-4c-security-eval-runner` |
