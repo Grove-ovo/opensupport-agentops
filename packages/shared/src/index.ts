@@ -71,4 +71,11 @@ export type {
   GateSeverity,
   RiskAssessment,
 } from './risk.js';
+export type {
+  AgentPipelineRun,
+  GeneratedResponse,
+  PipelineTraceAppend,
+  ResponseAction,
+  ResponseProposal,
+} from './response.js';
 export { isUuid } from './validation.js';

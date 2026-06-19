@@ -12,6 +12,7 @@
 | [Phase 2D RAG Evidence Pipeline](./phase-2d-rag-evidence.md) | Hybrid merge, deterministic rerank, evidence citations, blocking retrieval gates, and baseline metrics | Active |
 | [Phase 2E Tool Contracts](./phase-2e-tool-contracts.md) | Versioned manifests, schema/permission/ownership validation, deterministic mock tools, audit hashes, and idempotency | Active |
 | [Phase 2F Risk Guardrail](./phase-2f-risk-guardrail.md) | Rule-first input/retrieval/tool/output decisions, deterministic precedence, immutable hashes, and bounded model judgment | Active |
+| [Phase 2G Agent Runtime](./phase-2g-agent-runtime.md) | Deadline-bound route/triage/RAG/tool/risk/response orchestration, grounding, model fallback, and trace append | Active |
 
 ## Pre-Development Checklist
 
@@ -24,6 +25,8 @@ Before changing Agent pipeline code:
   manifests, tool execution, mock business services, audit, or idempotency.
 - Read [Phase 2F Risk Guardrail](./phase-2f-risk-guardrail.md) when changing
   layered safety rules, gate decisions, severity, or recommendations.
+- Read [Phase 2G Agent Runtime](./phase-2g-agent-runtime.md) when changing
+  orchestration, response proposals, grounding, model routing, or trace append.
 - Preserve tenant, trace, deadline, and immutable version context.
 - Keep provider-specific payloads behind adapters.
 - Confirm whether a value is transient or safe to persist.
