@@ -1,5 +1,12 @@
 export type { CanonicalInboundEvent, CanonicalInboundEventSource } from './chatwoot.js';
 export type {
+  ChatwootDeliveryAudit,
+  ChatwootDeliveryCode,
+  ChatwootDeliveryCommand,
+  ChatwootDeliveryMessageType,
+  ChatwootDeliveryReceipt,
+} from './chatwoot-delivery.js';
+export type {
   AgentCapability,
   AgentEntities,
   AgentIntent,

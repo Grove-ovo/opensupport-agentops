@@ -3,7 +3,7 @@
   "name": "phase-3c-chatwoot-runtime-delivery",
   "title": "Phase 3C: Chatwoot Runtime Delivery",
   "description": "Add idempotent Chatwoot private-note and public-reply delivery adapters with tenant-scoped credentials and delivery audit boundaries.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": "feature",
   "scope": "Idempotent tenant-scoped Chatwoot private-note and public-reply delivery",
   "package": "root",
