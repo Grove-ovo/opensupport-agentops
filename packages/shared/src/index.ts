@@ -43,4 +43,14 @@ export type {
   RetrievalChunkRecord,
   RetrievalConfigVersion,
 } from './retrieval.js';
+export type {
+  EvidenceBundle,
+  EvidenceGateDecision,
+  EvidenceGateReasonCode,
+  EvidenceRef,
+  MergedRetrievalCandidate,
+  RAGBaselineCase,
+  RAGBaselineMetrics,
+  RAGPipelineConfig,
+} from './evidence.js';
 export { isUuid } from './validation.js';

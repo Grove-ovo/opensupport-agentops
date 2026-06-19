@@ -7,13 +7,13 @@ and establish the initial retrieval-quality baseline.
 
 ## Requirements
 
-- Normalize query, optionally rewrite through a bounded interface, retrieve
+- [x] Normalize query, optionally rewrite through a bounded interface, retrieve
   lexical/vector candidates, merge, rerank, threshold, and filter evidence.
-- Preserve raw lexical/vector, merged, rerank, and threshold decision fields.
-- Detect no-evidence, stale-version, injected-document, and conflicting-policy
+- [x] Preserve raw lexical/vector, merged, rerank, and threshold decision fields.
+- [x] Detect no-evidence, stale-version, injected-document, and conflicting-policy
   cases.
-- Return evidence IDs suitable for trace and response citation.
-- Produce `docs/rag_pipeline.md` and `reports/rag_eval_baseline.md`.
+- [x] Return evidence IDs suitable for trace and response citation.
+- [x] Produce `docs/rag_pipeline.md` and `reports/rag_eval_baseline.md`.
 
 ## Acceptance Criteria
 
