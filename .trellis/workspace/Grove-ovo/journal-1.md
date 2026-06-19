@@ -569,3 +569,36 @@ Implemented provider-neutral, tenant-scoped Chatwoot private-note and public-rep
 ### Next Steps
 
 - None - task complete
+
+
+## Session 18: Phase 3D Approval Snapshot Persistence
+
+**Date**: 2026-06-19
+**Task**: Phase 3D Approval Snapshot Persistence
+**Branch**: `feat/phase-3d-approval-snapshot-persistence`
+
+### Summary
+
+Implemented immutable approval snapshots, atomic waiting_approval transition, semantic idempotency, trace version verification, cross-tenant constraints, and live PostgreSQL migration verification.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `da5fe12` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

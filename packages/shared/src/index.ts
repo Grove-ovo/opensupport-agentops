@@ -7,6 +7,13 @@ export type {
   ChatwootDeliveryReceipt,
 } from './chatwoot-delivery.js';
 export type {
+  ApprovalCreationResult,
+  ApprovalRequest,
+  ApprovalSnapshot,
+  ApprovalState,
+  CreateApprovalCommand,
+} from './approval.js';
+export type {
   AgentCapability,
   AgentEntities,
   AgentIntent,

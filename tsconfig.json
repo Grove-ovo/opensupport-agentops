@@ -14,6 +14,7 @@
     { "path": "./packages/tools" },
     { "path": "./packages/guardrails" },
     { "path": "./packages/agent-runtime" },
-    { "path": "./packages/runtime-control" }
+    { "path": "./packages/runtime-control" },
+    { "path": "./packages/approvals" }
   ]
 }

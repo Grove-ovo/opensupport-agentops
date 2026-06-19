@@ -16,10 +16,10 @@ and move the ticket to `waiting_approval`.
 
 ## Acceptance Criteria
 
-- [ ] Assist creates one pending approval with complete snapshot.
-- [ ] Duplicate creation returns the same approval.
-- [ ] Snapshot mutation and cross-tenant references are rejected.
-- [ ] Ticket enters `waiting_approval` atomically.
+- [x] Assist creates one pending approval with complete snapshot.
+- [x] Duplicate creation returns the same approval.
+- [x] Snapshot mutation and cross-tenant references are rejected.
+- [x] Ticket enters `waiting_approval` atomically.
 
 ## Out of Scope
 

@@ -15,6 +15,7 @@
 | [Phase 2C Policy Retrieval](./phase-2c-policy-retrieval.md) | Immutable tenant policy corpus, deterministic ingestion, PostgreSQL FTS, and pgvector candidate retrieval | Active |
 | [Phase 3A Ticket Execution State Machine](./phase-3a-ticket-execution-state-machine.md) | Guarded expected-state transitions, idempotency, append-only audit, and PostgreSQL enforcement | Active |
 | [Phase 3B Runtime Mode Decision](./phase-3b-runtime-mode-decision.md) | Versioned Auto policy, deterministic requested/effective mode decisions, and downgrade reasons | Active |
+| [Phase 3D Approval Snapshots](./phase-3d-approval-snapshots.md) | Atomic pending approval creation and immutable evidence/tool/risk/version snapshots | Active |
 
 ## Pre-Development Checklist
 
