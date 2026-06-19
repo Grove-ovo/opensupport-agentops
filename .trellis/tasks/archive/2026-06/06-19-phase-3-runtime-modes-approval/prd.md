@@ -38,24 +38,24 @@ snapshots, idempotent Chatwoot delivery, and auditable human actions.
 
 ## Acceptance Criteria
 
-- [ ] AC-1: Invalid ticket execution transitions are rejected in TypeScript and
+- [x] AC-1: Invalid ticket execution transitions are rejected in TypeScript and
   PostgreSQL.
-- [ ] AC-2: Shadow produces one private note and never a public reply.
-- [ ] AC-3: Assist creates one pending approval with an immutable snapshot and
+- [x] AC-2: Shadow produces one private note and never a public reply.
+- [x] AC-3: Assist creates one pending approval with an immutable snapshot and
   enters `waiting_approval`.
-- [ ] AC-4: Approve/edit can produce one guarded public reply; reject,
+- [x] AC-4: Approve/edit can produce one guarded public reply; reject,
   escalate, and expire cannot later send that reply.
-- [ ] AC-5: Auto sends only allowed low-risk grounded replies and records the
+- [x] AC-5: Auto sends only allowed low-risk grounded replies and records the
   effective mode/action decision.
-- [ ] AC-6: P0 risk, missing evidence/tool grounding, timeout, or budget failure
+- [x] AC-6: P0 risk, missing evidence/tool grounding, timeout, or budget failure
   prevents Auto and records a stable downgrade reason.
-- [ ] AC-7: Duplicate runtime or approval commands do not duplicate Chatwoot
+- [x] AC-7: Duplicate runtime or approval commands do not duplicate Chatwoot
   messages, approvals, or transition audit rows.
-- [ ] AC-8: Human edits preserve original and edited text and record a
+- [x] AC-8: Human edits preserve original and edited text and record a
   deterministic edit distance.
-- [ ] AC-9: Every delivery and approval action is tenant/trace scoped and
+- [x] AC-9: Every delivery and approval action is tenant/trace scoped and
   auditable without persisting credentials.
-- [ ] AC-10: Phase 3A through Phase 3F remain independently executable Trellis
+- [x] AC-10: Phase 3A through Phase 3F remain independently executable Trellis
   tasks and pass the parent integration validator.
 
 ## Child Task Plan
@@ -71,13 +71,12 @@ snapshots, idempotent Chatwoot delivery, and auditable human actions.
 
 ## Current Execution Focus
 
-Phase 3A only:
+Completed:
 
-- shared state and transition contracts
-- deterministic transition guard
-- `ticket_execution_transitions` append-only audit
-- PostgreSQL transition enforcement and live verification
-- no Chatwoot delivery and no approval creation
+- Phase 3A through Phase 3F are implemented and archived.
+- Shadow, Assist, Auto, approval actions, delivery, and audit integration pass.
+- Full tests, two consecutive migration runs, and live PostgreSQL verification
+  pass.
 
 ## Technical Approach
 
