@@ -17,12 +17,12 @@ the required reports, and prove the complete Phase 4 flow.
 
 ## Acceptance Criteria
 
-- [ ] Failed case/gate results map to deterministic failure buckets.
-- [ ] Failure records contain no input, response, evidence, tool, credential,
+- [x] Failed case/gate results map to deterministic failure buckets.
+- [x] Failure records contain no input, response, evidence, tool, credential,
   or provider payload.
-- [ ] All three required reports exist and match fixed fixture metrics.
-- [ ] All child tasks remain linked and independently executable.
-- [ ] Full tests, migrations, DB verification, and Trellis Check pass.
+- [x] All three required reports exist and match fixed fixture metrics.
+- [x] All child tasks remain linked and independently executable.
+- [x] Full tests, migrations, DB verification, and Trellis Check pass.
 
 ## Out of Scope
 

@@ -3,7 +3,7 @@
   "name": "phase-4f-failure-buckets-reports-integration",
   "title": "Phase 4F: Failure Buckets + Reports + Integration",
   "description": "Materialize failure buckets, generate required reports, and validate all Phase 4 child tasks and artifacts.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": "feature",
   "scope": "Failure bucket materialization, deterministic Phase 4 reports, and parent acceptance integration",
   "package": "root",

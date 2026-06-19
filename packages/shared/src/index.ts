@@ -141,4 +141,9 @@ export type {
   ReleaseGateResult,
   ReleasePromotionState,
 } from './release.js';
+export type {
+  FailureBucket,
+  FailureCase,
+  FailureSourceType,
+} from './failure.js';
 export { isUuid } from './validation.js';

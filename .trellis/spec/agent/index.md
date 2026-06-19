@@ -18,6 +18,7 @@
 | [Phase 4B Replay Eval](./phase-4b-replay-eval.md) | Injected candidate replay with deterministic quality, grounding, latency, cost, and regression metrics | Active |
 | [Phase 4C Security Eval](./phase-4c-security-eval.md) | Deterministic P0, forbidden outcome, PII, and unauthorized-access evaluation | Active |
 | [Phase 4E Release Gate](./phase-4e-release-gate.md) | Exact PRD thresholds, immutable gate decisions, and controlled promotion ceilings | Active |
+| [Phase 4F Failure Buckets And Reports](./phase-4f-failure-buckets-reports.md) | Safe failure references, deterministic classification, reproducible reports, and Phase 4 integration | Active |
 
 ## Pre-Development Checklist
 
@@ -43,6 +44,9 @@ Before changing Agent pipeline code:
 - Read [Phase 4E Release Gate](./phase-4e-release-gate.md) when changing
   release thresholds, decision severity, promotion ceilings, or gate
   idempotency.
+- Read [Phase 4F Failure Buckets And Reports](./phase-4f-failure-buckets-reports.md)
+  when changing failure classification, safe record fields, report fixtures,
+  or Phase 4 integration checks.
 - Preserve tenant, trace, deadline, and immutable version context.
 - Keep provider-specific payloads behind adapters.
 - Confirm whether a value is transient or safe to persist.
