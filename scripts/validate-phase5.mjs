@@ -16,7 +16,8 @@ const childSlugs = [
 ];
 const finalMode = process.argv.includes('--final');
 const failures = [];
-const parent = readJson(`.trellis/tasks/${parentSlug}/task.json`);
+const parentPath = resolveTask(parentSlug);
+const parent = parentPath === null ? null : readJson(parentPath);
 
 if (parent === null) {
   failures.push(`missing Phase 5 parent task: ${parentSlug}`);
