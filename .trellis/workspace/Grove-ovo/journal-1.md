@@ -998,3 +998,36 @@ Added deterministic V0 monolithic and V1 retrieval-only benchmark adapters, scop
 ### Next Steps
 
 - None - task complete
+
+
+## Session 31: Phase 5C RAG tools and selective adapters
+
+**Date**: 2026-06-20
+**Task**: Phase 5C RAG tools and selective adapters
+**Branch**: `feat/phase-5c-rag-tools-selective-adapters`
+
+### Summary
+
+Added deterministic V2 RAG+Tools and V3 selective-pipeline adapters, actual pipeline execution with injected side-effect-free boundaries, same-scope tests, docs, and specs.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `dc15175` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

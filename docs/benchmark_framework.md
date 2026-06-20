@@ -63,6 +63,24 @@ These adapters are deterministic reference fixtures. Their latency, cost,
 reply hashes, and edit-distance values are derived from case characteristics;
 they do not invoke models or claim production quality.
 
+## V2 And V3 Reference Adapters
+
+`V2RagToolsBenchmarkAdapter` adds expected policy evidence plus deterministic
+mock order, logistics, refund, and handoff tool capabilities in one flow. It
+does not include the layered runtime gate, so high-risk public replies model
+an Auto/unsafe limitation.
+
+`V3SelectivePipelineBenchmarkAdapter` executes the existing
+`runAgentPipeline` with deterministic injected triage, evidence, mock tool
+results, response generation, and clock functions. Existing routing,
+grounding, tool planning, and rule-first risk behavior therefore determine the
+observation. High-risk replies normalize to Assist, clarification to Shadow,
+and policy conflicts remain blocking handoffs.
+
+The injected V3 tool results are reference-only and explicitly record that no
+external side effect occurred. The pipeline produces proposals only; Chatwoot
+delivery and approval actions are not imported.
+
 ## Reproducibility And Failure Behavior
 
 Benchmark input hashes use canonical key ordering. Runs, metrics, observations,
@@ -79,6 +97,7 @@ produce a successful run.
 ```text
 npm run test:phase5a
 npm run test:phase5b
+npm run test:phase5c
 npm run test:eval
 npm run typecheck
 ```

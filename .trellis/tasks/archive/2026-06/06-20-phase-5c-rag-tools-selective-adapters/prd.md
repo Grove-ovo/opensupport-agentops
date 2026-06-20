@@ -17,11 +17,11 @@ benchmark adapters.
 
 ## Acceptance Criteria
 
-- [ ] V2 and V3 execute the same benchmark input scope.
-- [ ] V2 tool and retrieval behavior is deterministic.
-- [ ] V3 reflects selective route, grounding, tool, and safety behavior.
-- [ ] No delivery, approval action, or mutable commerce side effect occurs.
-- [ ] Trellis Check, lint, type-check, and tests pass.
+- [x] V2 and V3 execute the same benchmark input scope.
+- [x] V2 tool and retrieval behavior is deterministic.
+- [x] V3 reflects selective route, grounding, tool, and safety behavior.
+- [x] No delivery, approval action, or mutable commerce side effect occurs.
+- [x] Trellis Check, lint, type-check, and tests pass.
 
 ## Out of Scope
 

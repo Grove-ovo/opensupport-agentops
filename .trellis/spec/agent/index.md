@@ -21,6 +21,7 @@
 | [Phase 4F Failure Buckets And Reports](./phase-4f-failure-buckets-reports.md) | Safe failure references, deterministic classification, reproducible reports, and Phase 4 integration | Active |
 | [Phase 5A Benchmark Contracts And Metrics](./phase-5a-benchmark-contracts.md) | Immutable V0-V3 benchmark scope, deterministic metrics, safe observations, and idempotency | Active |
 | [Phase 5B V0 And V1 Reference Adapters](./phase-5b-reference-adapters.md) | Deterministic Super Agent and RAG-only reference behavior without side effects | Active |
+| [Phase 5C V2 And V3 Reference Adapters](./phase-5c-selective-adapters.md) | Deterministic RAG+Tools and existing selective-pipeline benchmark behavior | Active |
 
 ## Pre-Development Checklist
 
@@ -54,6 +55,8 @@ Before changing Agent pipeline code:
   or benchmark idempotency.
 - Read [Phase 5B V0 And V1 Reference Adapters](./phase-5b-reference-adapters.md)
   when changing Super Agent or RAG-only benchmark behavior.
+- Read [Phase 5C V2 And V3 Reference Adapters](./phase-5c-selective-adapters.md)
+  when changing RAG+Tools or selective-pipeline benchmark behavior.
 - Preserve tenant, trace, deadline, and immutable version context.
 - Keep provider-specific payloads behind adapters.
 - Confirm whether a value is transient or safe to persist.
