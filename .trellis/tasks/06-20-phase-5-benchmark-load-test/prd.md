@@ -73,25 +73,25 @@ mutable commerce side effects.
 
 ## Acceptance Criteria
 
-- [ ] AC-1: V0, V1, V2, and V3 use the same immutable benchmark input scope.
-- [ ] AC-2: Every variant reports all eight source-PRD comparison metrics.
-- [ ] AC-3: Tool Call Accuracy and Human Edit Rate have deterministic,
+- [x] AC-1: V0, V1, V2, and V3 use the same immutable benchmark input scope.
+- [x] AC-2: Every variant reports all eight source-PRD comparison metrics.
+- [x] AC-3: Tool Call Accuracy and Human Edit Rate have deterministic,
   documented formulas and boundary tests.
-- [ ] AC-4: No benchmark variant performs Chatwoot, approval, or mutable
+- [x] AC-4: No benchmark variant performs Chatwoot, approval, or mutable
   commerce side effects.
-- [ ] AC-5: Load scenarios at concurrency 1/5/10/25 report throughput,
+- [x] AC-5: Load scenarios at concurrency 1/5/10/25 report throughput,
   success/error/timeout counts, p50/p95/p99, and event-loop metrics.
-- [ ] AC-6: Invalid concurrency, incomplete observations, cross-tenant scope,
+- [x] AC-6: Invalid concurrency, incomplete observations, cross-tenant scope,
   duplicate/conflicting run keys, and executor failures fail closed.
-- [ ] AC-7: Benchmark and load inputs/results are versioned, hashable, and
+- [x] AC-7: Benchmark and load inputs/results are versioned, hashable, and
   reproducible.
-- [ ] AC-8: `benchmark_report.md` compares V0–V3 without claiming fixture
+- [x] AC-8: `benchmark_report.md` compares V0–V3 without claiming fixture
   results are production quality.
-- [ ] AC-9: `load_test_report.md` identifies the tested boundary and does not
+- [x] AC-9: `load_test_report.md` identifies the tested boundary and does not
   claim HTTP/provider capacity.
-- [ ] AC-10: `cost_report.md` compares average/total cost and tenant budget
+- [x] AC-10: `cost_report.md` compares average/total cost and tenant budget
   headroom per variant.
-- [ ] AC-11: All child tasks are archived, linked, and pass full tests,
+- [x] AC-11: All child tasks are archived, linked, and pass full tests,
   report reproduction, type-check, lint, and parent integration validation.
 
 ## Proposed Child Tasks

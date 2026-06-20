@@ -3,7 +3,7 @@
   "name": "phase-5-benchmark-load-test",
   "title": "Phase 5: Benchmark + Load Test",
   "description": "",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": "Application-level deterministic V0-V3 benchmark, load harness, cost analysis, reports, and integration",
   "package": null,
