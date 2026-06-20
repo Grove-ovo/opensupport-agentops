@@ -18,6 +18,7 @@
 | [Phase 3D Approval Snapshots](./phase-3d-approval-snapshots.md) | Atomic pending approval creation and immutable evidence/tool/risk/version snapshots | Active |
 | [Phase 3E Approval Actions](./phase-3e-approval-actions.md) | Terminal approval state machine, actor audit, guarded delivery, and edit distance | Active |
 | [Phase 4D Release Candidate State Machine](./phase-4d-release-candidate-state-machine.md) | Immutable seven-version snapshots, exact Eval Runs, guarded promotion state, and audit | Active |
+| [GitHub Release Readiness](./github-release-readiness.md) | Accurate repository entry docs, MIT license, CI quality chain, branch policy, and private publication | Active |
 
 ## Pre-Development Checklist
 
@@ -43,6 +44,9 @@ Before changing infra, database, or local runtime files:
 - Read [Phase 4D Release Candidate State Machine](./phase-4d-release-candidate-state-machine.md)
   when changing release snapshots, candidate state, Eval Run scope, or
   transition persistence.
+- Read [GitHub Release Readiness](./github-release-readiness.md) when changing
+  repository entry documentation, CI, release branches, license, or remote
+  publication.
 - Confirm whether the change belongs to the active Trellis phase.
 - Search existing migrations and docs before adding duplicate table or env names.
 - Keep secret-bearing values as references, not plaintext persisted values.

@@ -66,7 +66,7 @@ npm run db:migrate
 ```
 
 The command applies the complete ordered migration chain from
-`0001_phase1_foundation.sql` through `0010_eval_foundation.sql`.
+`0001_phase1_foundation.sql` through `0013_failure_cases.sql`.
 
 Phase 2C uses the `pgvector/pgvector:pg16` image. If the local PostgreSQL
 container predates Phase 2C, recreate that service before migration:
@@ -75,16 +75,17 @@ container predates Phase 2C, recreate that service before migration:
 docker compose -f infra/docker/compose.phase1.yml up -d --force-recreate postgres
 ```
 
-The migrations create the foundation, retrieval, runtime, approval, and eval
-tables. The Phase 4A additions are:
+The migrations create the foundation, retrieval, runtime, approval, eval,
+release-gate, and failure-analysis tables. The Phase 4A additions are:
 
 - `eval_cases`
 - `security_eval_cases`
 - `eval_runs`
 - `eval_case_results`
 
-It does not create release gate, billing, RBAC, or public user registration
-tables.
+Later Phase 4 migrations add release candidates, release-gate decisions, and
+safe failure records. The chain does not create billing, full RBAC, or public
+user registration tables.
 
 Verify the live database table list with:
 
