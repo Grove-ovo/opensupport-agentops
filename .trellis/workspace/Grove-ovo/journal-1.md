@@ -1031,3 +1031,36 @@ Added deterministic V2 RAG+Tools and V3 selective-pipeline adapters, actual pipe
 ### Next Steps
 
 - None - task complete
+
+
+## Session 32: Phase 5D comparative benchmark
+
+**Date**: 2026-06-20
+**Task**: Phase 5D comparative benchmark
+**Branch**: `feat/phase-5d-comparative-benchmark-report`
+
+### Summary
+
+Added immutable cross-variant scope validation, V3 pairwise deltas, safety-first deterministic ranking, and a reproducible benchmark report.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `6aa1bbb` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
