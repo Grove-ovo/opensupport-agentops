@@ -1,0 +1,21 @@
+node_modules/
+dist/
+build/
+coverage/
+.turbo/
+.next/
+.vite/
+
+.env
+.env.*
+!.env.example
+
+*.log
+*.tsbuildinfo
+.DS_Store
+
+tmp/
+temp/
+
+# Trellis local runtime state
+.trellis/.runtime/

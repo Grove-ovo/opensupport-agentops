@@ -1,0 +1,20 @@
+{
+  "name": "@opensupport/runtime-orchestrator",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "@opensupport/approvals": "0.1.0",
+    "@opensupport/chatwoot": "0.1.0",
+    "@opensupport/runtime-control": "0.1.0",
+    "@opensupport/shared": "0.1.0"
+  }
+}

@@ -1,0 +1,37 @@
+name: opensupport-agentops-phase1
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: agentops-postgres
+    environment:
+      POSTGRES_USER: ${AGENTOPS_POSTGRES_USER:-agentops}
+      POSTGRES_PASSWORD: ${AGENTOPS_POSTGRES_PASSWORD:-agentops}
+      POSTGRES_DB: ${AGENTOPS_POSTGRES_DB:-agentops}
+    ports:
+      - "${AGENTOPS_POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - agentops_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: agentops-redis
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "${AGENTOPS_REDIS_PORT:-6379}:6379"
+    volumes:
+      - agentops_redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  agentops_postgres_data:
+  agentops_redis_data:
