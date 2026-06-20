@@ -157,4 +157,13 @@ export type {
   BenchmarkVariantDelta,
   BenchmarkVariant,
 } from './benchmark.js';
+export type {
+  LoadEventLoopMetrics,
+  LoadIterationErrorCode,
+  LoadIterationResult,
+  LoadIterationStatus,
+  LoadScenarioConfig,
+  LoadScenarioMetrics,
+  LoadScenarioResult,
+} from './load.js';
 export { isUuid } from './validation.js';

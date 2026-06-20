@@ -35,6 +35,20 @@ export type {
   BenchmarkComparisonErrorCode,
 } from './comparison.js';
 export {
+  ApplicationLoadHarness,
+  LoadHarnessError,
+  calculateLoadMetrics,
+} from './load.js';
+export type {
+  LoadEventLoopProbe,
+  LoadExecutionResult,
+  LoadHarnessDependencies,
+  LoadHarnessErrorCode,
+  LoadWorkloadExecutor,
+  LoadWorkloadInvocation,
+  RunLoadScenarioCommand,
+} from './load.js';
+export {
   ReferenceAdapterError,
   V0SuperAgentBenchmarkAdapter,
   V1RagOnlyBenchmarkAdapter,

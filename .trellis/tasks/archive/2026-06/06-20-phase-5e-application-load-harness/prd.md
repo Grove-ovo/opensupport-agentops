@@ -19,11 +19,11 @@ latency percentiles, throughput, errors, timeouts, and event-loop metrics.
 
 ## Acceptance Criteria
 
-- [ ] Concurrency never exceeds the configured bound.
-- [ ] Counts sum to measured iterations.
-- [ ] Percentile and throughput boundary formulas are tested.
-- [ ] Timeout/error handling is fail-closed and isolated.
-- [ ] Trellis Check, lint, type-check, and tests pass.
+- [x] Concurrency never exceeds the configured bound.
+- [x] Counts sum to measured iterations.
+- [x] Percentile and throughput boundary formulas are tested.
+- [x] Timeout/error handling is fail-closed and isolated.
+- [x] Trellis Check, lint, type-check, and tests pass.
 
 ## Out of Scope
 
