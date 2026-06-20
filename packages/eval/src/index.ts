@@ -28,6 +28,14 @@ export type {
   RunBenchmarkCommand,
 } from './benchmark.js';
 export {
+  ReferenceAdapterError,
+  V0SuperAgentBenchmarkAdapter,
+  V1RagOnlyBenchmarkAdapter,
+} from './reference-adapters.js';
+export type {
+  ReferenceAdapterErrorCode,
+} from './reference-adapters.js';
+export {
   SecurityEvalError,
   SecurityEvalRunner,
   calculateSecurityMetrics,

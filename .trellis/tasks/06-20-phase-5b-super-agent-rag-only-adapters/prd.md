@@ -18,11 +18,11 @@ Agent and V1 RAG-only benchmark variants.
 
 ## Acceptance Criteria
 
-- [ ] V0 and V1 produce deterministic observations for every benchmark case.
-- [ ] V1 never reports a business tool call.
-- [ ] Policy grounding and tool-required limitations are covered by tests.
-- [ ] Scope and unsupported variant input fail closed.
-- [ ] Trellis Check, lint, type-check, and tests pass.
+- [x] V0 and V1 produce deterministic observations for every benchmark case.
+- [x] V1 never reports a business tool call.
+- [x] Policy grounding and tool-required limitations are covered by tests.
+- [x] Scope and unsupported variant input fail closed.
+- [x] Trellis Check, lint, type-check, and tests pass.
 
 ## Out of Scope
 

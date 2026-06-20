@@ -3,7 +3,7 @@
   "name": "phase-5b-super-agent-rag-only-adapters",
   "title": "Phase 5B: Super Agent + RAG-only Adapters",
   "description": "Implement deterministic side-effect-free V0 Super Agent and V1 RAG-only benchmark adapters.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": "Deterministic V0 Super Agent and V1 RAG-only reference adapters",
   "package": null,
