@@ -37,10 +37,10 @@ export class V0SuperAgentBenchmarkAdapter
     evalCase: EvalCase,
     context: BenchmarkExecutionContext,
   ): BenchmarkCandidateObservation {
-    validateInput(evalCase, context, 'v0_super_agent');
+    validateReferenceAdapterInput(evalCase, context, 'v0_super_agent');
     const unsafeReply =
       evalCase.high_risk && evalCase.expected_action === 'reply';
-    return observation(evalCase, context, {
+    return createReferenceObservation(evalCase, context, {
       action: evalCase.expected_action,
       effectiveRuntimeMode: unsafeReply ? 'auto' : runtimeFor(evalCase),
       evidenceIds: evalCase.expected_evidence_ids,
@@ -74,7 +74,7 @@ export class V1RagOnlyBenchmarkAdapter
     evalCase: EvalCase,
     context: BenchmarkExecutionContext,
   ): BenchmarkCandidateObservation {
-    validateInput(evalCase, context, 'v1_rag_only');
+    validateReferenceAdapterInput(evalCase, context, 'v1_rag_only');
     const toolLimitedReply =
       evalCase.required_tool_names.length > 0 &&
       evalCase.expected_action === 'reply';
@@ -84,7 +84,7 @@ export class V1RagOnlyBenchmarkAdapter
     const evidenceIds = POLICY_INTENTS.has(evalCase.expected_intent)
       ? evalCase.expected_evidence_ids
       : [];
-    return observation(evalCase, context, {
+    return createReferenceObservation(evalCase, context, {
       action,
       effectiveRuntimeMode:
         action === 'reply'
@@ -107,7 +107,8 @@ export class V1RagOnlyBenchmarkAdapter
   }
 }
 
-interface ObservationValues {
+export interface ReferenceObservationValues {
+  readonly intent?: AgentIntent;
   readonly action: ResponseAction;
   readonly effectiveRuntimeMode: RuntimeMode;
   readonly evidenceIds: readonly string[];
@@ -119,10 +120,10 @@ interface ObservationValues {
   readonly estimatedCost: number;
 }
 
-function observation(
+export function createReferenceObservation(
   evalCase: EvalCase,
   context: BenchmarkExecutionContext,
-  values: ObservationValues,
+  values: ReferenceObservationValues,
 ): BenchmarkCandidateObservation {
   const humanEditEligible = values.action === 'reply';
   const proposedReplyHash = humanEditEligible
@@ -138,7 +139,7 @@ function observation(
     tenant_id: evalCase.tenant_id,
     variant: context.variant,
     variant_version: context.variant_version,
-    intent: evalCase.expected_intent,
+    intent: values.intent ?? evalCase.expected_intent,
     action: values.action,
     effective_runtime_mode: values.effectiveRuntimeMode,
     evidence_ids: Object.freeze([...values.evidenceIds]),
@@ -159,7 +160,7 @@ function observation(
   });
 }
 
-function validateInput(
+export function validateReferenceAdapterInput(
   evalCase: EvalCase,
   context: BenchmarkExecutionContext,
   supportedVariant: BenchmarkVariant,

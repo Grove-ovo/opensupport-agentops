@@ -12,6 +12,7 @@
     }
   },
   "dependencies": {
+    "@opensupport/agent-runtime": "0.1.0",
     "@opensupport/shared": "0.1.0"
   }
 }

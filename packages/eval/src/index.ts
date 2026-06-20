@@ -36,6 +36,10 @@ export type {
   ReferenceAdapterErrorCode,
 } from './reference-adapters.js';
 export {
+  V2RagToolsBenchmarkAdapter,
+  V3SelectivePipelineBenchmarkAdapter,
+} from './selective-adapters.js';
+export {
   SecurityEvalError,
   SecurityEvalRunner,
   calculateSecurityMetrics,
