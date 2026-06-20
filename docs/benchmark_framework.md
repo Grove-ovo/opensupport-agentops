@@ -138,6 +138,24 @@ Phase 5 scenarios cover concurrency 1, 5, 10, and 25. These are in-process
 application measurements, not HTTP, provider, Chatwoot, container, network,
 or distributed capacity results.
 
+## Load And Cost Reports
+
+`reports/load_test_report.md` executes the V3 selective pipeline through the
+public load harness for deterministic concurrency 1, 5, 10, and 25 fixtures.
+The report includes warmup/measured counts, success/error/timeout counts,
+observed peak concurrency, throughput, p50/p95/p99 latency, event-loop
+utilization, and event-loop delay.
+
+`reports/cost_report.md` uses the same V0-V3 benchmark comparison as the
+architecture report. It presents estimated average and total execution cost
+separately from configured per-ticket and daily tenant budgets. Headroom is
+the configured limit minus the measured estimate. V3 absolute and relative
+average-cost deltas are reported against every variant.
+
+All three Phase 5 reports are generated from committed fixtures and checked
+byte-for-byte. Their interpretation sections explicitly exclude production
+provider billing, HTTP/network capacity, and mutable external side effects.
+
 ## Commands
 
 ```text
@@ -148,6 +166,10 @@ npm run test:phase5d
 npm run test:phase5e
 npm run reports:phase5:benchmark
 npm run reports:phase5:benchmark:check
+npm run reports:phase5
+npm run reports:phase5:check
+npm run test:phase5f
+npm run test:phase5
 npm run test:eval
 npm run typecheck
 ```

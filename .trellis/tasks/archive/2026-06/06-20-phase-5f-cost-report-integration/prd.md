@@ -16,12 +16,12 @@ and prove the full Phase 5 task/artifact chain.
 
 ## Acceptance Criteria
 
-- [ ] All three Phase 5 reports exist and reproduce byte-for-byte.
-- [ ] Cost report separates measured cost from tenant budget.
-- [ ] Load report includes required counts, throughput, percentiles, and
+- [x] All three Phase 5 reports exist and reproduce byte-for-byte.
+- [x] Cost report separates measured cost from tenant budget.
+- [x] Load report includes required counts, throughput, percentiles, and
   event-loop metrics for all four scenarios.
-- [ ] Parent integration validator resolves active or archived tasks.
-- [ ] Full tests, Trellis Check, lint, and type-check pass.
+- [x] Parent integration validator resolves active or archived tasks.
+- [x] Full tests, Trellis Check, lint, and type-check pass.
 
 ## Out of Scope
 

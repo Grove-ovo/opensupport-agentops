@@ -1,53 +1,11 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import {
-  BenchmarkRunner,
-  V0SuperAgentBenchmarkAdapter,
-  V1RagOnlyBenchmarkAdapter,
-  V2RagToolsBenchmarkAdapter,
-  V3SelectivePipelineBenchmarkAdapter,
-  compareBenchmarkRuns,
-  parseReplayDataset,
-} from '../packages/eval/dist/index.js';
+  createBenchmarkComparison,
+} from './phase5-report-fixtures.mjs';
 
-const generatedAt = '2026-06-20T00:00:00.000Z';
-const tenantId = '018f7f4a-7c1d-7b22-8d41-1234567890aa';
-const configHash = 'a'.repeat(64);
 const reportPath = 'reports/benchmark_report.md';
 const checkOnly = process.argv.includes('--check');
-const variants = [
-  ['v0_super_agent', new V0SuperAgentBenchmarkAdapter()],
-  ['v1_rag_only', new V1RagOnlyBenchmarkAdapter()],
-  ['v2_rag_tools', new V2RagToolsBenchmarkAdapter()],
-  ['v3_selective_pipeline', new V3SelectivePipelineBenchmarkAdapter()],
-];
-
-const dataset = parseReplayDataset(
-  await readFile('eval/eval_cases.jsonl', 'utf8'),
-);
-const cases = dataset.cases.filter((item) => item.split === 'test');
-const runs = await Promise.all(
-  variants.map(async ([variant, adapter], index) => {
-    const result = await new BenchmarkRunner(adapter).run(
-      {
-        run_id: `018f7f4a-7c1d-7b22-8d41-1234567892${index.toString().padStart(2, '0')}`,
-        tenant_id: tenantId,
-        variant,
-        variant_version: 'phase5-reference-v1',
-        dataset_version: dataset.dataset_version,
-        dataset_split: 'test',
-        config_hash: configHash,
-        workload_version: 'benchmark-workload-v1',
-        cases,
-        human_edit_distance_threshold: 0.1,
-        idempotency_key: `phase5-report-${variant}`,
-        created_at: generatedAt,
-      },
-      generatedAt,
-    );
-    return result.run;
-  }),
-);
-const comparison = compareBenchmarkRuns(runs, generatedAt);
+const comparison = await createBenchmarkComparison();
 const content = renderReport(comparison);
 
 if (checkOnly) {
