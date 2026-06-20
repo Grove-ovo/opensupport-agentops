@@ -149,6 +149,7 @@ export class BenchmarkRunner {
       caseResults,
       command.human_edit_distance_threshold,
     );
+    const scopeHash = hashBenchmarkScope(command);
     const run: BenchmarkRun = Object.freeze({
       schema_version: 'benchmark.v1',
       run_id: command.run_id,
@@ -167,6 +168,7 @@ export class BenchmarkRunner {
       human_edit_distance_threshold:
         command.human_edit_distance_threshold,
       idempotency_key: command.idempotency_key,
+      scope_hash: scopeHash,
       input_hash: inputHash,
       created_at: createdAt,
       completed_at: createdAt,
@@ -406,6 +408,19 @@ function hashBenchmarkInput(command: RunBenchmarkCommand): string {
     human_edit_distance_threshold:
       command.human_edit_distance_threshold,
     idempotency_key: command.idempotency_key,
+  });
+}
+
+function hashBenchmarkScope(command: RunBenchmarkCommand): string {
+  return hashStable({
+    tenant_id: command.tenant_id,
+    dataset_version: command.dataset_version,
+    dataset_split: command.dataset_split,
+    config_hash: command.config_hash,
+    workload_version: command.workload_version,
+    cases: command.cases,
+    human_edit_distance_threshold:
+      command.human_edit_distance_threshold,
   });
 }
 

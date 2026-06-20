@@ -17,11 +17,11 @@ reproducible architecture benchmark report.
 
 ## Acceptance Criteria
 
-- [ ] Exactly V0, V1, V2, and V3 are present once.
-- [ ] All eight metrics and pairwise V3 deltas are reported.
-- [ ] Safety-first ranking is deterministic.
-- [ ] Report generation is byte-for-byte reproducible.
-- [ ] Trellis Check, lint, type-check, and tests pass.
+- [x] Exactly V0, V1, V2, and V3 are present once.
+- [x] All eight metrics and pairwise V3 deltas are reported.
+- [x] Safety-first ranking is deterministic.
+- [x] Report generation is byte-for-byte reproducible.
+- [x] Trellis Check, lint, type-check, and tests pass.
 
 ## Out of Scope
 

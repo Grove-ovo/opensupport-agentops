@@ -1,6 +1,6 @@
 # Benchmark Framework
 
-Status: Phase 5A contracts and deterministic metrics
+Status: Phase 5D deterministic comparison and report
 
 ## Scope
 
@@ -85,6 +85,11 @@ delivery and approval actions are not imported.
 
 Benchmark input hashes use canonical key ordering. Runs, metrics, observations,
 and result collections are frozen before they cross the runner boundary.
+Every run also records a `scope_hash` derived from the tenant, dataset
+version/split, ordered cases, configuration hash, workload version, and edit
+threshold. Variant identity, variant version, run ID, and idempotency key are
+excluded, allowing the comparison layer to prove all architectures evaluated
+the same immutable workload.
 Identical concurrent retries return the original immutable run. Reusing an
 idempotency key or run ID with changed scope fails closed.
 
@@ -92,12 +97,32 @@ Empty inputs, duplicate cases/results, incomplete results, cross-tenant or
 cross-version observations, invalid edit fields, and executor failures do not
 produce a successful run.
 
+## Comparative Report
+
+`compareBenchmarkRuns` accepts exactly one successful run for each V0-V3. It
+rejects missing, duplicate, extra, or cross-scope runs and normalizes output
+into fixed variant order. Pairwise metric deltas use `V3 - baseline` for V0,
+V1, and V2 across all eight metrics.
+
+Ranking is safety-first. Unsafe Action Rate sorts ascending before every other
+metric, so no non-zero-unsafe variant can outrank a zero-unsafe variant.
+Deterministic tie breakers then use task success, tool accuracy, retrieval
+recall, no-evidence rate, human edit rate, latency, cost, and variant ID.
+
+`reports/benchmark_report.md` is generated from the committed test split using
+the same public adapters, runner, and comparison function exercised by tests.
+It is a deterministic reference-fixture architecture comparison, not a live
+provider, network, Chatwoot, or production model-quality benchmark.
+
 ## Commands
 
 ```text
 npm run test:phase5a
 npm run test:phase5b
 npm run test:phase5c
+npm run test:phase5d
+npm run reports:phase5:benchmark
+npm run reports:phase5:benchmark:check
 npm run test:eval
 npm run typecheck
 ```

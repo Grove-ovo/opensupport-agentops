@@ -22,6 +22,7 @@
 | [Phase 5A Benchmark Contracts And Metrics](./phase-5a-benchmark-contracts.md) | Immutable V0-V3 benchmark scope, deterministic metrics, safe observations, and idempotency | Active |
 | [Phase 5B V0 And V1 Reference Adapters](./phase-5b-reference-adapters.md) | Deterministic Super Agent and RAG-only reference behavior without side effects | Active |
 | [Phase 5C V2 And V3 Reference Adapters](./phase-5c-selective-adapters.md) | Deterministic RAG+Tools and existing selective-pipeline benchmark behavior | Active |
+| [Phase 5D Comparative Benchmark](./phase-5d-comparative-benchmark.md) | Immutable V0-V3 comparison, V3 deltas, safety-first ranking, and reproducible report | Active |
 
 ## Pre-Development Checklist
 
@@ -57,6 +58,9 @@ Before changing Agent pipeline code:
   when changing Super Agent or RAG-only benchmark behavior.
 - Read [Phase 5C V2 And V3 Reference Adapters](./phase-5c-selective-adapters.md)
   when changing RAG+Tools or selective-pipeline benchmark behavior.
+- Read [Phase 5D Comparative Benchmark](./phase-5d-comparative-benchmark.md)
+  when changing shared benchmark scope, comparison, ranking, deltas, or the
+  benchmark report.
 - Preserve tenant, trace, deadline, and immutable version context.
 - Keep provider-specific payloads behind adapters.
 - Confirm whether a value is transient or safe to persist.

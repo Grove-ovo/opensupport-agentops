@@ -3,7 +3,7 @@
   "name": "phase-5d-comparative-benchmark-report",
   "title": "Phase 5D: Comparative Benchmark Runner + Report",
   "description": "Run all four variants over one immutable scope, compare metrics, rank results, and generate benchmark_report.md.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": "Comparative benchmark runner, safety-first ranking, and benchmark report",
   "package": null,
