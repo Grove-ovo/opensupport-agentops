@@ -1,6 +1,6 @@
 # Technical Design: Phase 5 - Benchmark + Load Test
 
-Status: Accepted for iterative delivery
+Status: Completed
 Date: 2026-06-20
 Base branch: `dev`
 
@@ -31,3 +31,23 @@ immutable replay cases
 - Tool accuracy and human edit formulas are project-owned and deterministic.
 - No delivery, approval action, live provider, or mutable commerce side effect.
 - Reports identify fixture/application-level scope explicitly.
+
+## Delivered
+
+- Phase 5A: benchmark contracts, immutable runs, and eight metrics.
+- Phase 5B: deterministic V0 Super Agent and V1 RAG-only adapters.
+- Phase 5C: deterministic V2 RAG+Tools and actual V3 selective-pipeline
+  adapter.
+- Phase 5D: shared scope hash, V3 deltas, safety-first ranking, and benchmark
+  report.
+- Phase 5E: bounded application load harness with warmup, timeout/error
+  isolation, percentiles, throughput, and event-loop metrics.
+- Phase 5F: reproducible load/cost reports and parent integration validation.
+
+## Final Verification
+
+- `npm test`
+- `npm run typecheck`
+- `npm run lint`
+- `npm run reports:phase5:check`
+- `node scripts/validate-phase5.mjs --final`
