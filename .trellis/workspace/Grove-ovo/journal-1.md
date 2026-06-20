@@ -932,3 +932,36 @@ Completed and archived Phase 4 after all six child tasks passed full tests, repo
 ### Next Steps
 
 - None - task complete
+
+
+## Session 29: Phase 5A benchmark contracts and metrics
+
+**Date**: 2026-06-20
+**Task**: Phase 5A benchmark contracts and metrics
+**Branch**: `feat/phase-5a-benchmark-contracts-metrics`
+
+### Summary
+
+Added immutable V0-V3 benchmark contracts, deterministic metric formulas, idempotent runner validation, boundary tests, docs, and executable specs.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ba61b54` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

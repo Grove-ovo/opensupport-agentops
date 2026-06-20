@@ -146,4 +146,11 @@ export type {
   FailureCase,
   FailureSourceType,
 } from './failure.js';
+export type {
+  BenchmarkCandidateObservation,
+  BenchmarkCaseResult,
+  BenchmarkMetrics,
+  BenchmarkRun,
+  BenchmarkVariant,
+} from './benchmark.js';
 export { isUuid } from './validation.js';

@@ -13,7 +13,20 @@ export {
   ReplayEvalError,
   ReplayEvalRunner,
   calculateReplayMetrics,
+  evaluateReplayCaseBehavior,
 } from './replay.js';
+export {
+  BenchmarkError,
+  BenchmarkRunner,
+  calculateBenchmarkMetrics,
+} from './benchmark.js';
+export type {
+  BenchmarkErrorCode,
+  BenchmarkExecutionContext,
+  BenchmarkExecutionResult,
+  BenchmarkVariantExecutor,
+  RunBenchmarkCommand,
+} from './benchmark.js';
 export {
   SecurityEvalError,
   SecurityEvalRunner,

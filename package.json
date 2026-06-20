@@ -29,7 +29,7 @@
     "db:verify:release-gate": "psql \"${DATABASE_URL:-postgresql://agentops:agentops@localhost:5432/agentops}\" -v ON_ERROR_STOP=1 -f infra/verification/phase4e_release_gate.sql",
     "db:verify:failure-cases": "psql \"${DATABASE_URL:-postgresql://agentops:agentops@localhost:5432/agentops}\" -v ON_ERROR_STOP=1 -f infra/verification/phase4f_failure_cases.sql",
     "lint": "git diff --check",
-    "test": "npm run test:phase1 && npm run test:phase1a && npm run test:phase1c && npm run test:phase1d && npm run test:phase1e && npm run test:chatwoot && npm run test:model-config && npm run test:llm-observability && npm run test:pii && npm run test:trace && npm run test:phase2a && npm run test:agent-core && npm run test:phase2b && npm run test:llm-runtime && npm run test:phase2c && npm run test:retrieval && npm run test:phase2d && npm run test:rag && npm run test:phase2e && npm run test:tools && npm run test:phase2f && npm run test:guardrails && npm run test:phase2g && npm run test:agent-runtime && npm run test:phase2 && npm run test:phase3a && npm run test:phase3b && npm run test:runtime-control && npm run test:phase3c && npm run test:phase3d && npm run test:phase3e && npm run test:approvals && npm run test:phase3f && npm run test:runtime-orchestrator && npm run test:phase3 && npm run test:phase4a && npm run test:phase4b && npm run test:phase4c && npm run test:phase4d && npm run test:phase4e && npm run test:phase4f && npm run test:eval && npm run reports:phase4:check && npm run test:phase4",
+    "test": "npm run test:phase1 && npm run test:phase1a && npm run test:phase1c && npm run test:phase1d && npm run test:phase1e && npm run test:chatwoot && npm run test:model-config && npm run test:llm-observability && npm run test:pii && npm run test:trace && npm run test:phase2a && npm run test:agent-core && npm run test:phase2b && npm run test:llm-runtime && npm run test:phase2c && npm run test:retrieval && npm run test:phase2d && npm run test:rag && npm run test:phase2e && npm run test:tools && npm run test:phase2f && npm run test:guardrails && npm run test:phase2g && npm run test:agent-runtime && npm run test:phase2 && npm run test:phase3a && npm run test:phase3b && npm run test:runtime-control && npm run test:phase3c && npm run test:phase3d && npm run test:phase3e && npm run test:approvals && npm run test:phase3f && npm run test:runtime-orchestrator && npm run test:phase3 && npm run test:phase4a && npm run test:phase4b && npm run test:phase4c && npm run test:phase4d && npm run test:phase4e && npm run test:phase4f && npm run test:eval && npm run reports:phase4:check && npm run test:phase4 && npm run test:phase5a",
     "test:chatwoot": "npm run build && node --test packages/chatwoot/dist/*.test.js",
     "test:model-config": "npm run build && node --test packages/model-config/dist/*.test.js",
     "test:llm-observability": "npm run build && node --test packages/llm-observability/dist/*.test.js",
@@ -75,6 +75,7 @@
     "test:phase4e": "node scripts/validate-phase4e.mjs",
     "test:phase4f": "node scripts/validate-phase4f.mjs",
     "test:phase4": "node scripts/validate-phase4.mjs",
+    "test:phase5a": "npm run build && node --test packages/eval/dist/benchmark.test.js && node scripts/validate-phase5a.mjs",
     "typecheck": "tsc -b --pretty false"
   },
   "keywords": [],

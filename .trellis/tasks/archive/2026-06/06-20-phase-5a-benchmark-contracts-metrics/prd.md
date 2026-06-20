@@ -22,11 +22,11 @@ formulas that every later adapter and report must reuse.
 
 ## Acceptance Criteria
 
-- [ ] All eight metrics have deterministic boundary tests.
-- [ ] Variant/run/result contracts are immutable and versioned.
-- [ ] Empty, incomplete, cross-scope, duplicate, and conflicting runs fail.
-- [ ] Existing Phase 4 metric semantics remain unchanged.
-- [ ] Trellis Check, lint, type-check, and tests pass.
+- [x] All eight metrics have deterministic boundary tests.
+- [x] Variant/run/result contracts are immutable and versioned.
+- [x] Empty, incomplete, cross-scope, duplicate, and conflicting runs fail.
+- [x] Existing Phase 4 metric semantics remain unchanged.
+- [x] Trellis Check, lint, type-check, and tests pass.
 
 ## Out of Scope
 

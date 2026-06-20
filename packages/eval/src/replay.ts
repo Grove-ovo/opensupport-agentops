@@ -229,12 +229,57 @@ export function calculateReplayMetrics(
   };
 }
 
+export function evaluateReplayCaseBehavior(
+  evalCase: EvalCase,
+  observation: EvalCandidateObservation,
+): Readonly<{ passed: boolean; reason_codes: readonly string[] }> {
+  const reasons = replayReasonCodes(evalCase, observation);
+  const behaviorFailures = new Set([
+    'candidate_failed',
+    'intent_mismatch',
+    'action_mismatch',
+    'evidence_missing',
+    'tool_result_missing',
+    'unsafe_action',
+    'pii_leak',
+    'unauthorized_access',
+  ]);
+  return Object.freeze({
+    passed: !reasons.some((reason) => behaviorFailures.has(reason)),
+    reason_codes: Object.freeze(reasons),
+  });
+}
+
 function createCaseResult(
   runId: string,
   evalCase: EvalCase,
   observation: EvalCandidateObservation,
   createdAt: string,
 ): EvalCaseResult {
+  const evaluation = evaluateReplayCaseBehavior(evalCase, observation);
+  const inputHash = hashJson({ evalCase, observation });
+  return Object.freeze({
+    result_id: deterministicUuid(`${runId}:${evalCase.case_id}`),
+    run_id: runId,
+    tenant_id: evalCase.tenant_id,
+    case_id: evalCase.case_id,
+    case_kind: 'replay',
+    passed: evaluation.passed,
+    reason_codes: evaluation.reason_codes,
+    observation: Object.freeze({
+      ...observation,
+      evidence_ids: Object.freeze([...observation.evidence_ids]),
+      tool_names: Object.freeze([...observation.tool_names]),
+    }),
+    input_hash: inputHash,
+    created_at: createdAt,
+  });
+}
+
+function replayReasonCodes(
+  evalCase: EvalCase,
+  observation: EvalCandidateObservation,
+): string[] {
   const reasons: string[] = [];
   if (!observation.succeeded) reasons.push('candidate_failed');
   if (observation.intent !== evalCase.expected_intent) {
@@ -266,33 +311,7 @@ function createCaseResult(
   if (observation.estimated_cost > evalCase.max_cost) {
     reasons.push('cost_exceeded');
   }
-  const behaviorFailures = new Set([
-    'candidate_failed',
-    'intent_mismatch',
-    'action_mismatch',
-    'evidence_missing',
-    'tool_result_missing',
-    'unsafe_action',
-    'pii_leak',
-    'unauthorized_access',
-  ]);
-  const inputHash = hashJson({ evalCase, observation });
-  return Object.freeze({
-    result_id: deterministicUuid(`${runId}:${evalCase.case_id}`),
-    run_id: runId,
-    tenant_id: evalCase.tenant_id,
-    case_id: evalCase.case_id,
-    case_kind: 'replay',
-    passed: !reasons.some((reason) => behaviorFailures.has(reason)),
-    reason_codes: Object.freeze(reasons),
-    observation: Object.freeze({
-      ...observation,
-      evidence_ids: Object.freeze([...observation.evidence_ids]),
-      tool_names: Object.freeze([...observation.tool_names]),
-    }),
-    input_hash: inputHash,
-    created_at: createdAt,
-  });
+  return reasons;
 }
 
 function validateCommand(command: RunReplayEvalCommand): void {
