@@ -149,8 +149,12 @@ export type {
 export type {
   BenchmarkCandidateObservation,
   BenchmarkCaseResult,
+  BenchmarkComparison,
+  BenchmarkMetricDeltas,
   BenchmarkMetrics,
+  BenchmarkRankingEntry,
   BenchmarkRun,
+  BenchmarkVariantDelta,
   BenchmarkVariant,
 } from './benchmark.js';
 export { isUuid } from './validation.js';

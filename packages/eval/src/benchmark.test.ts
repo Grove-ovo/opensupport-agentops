@@ -22,6 +22,7 @@ test('calculates all eight benchmark metrics with deterministic boundaries', asy
   const result = await runner.run(command(cases), now);
 
   assert.equal(result.run.schema_version, 'benchmark.v1');
+  assert.match(result.run.scope_hash, /^[a-f0-9]{64}$/u);
   assert.equal(result.run.metrics.case_count, 4);
   assert.equal(result.run.metrics.task_success_rate, 0.5);
   assert.equal(result.run.metrics.retrieval_recall_at_5, 0.666667);

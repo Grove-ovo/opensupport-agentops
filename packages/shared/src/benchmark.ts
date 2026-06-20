@@ -56,7 +56,46 @@ export interface BenchmarkRun {
   readonly case_result_ids: readonly string[];
   readonly human_edit_distance_threshold: number;
   readonly idempotency_key: string;
+  readonly scope_hash: string;
   readonly input_hash: string;
   readonly created_at: string;
   readonly completed_at: string;
+}
+
+export interface BenchmarkMetricDeltas {
+  readonly task_success_rate: number;
+  readonly retrieval_recall_at_5: number;
+  readonly tool_call_accuracy: number;
+  readonly unsafe_action_rate: number;
+  readonly no_evidence_answer_rate: number;
+  readonly human_edit_rate: number;
+  readonly p95_latency_ms: number;
+  readonly average_cost_per_ticket: number;
+}
+
+export interface BenchmarkVariantDelta {
+  readonly candidate_variant: 'v3_selective_pipeline';
+  readonly baseline_variant: BenchmarkVariant;
+  readonly metrics: BenchmarkMetricDeltas;
+}
+
+export interface BenchmarkRankingEntry {
+  readonly rank: number;
+  readonly variant: BenchmarkVariant;
+  readonly metrics: BenchmarkMetrics;
+}
+
+export interface BenchmarkComparison {
+  readonly schema_version: 'benchmark-comparison.v1';
+  readonly tenant_id: string;
+  readonly dataset_version: string;
+  readonly dataset_split: EvalDatasetSplit;
+  readonly config_hash: string;
+  readonly workload_version: string;
+  readonly scope_hash: string;
+  readonly case_count: number;
+  readonly runs: readonly BenchmarkRun[];
+  readonly v3_deltas: readonly BenchmarkVariantDelta[];
+  readonly ranking: readonly BenchmarkRankingEntry[];
+  readonly created_at: string;
 }

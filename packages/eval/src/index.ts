@@ -28,6 +28,13 @@ export type {
   RunBenchmarkCommand,
 } from './benchmark.js';
 export {
+  BenchmarkComparisonError,
+  compareBenchmarkRuns,
+} from './comparison.js';
+export type {
+  BenchmarkComparisonErrorCode,
+} from './comparison.js';
+export {
   ReferenceAdapterError,
   V0SuperAgentBenchmarkAdapter,
   V1RagOnlyBenchmarkAdapter,
