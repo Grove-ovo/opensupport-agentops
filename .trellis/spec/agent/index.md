@@ -19,6 +19,7 @@
 | [Phase 4C Security Eval](./phase-4c-security-eval.md) | Deterministic P0, forbidden outcome, PII, and unauthorized-access evaluation | Active |
 | [Phase 4E Release Gate](./phase-4e-release-gate.md) | Exact PRD thresholds, immutable gate decisions, and controlled promotion ceilings | Active |
 | [Phase 4F Failure Buckets And Reports](./phase-4f-failure-buckets-reports.md) | Safe failure references, deterministic classification, reproducible reports, and Phase 4 integration | Active |
+| [Phase 5A Benchmark Contracts And Metrics](./phase-5a-benchmark-contracts.md) | Immutable V0-V3 benchmark scope, deterministic metrics, safe observations, and idempotency | Active |
 
 ## Pre-Development Checklist
 
@@ -47,6 +48,9 @@ Before changing Agent pipeline code:
 - Read [Phase 4F Failure Buckets And Reports](./phase-4f-failure-buckets-reports.md)
   when changing failure classification, safe record fields, report fixtures,
   or Phase 4 integration checks.
+- Read [Phase 5A Benchmark Contracts And Metrics](./phase-5a-benchmark-contracts.md)
+  when changing benchmark variants, observations, metric formulas, run scope,
+  or benchmark idempotency.
 - Preserve tenant, trace, deadline, and immutable version context.
 - Keep provider-specific payloads behind adapters.
 - Confirm whether a value is transient or safe to persist.

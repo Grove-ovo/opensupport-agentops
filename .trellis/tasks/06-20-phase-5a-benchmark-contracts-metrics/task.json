@@ -3,7 +3,7 @@
   "name": "phase-5a-benchmark-contracts-metrics",
   "title": "Phase 5A: Benchmark Contracts + Metrics",
   "description": "Define V0-V3 benchmark contracts, normalized observations, immutable runs, shared formulas, idempotency, and validation.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": "Benchmark contracts, formulas, immutable runs, idempotency, and validation",
   "package": null,
