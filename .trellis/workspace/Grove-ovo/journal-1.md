@@ -1163,3 +1163,38 @@ Closed the Phase 5 parent after all six child tasks were archived, all three rep
 ### Next Steps
 
 - None - task complete
+
+
+## Session 36: Publish repository to GitHub
+
+**Date**: 2026-06-20
+**Task**: Publish repository to GitHub
+**Branch**: `feat/github-release-readiness`
+
+### Summary
+
+Prepared accurate Phase 1-5 repository documentation, MIT license, GitHub CI, release validation, fixed archived Phase 5 parent resolution, promoted dev to main, and published main/dev to Grove-ovo/opensupport-agentops over SSH.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e111370` | (see git log) |
+| `393b4f8` | (see git log) |
+| `eedb7d8` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

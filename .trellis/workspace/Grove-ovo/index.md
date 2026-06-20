@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 35
+- **Total Sessions**: 36
 - **Last Active**: 2026-06-20
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1165 | Active |
+| `journal-1.md` | ~1200 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 36 | 2026-06-20 | Publish repository to GitHub | `e111370`, `393b4f8`, `eedb7d8` | `feat/github-release-readiness` |
 | 35 | 2026-06-20 | Complete Phase 5 benchmark and load test | `f28ac1b` | `feat/phase-5-benchmark-load-test` |
 | 34 | 2026-06-20 | Phase 5F reports and integration | `7a64c03` | `feat/phase-5f-cost-report-integration` |
 | 33 | 2026-06-20 | Phase 5E application load harness | `0621b97` | `feat/phase-5e-application-load-harness` |
