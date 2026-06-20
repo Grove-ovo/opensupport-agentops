@@ -31,8 +31,8 @@ without overstating production readiness or publishing secrets.
 - [x] GitHub CI runs the repository quality chain on Node 22.
 - [x] Secret and tracked-file scans find no release blocker.
 - [x] `npm run typecheck`, `npm run lint`, and `npm test` pass.
-- [ ] `main` contains the verified `dev` history.
-- [ ] Private GitHub remote is configured and `main`/`dev` are pushed.
+- [x] `main` contains the verified `dev` history.
+- [x] Private GitHub remote is configured and `main`/`dev` are pushed.
 
 ## Technical Approach
 

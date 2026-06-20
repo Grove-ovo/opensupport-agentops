@@ -25,9 +25,12 @@
 - tracked-file and credential-pattern scans
 - `python3 ./.trellis/scripts/task.py validate 06-20-github-release-readiness`
 
-## Pending Publication
+## Publication
 
-- Merge the release-ready feature branch to `dev`.
-- Reverify and merge `dev` to `main`.
-- Authenticate GitHub CLI, create the private repository, and push `main` and
-  `dev`.
+- Release-ready changes were merged to `dev`.
+- The fully verified `dev` history was promoted to `main`.
+- GitHub SSH authenticated as `Grove-ovo` over `ssh.github.com:443` because
+  the current network closes port 22.
+- Private repository:
+  `git@github.com:Grove-ovo/opensupport-agentops.git`
+- Published branches: `main` and `dev`.
