@@ -16,7 +16,7 @@
   "base_branch": "dev",
   "worktree_path": null,
   "commit": null,
-  "pr_url": null,
+  "pr_url": "https://github.com/Grove-ovo/opensupport-agentops",
   "subtasks": [],
   "children": [],
   "parent": null,
