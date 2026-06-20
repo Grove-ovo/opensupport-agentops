@@ -114,6 +114,30 @@ the same public adapters, runner, and comparison function exercised by tests.
 It is a deterministic reference-fixture architecture comparison, not a live
 provider, network, Chatwoot, or production model-quality benchmark.
 
+## Application Load Harness
+
+`ApplicationLoadHarness` measures an injected workload executor with fixed
+warmup, measured iterations, bounded concurrency, timeout, workload version,
+and ordered workload references. Selection is deterministic by iteration
+index. Warmup uses the same worker pool but is excluded from measured counts,
+duration, throughput, and latency percentiles.
+
+Measured results classify each iteration as succeeded, executor error, or
+timeout. A timed-out invocation receives an `AbortSignal`; its worker slot is
+not released until the executor settles, so actual dispatched workload cannot
+exceed the configured concurrency. One failed measured iteration does not
+cancel unrelated work. A failed warmup prevents a misleading measurement.
+
+The harness reports count totals, observed peak concurrency, duration,
+throughput, nearest-rank p50/p95/p99 latency, event-loop utilization, and p95
+and maximum event-loop delay. The default probe uses Node `perf_hooks`.
+Injected clocks and probes support deterministic formula tests and committed
+report fixtures.
+
+Phase 5 scenarios cover concurrency 1, 5, 10, and 25. These are in-process
+application measurements, not HTTP, provider, Chatwoot, container, network,
+or distributed capacity results.
+
 ## Commands
 
 ```text
@@ -121,6 +145,7 @@ npm run test:phase5a
 npm run test:phase5b
 npm run test:phase5c
 npm run test:phase5d
+npm run test:phase5e
 npm run reports:phase5:benchmark
 npm run reports:phase5:benchmark:check
 npm run test:eval

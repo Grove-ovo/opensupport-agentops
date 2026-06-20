@@ -23,6 +23,7 @@
 | [Phase 5B V0 And V1 Reference Adapters](./phase-5b-reference-adapters.md) | Deterministic Super Agent and RAG-only reference behavior without side effects | Active |
 | [Phase 5C V2 And V3 Reference Adapters](./phase-5c-selective-adapters.md) | Deterministic RAG+Tools and existing selective-pipeline benchmark behavior | Active |
 | [Phase 5D Comparative Benchmark](./phase-5d-comparative-benchmark.md) | Immutable V0-V3 comparison, V3 deltas, safety-first ranking, and reproducible report | Active |
+| [Phase 5E Application Load Harness](./phase-5e-application-load-harness.md) | Warmup, bounded worker concurrency, timeout/error isolation, percentiles, throughput, and event-loop metrics | Active |
 
 ## Pre-Development Checklist
 
@@ -61,6 +62,9 @@ Before changing Agent pipeline code:
 - Read [Phase 5D Comparative Benchmark](./phase-5d-comparative-benchmark.md)
   when changing shared benchmark scope, comparison, ranking, deltas, or the
   benchmark report.
+- Read [Phase 5E Application Load Harness](./phase-5e-application-load-harness.md)
+  when changing load scenarios, worker slots, timeout behavior, latency,
+  throughput, or event-loop measurement.
 - Preserve tenant, trace, deadline, and immutable version context.
 - Keep provider-specific payloads behind adapters.
 - Confirm whether a value is transient or safe to persist.

@@ -3,7 +3,7 @@
   "name": "phase-5e-application-load-harness",
   "title": "Phase 5E: Application Load Harness",
   "description": "Implement warmup, bounded-concurrency workload execution, latency percentiles, throughput, timeout/error, and event-loop metrics.",
-  "status": "planning",
+  "status": "in_progress",
   "dev_type": null,
   "scope": "In-process warmup/concurrency load harness and performance metrics",
   "package": null,
