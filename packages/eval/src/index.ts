@@ -13,7 +13,53 @@ export {
   ReplayEvalError,
   ReplayEvalRunner,
   calculateReplayMetrics,
+  evaluateReplayCaseBehavior,
 } from './replay.js';
+export {
+  BenchmarkError,
+  BenchmarkRunner,
+  calculateBenchmarkMetrics,
+} from './benchmark.js';
+export type {
+  BenchmarkErrorCode,
+  BenchmarkExecutionContext,
+  BenchmarkExecutionResult,
+  BenchmarkVariantExecutor,
+  RunBenchmarkCommand,
+} from './benchmark.js';
+export {
+  BenchmarkComparisonError,
+  compareBenchmarkRuns,
+} from './comparison.js';
+export type {
+  BenchmarkComparisonErrorCode,
+} from './comparison.js';
+export {
+  ApplicationLoadHarness,
+  LoadHarnessError,
+  calculateLoadMetrics,
+} from './load.js';
+export type {
+  LoadEventLoopProbe,
+  LoadExecutionResult,
+  LoadHarnessDependencies,
+  LoadHarnessErrorCode,
+  LoadWorkloadExecutor,
+  LoadWorkloadInvocation,
+  RunLoadScenarioCommand,
+} from './load.js';
+export {
+  ReferenceAdapterError,
+  V0SuperAgentBenchmarkAdapter,
+  V1RagOnlyBenchmarkAdapter,
+} from './reference-adapters.js';
+export type {
+  ReferenceAdapterErrorCode,
+} from './reference-adapters.js';
+export {
+  V2RagToolsBenchmarkAdapter,
+  V3SelectivePipelineBenchmarkAdapter,
+} from './selective-adapters.js';
 export {
   SecurityEvalError,
   SecurityEvalRunner,

@@ -19,6 +19,12 @@
 | [Phase 4C Security Eval](./phase-4c-security-eval.md) | Deterministic P0, forbidden outcome, PII, and unauthorized-access evaluation | Active |
 | [Phase 4E Release Gate](./phase-4e-release-gate.md) | Exact PRD thresholds, immutable gate decisions, and controlled promotion ceilings | Active |
 | [Phase 4F Failure Buckets And Reports](./phase-4f-failure-buckets-reports.md) | Safe failure references, deterministic classification, reproducible reports, and Phase 4 integration | Active |
+| [Phase 5A Benchmark Contracts And Metrics](./phase-5a-benchmark-contracts.md) | Immutable V0-V3 benchmark scope, deterministic metrics, safe observations, and idempotency | Active |
+| [Phase 5B V0 And V1 Reference Adapters](./phase-5b-reference-adapters.md) | Deterministic Super Agent and RAG-only reference behavior without side effects | Active |
+| [Phase 5C V2 And V3 Reference Adapters](./phase-5c-selective-adapters.md) | Deterministic RAG+Tools and existing selective-pipeline benchmark behavior | Active |
+| [Phase 5D Comparative Benchmark](./phase-5d-comparative-benchmark.md) | Immutable V0-V3 comparison, V3 deltas, safety-first ranking, and reproducible report | Active |
+| [Phase 5E Application Load Harness](./phase-5e-application-load-harness.md) | Warmup, bounded worker concurrency, timeout/error isolation, percentiles, throughput, and event-loop metrics | Active |
+| [Phase 5F Reports And Integration](./phase-5f-reports-integration.md) | Reproducible load/cost reports, budget separation, task resolution, and Phase 5 integration | Active |
 
 ## Pre-Development Checklist
 
@@ -47,6 +53,22 @@ Before changing Agent pipeline code:
 - Read [Phase 4F Failure Buckets And Reports](./phase-4f-failure-buckets-reports.md)
   when changing failure classification, safe record fields, report fixtures,
   or Phase 4 integration checks.
+- Read [Phase 5A Benchmark Contracts And Metrics](./phase-5a-benchmark-contracts.md)
+  when changing benchmark variants, observations, metric formulas, run scope,
+  or benchmark idempotency.
+- Read [Phase 5B V0 And V1 Reference Adapters](./phase-5b-reference-adapters.md)
+  when changing Super Agent or RAG-only benchmark behavior.
+- Read [Phase 5C V2 And V3 Reference Adapters](./phase-5c-selective-adapters.md)
+  when changing RAG+Tools or selective-pipeline benchmark behavior.
+- Read [Phase 5D Comparative Benchmark](./phase-5d-comparative-benchmark.md)
+  when changing shared benchmark scope, comparison, ranking, deltas, or the
+  benchmark report.
+- Read [Phase 5E Application Load Harness](./phase-5e-application-load-harness.md)
+  when changing load scenarios, worker slots, timeout behavior, latency,
+  throughput, or event-loop measurement.
+- Read [Phase 5F Reports And Integration](./phase-5f-reports-integration.md)
+  when changing report fixtures, cost/budget interpretation, report
+  reproduction, child-task resolution, or final Phase 5 validation.
 - Preserve tenant, trace, deadline, and immutable version context.
 - Keep provider-specific payloads behind adapters.
 - Confirm whether a value is transient or safe to persist.

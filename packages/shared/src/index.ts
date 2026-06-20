@@ -146,4 +146,24 @@ export type {
   FailureCase,
   FailureSourceType,
 } from './failure.js';
+export type {
+  BenchmarkCandidateObservation,
+  BenchmarkCaseResult,
+  BenchmarkComparison,
+  BenchmarkMetricDeltas,
+  BenchmarkMetrics,
+  BenchmarkRankingEntry,
+  BenchmarkRun,
+  BenchmarkVariantDelta,
+  BenchmarkVariant,
+} from './benchmark.js';
+export type {
+  LoadEventLoopMetrics,
+  LoadIterationErrorCode,
+  LoadIterationResult,
+  LoadIterationStatus,
+  LoadScenarioConfig,
+  LoadScenarioMetrics,
+  LoadScenarioResult,
+} from './load.js';
 export { isUuid } from './validation.js';

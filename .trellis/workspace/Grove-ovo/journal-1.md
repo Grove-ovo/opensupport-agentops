@@ -932,3 +932,201 @@ Completed and archived Phase 4 after all six child tasks passed full tests, repo
 ### Next Steps
 
 - None - task complete
+
+
+## Session 29: Phase 5A benchmark contracts and metrics
+
+**Date**: 2026-06-20
+**Task**: Phase 5A benchmark contracts and metrics
+**Branch**: `feat/phase-5a-benchmark-contracts-metrics`
+
+### Summary
+
+Added immutable V0-V3 benchmark contracts, deterministic metric formulas, idempotent runner validation, boundary tests, docs, and executable specs.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ba61b54` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 30: Phase 5B Super Agent and RAG-only adapters
+
+**Date**: 2026-06-20
+**Task**: Phase 5B Super Agent and RAG-only adapters
+**Branch**: `feat/phase-5b-super-agent-rag-only-adapters`
+
+### Summary
+
+Added deterministic V0 monolithic and V1 retrieval-only benchmark adapters, scope validation, side-effect guards, dataset-wide tests, docs, and specs.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e166b56` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 31: Phase 5C RAG tools and selective adapters
+
+**Date**: 2026-06-20
+**Task**: Phase 5C RAG tools and selective adapters
+**Branch**: `feat/phase-5c-rag-tools-selective-adapters`
+
+### Summary
+
+Added deterministic V2 RAG+Tools and V3 selective-pipeline adapters, actual pipeline execution with injected side-effect-free boundaries, same-scope tests, docs, and specs.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `dc15175` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 32: Phase 5D comparative benchmark
+
+**Date**: 2026-06-20
+**Task**: Phase 5D comparative benchmark
+**Branch**: `feat/phase-5d-comparative-benchmark-report`
+
+### Summary
+
+Added immutable cross-variant scope validation, V3 pairwise deltas, safety-first deterministic ranking, and a reproducible benchmark report.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `6aa1bbb` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 33: Phase 5E application load harness
+
+**Date**: 2026-06-20
+**Task**: Phase 5E application load harness
+**Branch**: `feat/phase-5e-application-load-harness`
+
+### Summary
+
+Added immutable in-process load contracts, bounded worker concurrency, warmup isolation, timeout/error handling, percentile/throughput formulas, and event-loop metrics.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `0621b97` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 34: Phase 5F reports and integration
+
+**Date**: 2026-06-20
+**Task**: Phase 5F reports and integration
+**Branch**: `feat/phase-5f-cost-report-integration`
+
+### Summary
+
+Added deterministic load and cost reports, shared Phase 5 fixtures, budget headroom analysis, report drift checks, and parent task integration validation.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `7a64c03` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
