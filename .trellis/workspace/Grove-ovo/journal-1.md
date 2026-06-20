@@ -965,3 +965,36 @@ Added immutable V0-V3 benchmark contracts, deterministic metric formulas, idempo
 ### Next Steps
 
 - None - task complete
+
+
+## Session 30: Phase 5B Super Agent and RAG-only adapters
+
+**Date**: 2026-06-20
+**Task**: Phase 5B Super Agent and RAG-only adapters
+**Branch**: `feat/phase-5b-super-agent-rag-only-adapters`
+
+### Summary
+
+Added deterministic V0 monolithic and V1 retrieval-only benchmark adapters, scope validation, side-effect guards, dataset-wide tests, docs, and specs.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e166b56` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

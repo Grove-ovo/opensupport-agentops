@@ -47,6 +47,22 @@ credentials.
 observations must carry proposed/final reply hashes and a normalized distance
 from `0` through `1`. Non-eligible observations carry null edit fields.
 
+## V0 And V1 Reference Adapters
+
+`V0SuperAgentBenchmarkAdapter` models one monolithic decision over intent,
+retrieval, tools, risk, and response. It can emit the expected evidence and
+tool references, but deliberately represents the absence of layered gates:
+high-risk public replies remain Auto and are marked unsafe.
+
+`V1RagOnlyBenchmarkAdapter` retrieves policy evidence for return/refund policy
+intents and never emits a business tool call. A public reply that requires a
+tool is downgraded to clarification. Pure policy replies, existing
+clarifications, and handoffs remain available.
+
+These adapters are deterministic reference fixtures. Their latency, cost,
+reply hashes, and edit-distance values are derived from case characteristics;
+they do not invoke models or claim production quality.
+
 ## Reproducibility And Failure Behavior
 
 Benchmark input hashes use canonical key ordering. Runs, metrics, observations,
@@ -62,6 +78,7 @@ produce a successful run.
 
 ```text
 npm run test:phase5a
+npm run test:phase5b
 npm run test:eval
 npm run typecheck
 ```

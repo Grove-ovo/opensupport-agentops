@@ -19,8 +19,11 @@ const VARIANTS = new Set<BenchmarkVariant>([
 ]);
 
 export interface BenchmarkExecutionContext {
+  readonly tenant_id: string;
   readonly variant: BenchmarkVariant;
   readonly variant_version: string;
+  readonly dataset_version: string;
+  readonly dataset_split: EvalDatasetSplit;
   readonly config_hash: string;
   readonly workload_version: string;
 }
@@ -117,8 +120,11 @@ export class BenchmarkRunner {
     inputHash: string,
   ): Promise<BenchmarkExecutionResult> {
     const context: BenchmarkExecutionContext = Object.freeze({
+      tenant_id: command.tenant_id,
       variant: command.variant,
       variant_version: command.variant_version,
+      dataset_version: command.dataset_version,
+      dataset_split: command.dataset_split,
       config_hash: command.config_hash,
       workload_version: command.workload_version,
     });
