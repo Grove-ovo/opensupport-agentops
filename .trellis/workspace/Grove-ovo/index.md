@@ -8,7 +8,7 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 30
+- **Total Sessions**: 31
 - **Last Active**: 2026-06-20
 <!-- @@@/auto:current-status -->
 
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1000 | Active |
+| `journal-1.md` | ~1033 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 31 | 2026-06-20 | Phase 5C RAG tools and selective adapters | `dc15175` | `feat/phase-5c-rag-tools-selective-adapters` |
 | 30 | 2026-06-20 | Phase 5B Super Agent and RAG-only adapters | `e166b56` | `feat/phase-5b-super-agent-rag-only-adapters` |
 | 29 | 2026-06-20 | Phase 5A benchmark contracts and metrics | `ba61b54` | `feat/phase-5a-benchmark-contracts-metrics` |
 | 28 | 2026-06-19 | Complete Phase 4 eval and release gate | `88e012d` | `feat/phase-4-eval-release-gate` |
