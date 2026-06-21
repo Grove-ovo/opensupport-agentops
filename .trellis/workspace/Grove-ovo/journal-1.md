@@ -1265,3 +1265,36 @@ Implemented signed Chatwoot ingress, tenant BYOK OpenAI-compatible and Anthropic
 ### Next Steps
 
 - None - task complete
+
+
+## Session 39: Complete Phase 6C operations dashboard
+
+**Date**: 2026-06-21
+**Task**: Complete Phase 6C operations dashboard
+**Branch**: `feat/phase-6c-operations-dashboard`
+
+### Summary
+
+Added tenant-scoped operations APIs and a responsive React/Vite dashboard for overview, traces, approvals, releases, and safe settings. Verified production build, full regression, real PostgreSQL/Redis/Chatwoot approval delivery, and Playwright desktop/mobile workflows.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ed9d634` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
