@@ -1,6 +1,6 @@
 # AgentOps Database Schema
 
-Status: Phase 1 foundation through Phase 4A eval persistence
+Status: Phase 1 foundation through Phase 6A productization runtime
 Migrations:
 
 - `infra/migrations/0001_phase1_foundation.sql`
@@ -13,6 +13,10 @@ Migrations:
 - `infra/migrations/0008_approval_snapshots.sql`
 - `infra/migrations/0009_approval_actions.sql`
 - `infra/migrations/0010_eval_foundation.sql`
+- `infra/migrations/0011_release_candidates.sql`
+- `infra/migrations/0012_release_gate_results.sql`
+- `infra/migrations/0013_failure_cases.sql`
+- `infra/migrations/0014_productization_runtime.sql`
 
 ## Design Rules
 
@@ -272,6 +276,43 @@ observations. Runs are scoped by tenant, dataset, candidate snapshot hash, and
 idempotency key. Results reference the run and retain hashes/reason codes
 without provider or customer payloads.
 
+### release_candidates / release_candidate_transitions
+
+Immutable seven-version release snapshots and append-only guarded state
+transitions from draft through evaluation and controlled runtime promotion.
+
+### release_gate_results / release_gate_decisions
+
+Immutable gate outcomes for the exact replay/security runs referenced by a
+release candidate. Blocking P0 decisions cap or prevent promotion.
+
+### failure_cases
+
+Append-only safe failure references and normalized metrics. Raw customer,
+provider, and evaluation payloads are excluded.
+
+### agentops_schema_migrations
+
+Records the highest applied ordered migration for application readiness.
+Migration 14 backfills markers for migrations 1 through 14.
+
+### canonical_inbound_events
+
+Stores project-owned Chatwoot event identity, source, dedupe key, payload hash,
+customer/self flags, decision, and optional trace link. The table deliberately
+does not store the raw webhook body.
+
+### async_job_outbox
+
+Transactional identifier-only jobs for Monitor, eval materialization, and
+dashboard aggregation. Later worker phases publish pending rows to Redis
+Streams.
+
+### operational_aggregates
+
+Tenant-scoped time-window aggregates materialized outside the online response
+path.
+
 ## Deferred Tables
 
 The following original PRD tables are intentionally deferred:
@@ -285,6 +326,3 @@ The following original PRD tables are intentionally deferred:
 - `intent_predictions`
 - `retrieval_events`
 - `tool_calls`
-- `release_candidates`
-- `release_gate_results`
-- `failure_cases`
