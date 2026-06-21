@@ -126,6 +126,12 @@ core pipeline. Controlled launch depends on five rules:
 - Online/async split: user-facing work stays on a bounded critical path;
   monitoring, eval materialization, and dashboard aggregation run async.
 
+The async boundary is implemented as PostgreSQL outbox -> Redis Streams ->
+durable worker lease. Stream delivery is at-least-once; PostgreSQL job and
+handler outputs are idempotent. Messages are acknowledged only after durable
+writes, stale pending messages are reclaimed, and exhausted retries move to a
+safe-metadata dead-letter stream.
+
 ### Canonical Inbound Events
 
 Agent Bot is the primary online invocation path. Account webhooks are the audit

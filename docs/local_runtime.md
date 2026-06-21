@@ -140,6 +140,13 @@ business records, and runtime execution audits with:
 npm run db:verify:phase6b
 ```
 
+Verify worker leases, monitor results, outbox triggers, and operational
+aggregates with:
+
+```bash
+npm run db:verify:phase6d
+```
+
 ## Running The API
 
 After migrations are applied:
@@ -159,9 +166,15 @@ POST http://localhost:8080/api/v1/chatwoot/agent-bot/:tenantId
 POST http://localhost:8080/api/v1/chatwoot/webhooks/:tenantId
 ```
 
-Readiness returns `503` until PostgreSQL, Redis, and migration version 15 are
+Readiness returns `503` until PostgreSQL, Redis, and migration version 16 are
 available. The process handles `SIGINT` and `SIGTERM` by closing HTTP,
 PostgreSQL, and Redis connections.
+
+Run the asynchronous worker separately:
+
+```bash
+npm run start:worker
+```
 
 The runtime also requires:
 

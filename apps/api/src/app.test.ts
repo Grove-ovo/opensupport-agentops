@@ -42,7 +42,7 @@ test('configuration validates the deployment master key', () => {
     REDIS_URL: 'redis://localhost:6379/0',
     AGENTOPS_MASTER_KEY: `base64url:${Buffer.alloc(32, 1).toString('base64url')}`,
   });
-  assert.equal(config.requiredMigration, 15);
+  assert.equal(config.requiredMigration, 16);
 });
 
 test('liveness, readiness, metrics, and tenant routes expose stable contracts', async () => {

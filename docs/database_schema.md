@@ -296,7 +296,8 @@ provider, and evaluation payloads are excluded.
 
 Records the highest applied ordered migration for application readiness.
 Migration 14 backfills markers for migrations 1 through 14; migration 15 adds
-the production Chatwoot/LLM runtime marker.
+the production Chatwoot/LLM runtime marker, and migration 16 adds the async
+worker contract.
 
 ### canonical_inbound_events
 
@@ -333,13 +334,26 @@ hash. Tenant plus canonical event is unique, and rows are append-only.
 ### async_job_outbox
 
 Transactional identifier-only jobs for Monitor, eval materialization, and
-dashboard aggregation. Later worker phases publish pending rows to Redis
-Streams.
+dashboard aggregation. Phase 6D publishes rows to Redis Streams with an atomic
+dedupe marker and records the resulting stream ID.
+
+### async_job_executions
+
+Durable worker leases and idempotency state. A stale `processing` lease may be
+reclaimed after the configured visibility timeout; `succeeded` and
+`dead_letter` states are terminal.
+
+### monitor_trace_results
+
+One deterministic safe monitor classification per runtime execution. It stores
+only trace/audit identifiers, outcome, decision, failure bucket, stable reason,
+severity, and an input hash.
 
 ### operational_aggregates
 
 Tenant-scoped time-window aggregates materialized outside the online response
-path.
+path. The operations API reads the latest `dashboard_overview_24h` record
+instead of calculating live aggregates.
 
 ## Deferred Tables
 
