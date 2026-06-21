@@ -1,17 +1,17 @@
 # Local Runtime Foundation
 
-Status: Phase 1A foundation  
+Status: Phase 6A deployable runtime
 Scope: AgentOps API, PostgreSQL, Redis, and local Chatwoot expectations
 
 ## Runtime Components
 
-Phase 1A keeps the runtime intentionally small:
+The local runtime contains:
 
-- AgentOps API: future TypeScript service in `apps/api`.
+- AgentOps API: Fastify TypeScript service in `apps/api`.
 - PostgreSQL with pgvector: tenant config, policy corpus, traces, LLM logs,
   retrieval vectors, and audit logs.
-- Redis: future dedupe TTLs, idempotency locks, async job coordination, and
-  rate limiting.
+- Redis: canonical-event dedupe TTLs, idempotency locks, and the coordination
+  base for later async jobs and rate limiting.
 - Chatwoot: local/self-hosted Chatwoot instance used as the conversation
   surface. AgentOps does not own user-facing inbox UI.
 
@@ -66,7 +66,13 @@ npm run db:migrate
 ```
 
 The command applies the complete ordered migration chain from
-`0001_phase1_foundation.sql` through `0013_failure_cases.sql`.
+`0001_phase1_foundation.sql` through `0014_productization_runtime.sql`.
+
+Production-style environments can run the same ordered chain without `psql`:
+
+```bash
+npm run db:migrate:node
+```
 
 Phase 2C uses the `pgvector/pgvector:pg16` image. If the local PostgreSQL
 container predates Phase 2C, recreate that service before migration:
@@ -120,6 +126,34 @@ Verify immutable evaluation case, run, and result persistence with:
 npm run db:verify:eval
 ```
 
+Verify the schema migration marker, canonical inbound event uniqueness, async
+outbox, and operational aggregate tables with:
+
+```bash
+npm run db:verify:phase6a
+```
+
+## Running The API
+
+After migrations are applied:
+
+```bash
+npm run start:api
+```
+
+The default endpoints are:
+
+```text
+GET http://localhost:8080/health/live
+GET http://localhost:8080/health/ready
+GET http://localhost:8080/metrics
+GET http://localhost:8080/api/v1/tenants
+```
+
+Readiness returns `503` until PostgreSQL, Redis, and migration version 14 are
+available. The process handles `SIGINT` and `SIGTERM` by closing HTTP,
+PostgreSQL, and Redis connections.
+
 ## Local Chatwoot Expectations
 
 Use a local Chatwoot instance from the official Chatwoot development or
@@ -136,10 +170,8 @@ Chatwoot tokens and tenant provider keys must not be stored in database rows.
 
 ## Phase Boundaries
 
-Phase 1A prepares the local runtime and database only. It does not implement:
-
-- Chatwoot endpoint handlers or event dedupe logic.
-- Tenant model config API routes.
-- LLM provider calls.
-- PII masking implementation.
-- Dashboard UI, release deployment control, billing, RBAC, or public accounts.
+Phase 6A provides the deployable API and storage foundation. Real Chatwoot
+delivery and LLM provider calls, dashboard UI, asynchronous worker consumption,
+and production reverse-proxy/monitoring composition are owned by later Phase 6
+subtasks. Phase 6A does not implement those features. Billing, full RBAC, and
+public accounts remain out of scope.

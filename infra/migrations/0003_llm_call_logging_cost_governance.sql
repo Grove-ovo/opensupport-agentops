@@ -29,6 +29,9 @@ DROP CONSTRAINT IF EXISTS approval_requests_model_config_fk;
 ALTER TABLE IF EXISTS approval_action_records
 DROP CONSTRAINT IF EXISTS approval_action_records_approval_scope_fk;
 
+ALTER TABLE IF EXISTS canonical_inbound_events
+DROP CONSTRAINT IF EXISTS canonical_inbound_events_trace_fk;
+
 ALTER TABLE agent_traces
 DROP CONSTRAINT IF EXISTS agent_traces_tenant_trace_uniq;
 
