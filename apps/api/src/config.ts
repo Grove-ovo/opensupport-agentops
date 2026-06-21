@@ -11,6 +11,7 @@ export interface ApiConfig {
   buildVersion: string;
   logLevel: string;
   masterKey: string;
+  masterKeyId: string;
   providerBaseUrls: Readonly<Record<string, string>>;
   modelPricing: Readonly<
     Record<
@@ -104,6 +105,7 @@ export function loadApiConfig(
     buildVersion: env.AGENTOPS_BUILD_VERSION?.trim() || 'dev',
     logLevel: env.LOG_LEVEL?.trim() || 'info',
     masterKey,
+    masterKeyId: env.AGENTOPS_MASTER_KEY_ID?.trim() || 'local-v1',
     providerBaseUrls,
     modelPricing,
     pipelineDeadlineMs,

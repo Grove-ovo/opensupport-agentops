@@ -6,54 +6,44 @@
 
 ## Overview
 
-<!--
-Document your project's component conventions here.
-
-Questions to answer:
-- What component patterns do you use?
-- How are props defined?
-- How do you handle composition?
-- What accessibility standards apply?
--->
-
-(To be filled by the team)
+Components are typed functions. Operator actions use explicit text or Lucide
+icons and must expose accessible names. Destructive or externally visible
+actions use `ConfirmDialog`.
 
 ---
 
 ## Component Structure
 
-<!-- Standard structure of a component file -->
-
-(To be filled by the team)
+Define the props interface first, export the component, then keep small
+file-local render helpers below it. View files own workflow state.
 
 ---
 
 ## Props Conventions
 
-<!-- How props should be defined and typed -->
-
-(To be filled by the team)
+Do not use `any`. Event callbacks are named `on<Action>`. Server records come
+from `types.ts`; view-local command unions stay in the view.
 
 ---
 
 ## Styling Patterns
 
-<!-- How styles are applied (CSS modules, styled-components, Tailwind, etc.) -->
-
-(To be filled by the team)
+Use classes from `styles.css`. Cards are reserved for repeated records and
+bounded tools, with radius at most 6px. Dense operational pages use panels,
+tables, and full-width bands.
 
 ---
 
 ## Accessibility
 
-<!-- A11y requirements and patterns -->
-
-(To be filled by the team)
+Icon-only buttons require `title` or `aria-label`. Dialogs require
+`role="dialog"`, `aria-modal`, an accessible heading, Escape handling, and
+focusable cancel/confirm actions. Tables use semantic table elements.
 
 ---
 
 ## Common Mistakes
 
-<!-- Component-related mistakes your team has made -->
-
-(To be filled by the team)
+- Do not perform approval or release mutations from an unconfirmed click.
+- Do not expose raw provider payloads or stored secret values.
+- Do not depend on CSS-hidden desktop controls as the only mobile control.

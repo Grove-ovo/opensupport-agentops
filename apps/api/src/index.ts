@@ -27,6 +27,8 @@ export {
   type ChatwootRuntimeConnection,
 } from './e2e-repository.js';
 export { MetricsRegistry } from './metrics.js';
+export { OperationsError, PostgresOperationsService } from './operations.js';
+export { registerOperationsRoutes } from './operations-routes.js';
 export { NodeRedisCoordinator } from './redis.js';
 export { HttpLLMProviderAdapter, ProviderAdapterError } from './provider.js';
 export { PostgresAgentOpsStore } from './repositories.js';

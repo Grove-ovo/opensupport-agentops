@@ -10,6 +10,7 @@ import { HttpLLMProviderAdapter } from './provider.js';
 import { NodeRedisCoordinator } from './redis.js';
 import { PostgresAgentOpsStore } from './repositories.js';
 import { EnvironmentSecretResolver } from './secrets.js';
+import { PostgresOperationsService } from './operations.js';
 import { ProductionTicketService } from './ticket-service.js';
 
 const RUN = process.env.AGENTOPS_RUN_INTEGRATION === '1';
@@ -204,6 +205,12 @@ integration(
         approvalTtlMs: 86_400_000,
       },
     );
+    const operations = new PostgresOperationsService(
+      pool,
+      secrets,
+      masterKeyReference,
+      'local-test',
+    );
     const app = buildApp({
       store,
       redis,
@@ -212,6 +219,7 @@ integration(
       buildVersion: 'test',
       closeDependencies: false,
       chatwootIngress: ticketService,
+      operations,
     });
     context.after(async () => {
       try {
@@ -308,6 +316,25 @@ integration(
     const assist = await sendEvent(app, tenantId, 201, 'agent-bot');
     assert.equal(assist.json().outcome, 'approval_pending');
     assert.equal(chatwootMessages.length, 1);
+    const pendingApproval = await pool.query<{ approval_id: string }>(
+      `SELECT approval_id
+       FROM approval_requests
+       WHERE tenant_id = $1 AND state = 'pending'
+       ORDER BY created_at DESC
+       LIMIT 1`,
+      [tenantId],
+    );
+    const approved = await operations.applyApprovalAction({
+      tenantId,
+      approvalId: pendingApproval.rows[0]?.approval_id ?? '',
+      action: 'approve',
+      actorId: 'integration-operator',
+      editedReply: null,
+      idempotencyKey: `approval-${randomUUID()}`,
+    });
+    assert.equal(approved.state, 'approved');
+    assert.equal(chatwootMessages.length, 2);
+    assert.equal(chatwootMessages[1]?.private, false);
 
     await pool.query(
       `UPDATE chatwoot_connections
@@ -317,21 +344,21 @@ integration(
     );
     const auto = await sendEvent(app, tenantId, 202, 'agent-bot');
     assert.equal(auto.json().outcome, 'replied');
-    assert.equal(chatwootMessages.length, 2);
-    assert.equal(chatwootMessages[1]?.private, false);
+    assert.equal(chatwootMessages.length, 3);
+    assert.equal(chatwootMessages[2]?.private, false);
 
     providerStatus = 503;
     const providerFailure = await sendEvent(app, tenantId, 203, 'agent-bot');
     providerStatus = 200;
     assert.equal(providerFailure.json().outcome, 'handed_off');
-    assert.equal(chatwootMessages.length, 2);
+    assert.equal(chatwootMessages.length, 3);
 
     chatwootStatus = 503;
     const chatwootFailure = await sendEvent(app, tenantId, 204, 'agent-bot');
     chatwootStatus = 200;
     assert.equal(chatwootFailure.json().outcome, 'failed');
     assert.equal(chatwootFailure.json().reason_code, 'retryable_error');
-    assert.equal(chatwootMessages.length, 3);
+    assert.equal(chatwootMessages.length, 4);
 
     assert.equal(providerPrompts.length, 5);
     assert.ok(providerPrompts.every((prompt) => !prompt.includes('alice@example.com')));
@@ -417,7 +444,7 @@ integration(
       traces: '5',
       calls: '5',
       approvals: '1',
-      deliveries: '4',
+      deliveries: '5',
       events: '7',
       audits: '5',
     });

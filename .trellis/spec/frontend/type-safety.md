@@ -6,46 +6,34 @@
 
 ## Overview
 
-<!--
-Document your project's type safety conventions here.
-
-Questions to answer:
-- What type system do you use?
-- How are types organized?
-- What validation library do you use?
-- How do you handle type inference?
--->
-
-(To be filled by the team)
+The frontend uses strict TypeScript. `types.ts` contains only safe dashboard
+response shapes; backend secrets and raw payload types are intentionally absent.
 
 ---
 
 ## Type Organization
 
-<!-- Where types are defined, shared types vs local types -->
-
-(To be filled by the team)
+Cross-view records live in `types.ts`. API request types are declared beside
+the method in `api.ts`. Props and local action unions stay beside components.
 
 ---
 
 ## Validation
 
-<!-- Runtime validation patterns (Zod, Yup, io-ts, etc.) -->
-
-(To be filled by the team)
+Fastify validates dashboard requests. The frontend treats non-2xx responses as
+`ApiError` and never casts an error envelope to a success record.
 
 ---
 
 ## Common Patterns
 
-<!-- Type utilities, generics, type guards -->
-
-(To be filled by the team)
+Use `Page<T>` for collection endpoints and `Resource<T>` for server reads.
+Use literal unions for runtime modes, approval states, and release states.
 
 ---
 
 ## Forbidden Patterns
 
-<!-- any, type assertions, etc. -->
-
-(To be filled by the team)
+Do not use `any`, broad `Record<string, any>`, or non-null assertions for API
+records. A type assertion is acceptable only at a tested JSON boundary where
+the server contract is authoritative.

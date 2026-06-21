@@ -6,46 +6,36 @@
 
 ## Overview
 
-<!--
-Document your project's state management conventions here.
-
-Questions to answer:
-- What state management solution do you use?
-- How is local vs global state decided?
-- How do you handle server state?
-- What are the patterns for derived state?
--->
-
-(To be filled by the team)
+Tenant and active view state live in `App`. Form, filter, dialog, and selected
+record state stay in their owning view.
 
 ---
 
 ## State Categories
 
-<!-- Local state, global state, server state, URL state -->
-
-(To be filled by the team)
+- App state: selected tenant and view.
+- View state: filters, forms, selected records, mutation progress.
+- Server state: `useResource`.
+- Derived state: `useMemo` only when filtering or calculation is non-trivial.
 
 ---
 
 ## When to Use Global State
 
-<!-- Criteria for promoting state to global -->
-
-(To be filled by the team)
+Promote state to `App` only when multiple views must share it. Do not add a
+store for state that has one owner.
 
 ---
 
 ## Server State
 
-<!-- How server data is cached and synchronized -->
-
-(To be filled by the team)
+Reads retain the last successful response. Successful mutations call
+`reload()` on affected resources. Mutations are not optimistically applied
+because approval and release state machines are authoritative in PostgreSQL.
 
 ---
 
 ## Common Mistakes
 
-<!-- State management mistakes your team has made -->
-
-(To be filled by the team)
+Do not infer successful external delivery before the API returns success.
+Never keep plaintext secret replacements after a settings reload.

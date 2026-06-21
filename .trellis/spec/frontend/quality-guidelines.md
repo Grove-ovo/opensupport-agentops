@@ -6,46 +6,38 @@
 
 ## Overview
 
-<!--
-Document your project's quality standards here.
-
-Questions to answer:
-- What patterns are forbidden?
-- What linting rules do you enforce?
-- What are your testing requirements?
-- What code review standards apply?
--->
-
-(To be filled by the team)
+Every dashboard change must pass TypeScript project references, Vitest,
+production Vite build, and Playwright at desktop and mobile widths.
 
 ---
 
 ## Forbidden Patterns
 
-<!-- Patterns that should never be used and why -->
-
-(To be filled by the team)
+- Unconfirmed public replies or release transitions.
+- Secret plaintext in responses, placeholders, logs, screenshots, or state.
+- Viewport-width font scaling or controls that cause horizontal overflow.
+- Raw SVG icons when Lucide provides the icon.
 
 ---
 
 ## Required Patterns
 
-<!-- Patterns that must always be used -->
-
-(To be filled by the team)
+- Loading, empty, error, stale, and unavailable states for server reads.
+- Stable dimensions for nav, tables, status badges, and icon buttons.
+- Responsive validation at 1440px desktop and a Chromium mobile device.
 
 ---
 
 ## Testing Requirements
 
-<!-- What level of testing is expected -->
-
-(To be filled by the team)
+Vitest covers render, mutation confirmation, and failure states. Playwright
+covers primary operator workflows and asserts no horizontal viewport overflow.
+API route tests verify confirmation schemas and command translation.
 
 ---
 
 ## Code Review Checklist
 
-<!-- What reviewers should check -->
-
-(To be filled by the team)
+Check tenant scoping, confirmation boundaries, secret redaction, mobile
+overflow, keyboard-accessible controls, API error states, and production build
+output.
