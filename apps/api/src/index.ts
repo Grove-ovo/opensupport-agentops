@@ -1,4 +1,9 @@
 export { buildApp, type BuildAppOptions } from './app.js';
+export {
+  ChatwootConversationService,
+  PersistentChatwootDeliveryService,
+} from './chatwoot-delivery.js';
+export { registerChatwootRoutes } from './chatwoot-routes.js';
 export { ConfigError, loadApiConfig, type ApiConfig } from './config.js';
 export type {
   AgentOpsStore,
@@ -17,7 +22,17 @@ export type {
   TraceSummaryRecord,
 } from './contracts.js';
 export { createPostgresPool } from './database.js';
+export {
+  ProductionE2ERepository,
+  type ChatwootRuntimeConnection,
+} from './e2e-repository.js';
 export { MetricsRegistry } from './metrics.js';
 export { NodeRedisCoordinator } from './redis.js';
+export { HttpLLMProviderAdapter, ProviderAdapterError } from './provider.js';
 export { PostgresAgentOpsStore } from './repositories.js';
 export { createRuntimeApp } from './runtime.js';
+export { EnvironmentSecretResolver } from './secrets.js';
+export {
+  ProductionTicketService,
+  type ProductionTicketServiceOptions,
+} from './ticket-service.js';

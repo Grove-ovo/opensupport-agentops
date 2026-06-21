@@ -25,7 +25,7 @@ integration('PostgreSQL repositories and Redis coordination use real services', 
     await Promise.all([store.close(), redis.close()]);
   });
 
-  assert.equal(await store.getMigrationVersion(), 14);
+  assert.equal(await store.getMigrationVersion(), 15);
   await store.ping();
   await redis.ping();
 

@@ -1232,3 +1232,36 @@ Planned Phase 6 and completed the deployable Fastify API foundation with Postgre
 ### Next Steps
 
 - None - task complete
+
+
+## Session 38: Phase 6B Chatwoot LLM E2E
+
+**Date**: 2026-06-21
+**Task**: Phase 6B Chatwoot LLM E2E
+**Branch**: `feat/phase-6b-chatwoot-llm-e2e`
+
+### Summary
+
+Implemented signed Chatwoot ingress, tenant BYOK OpenAI-compatible and Anthropic adapters, canonical execution dedupe, persistent delivery idempotency, runtime audits, live smoke tooling, documentation, migrations, and real PostgreSQL/Redis HTTP E2E coverage.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `3658cea` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

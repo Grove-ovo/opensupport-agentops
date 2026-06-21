@@ -59,6 +59,11 @@ export interface LLMRuntimeResult<T> {
   fallback_used: boolean;
   reason_code: string | null;
   attempts: number;
+  usage: {
+    input_tokens: number;
+    output_tokens: number;
+    estimated_cost: number;
+  } | null;
 }
 
 export interface RunConditionalTriageInput
@@ -75,4 +80,5 @@ export interface ConditionalTriageResult {
   decision: TriageDecision | null;
   reason_code: string | null;
   attempts: number;
+  usage: LLMRuntimeResult<unknown>['usage'];
 }

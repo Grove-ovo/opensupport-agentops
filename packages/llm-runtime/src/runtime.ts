@@ -44,6 +44,7 @@ export async function invokeTenantModel<T>(
       fallback_used: false,
       reason_code: budget.reasonCode,
       attempts: 0,
+      usage: null,
     };
   }
 
@@ -79,6 +80,15 @@ export async function invokeTenantModel<T>(
           fallback_used: index > 0,
           reason_code: null,
           attempts: index + 1,
+          usage: {
+            input_tokens: response.inputTokens,
+            output_tokens: response.outputTokens,
+            estimated_cost: estimateLLMCallCost({
+              inputTokens: response.inputTokens,
+              outputTokens: response.outputTokens,
+              ...pricingInput(pricing),
+            }).estimatedCost,
+          },
         };
       } catch (error) {
         const reason = runtimeErrorCode(error);
@@ -106,6 +116,7 @@ export async function invokeTenantModel<T>(
     fallback_used: models.length > 1,
     reason_code: lastReason,
     attempts: models.length,
+    usage: null,
   };
 }
 
@@ -216,6 +227,19 @@ function pricingInput(pricing: ModelPricing) {
 function runtimeErrorCode(error: unknown): string {
   if (error instanceof RuntimeError) {
     return error.code;
+  }
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    typeof Reflect.get(error, 'code') === 'string'
+  ) {
+    const code = String(Reflect.get(error, 'code'));
+    if (
+      code === 'invalid_provider_response' ||
+      /^provider_[a-z0-9_]+$/.test(code)
+    ) {
+      return code;
+    }
   }
   return 'provider_failed';
 }

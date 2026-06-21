@@ -178,6 +178,29 @@ test('returns degraded after primary and fallback provider failures', async () =
   assert.equal(result.attempts, 2);
 });
 
+test('preserves stable provider adapter error codes in logs and results', async () => {
+  const errors: Array<string | null> = [];
+  const provider: LLMProviderAdapter = {
+    async invoke() {
+      throw Object.assign(new Error('retryable provider failure'), {
+        code: 'provider_retryable_error',
+      });
+    },
+  };
+  const result = await runConditionalTriage({
+    ...input(provider),
+    config: {
+      ...config,
+      fallback_model: config.fast_model,
+    },
+    log: (record) => {
+      errors.push(record.error_code);
+    },
+  });
+  assert.equal(result.reason_code, 'provider_retryable_error');
+  assert.deepEqual(errors, ['provider_retryable_error']);
+});
+
 test('returns an explicit timeout result', async () => {
   const provider: LLMProviderAdapter = {
     invoke(request) {
