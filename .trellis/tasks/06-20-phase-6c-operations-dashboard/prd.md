@@ -22,17 +22,16 @@ completing approval, release, and tenant configuration workflows.
 
 ## Acceptance Criteria
 
-- [ ] Operators can inspect traces and filters.
-- [ ] Operators can approve, edit, reject, or escalate pending approvals.
-- [ ] Operators can inspect release gate results and perform allowed transitions.
-- [ ] Operators can edit non-secret tenant/model settings and replace secrets
+- [x] Operators can inspect traces and filters.
+- [x] Operators can approve, edit, reject, or escalate pending approvals.
+- [x] Operators can inspect release gate results and perform allowed transitions.
+- [x] Operators can edit non-secret tenant/model settings and replace secrets
       without reading existing plaintext.
-- [ ] UI tests and browser E2E cover primary workflows and failure states.
-- [ ] Production assets build and are served by the API or reverse proxy.
-- [ ] Desktop and mobile screenshots have no overlap or clipped controls.
+- [x] UI tests and browser E2E cover primary workflows and failure states.
+- [x] Production assets build and are ready for the Phase 6E reverse proxy.
+- [x] Desktop and mobile screenshots have no overlap or clipped controls.
 
 ## Out Of Scope
 
 - Public signup, billing, and full RBAC.
 - Marketing pages.
-

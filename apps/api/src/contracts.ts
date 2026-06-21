@@ -100,6 +100,137 @@ export interface ReleaseCandidateSummaryRecord {
   updated_at: string;
 }
 
+export interface DashboardOverviewRecord {
+  active_conversations: number;
+  auto_rate: number;
+  approval_backlog: number;
+  p95_latency_ms: number;
+  daily_cost: number;
+  failure_count: number;
+  workload: Array<{
+    bucket: string;
+    traces: number;
+    p95_latency_ms: number;
+    estimated_cost: number;
+  }>;
+}
+
+export interface TraceDetailRecord extends TraceSummaryRecord {
+  version_snapshot: {
+    agent_version_id: string;
+    prompt_version_id: string;
+    policy_version_id: string;
+    tool_manifest_version_id: string;
+    risk_rule_version_id: string;
+    retrieval_config_version_id: string;
+    model_config_version_id: string;
+  };
+  retrieved_doc_ids: string[];
+  tool_call_ids: string[];
+  pii_categories: string[];
+  transitions: Array<Record<string, unknown>>;
+  llm_calls: Array<Record<string, unknown>>;
+  runtime_decision: Record<string, unknown> | null;
+  approval: ApprovalSummaryRecord | null;
+  deliveries: Array<Record<string, unknown>>;
+}
+
+export interface ReleaseCandidateDetailRecord
+  extends ReleaseCandidateSummaryRecord {
+  transitions: Array<Record<string, unknown>>;
+  gate_result: Record<string, unknown> | null;
+  gate_decisions: Array<Record<string, unknown>>;
+}
+
+export interface OperationsSettingsRecord {
+  tenant: TenantRecord;
+  model_config: SafeModelConfigRecord | null;
+  chatwoot: {
+    id: string;
+    base_url: string;
+    account_id: number;
+    inbox_id: number | null;
+    agent_bot_id: number | null;
+    verification_status: string;
+    runtime_mode: RuntimeMode;
+    has_webhook_secret: boolean;
+    has_api_token: boolean;
+    webhook_secret_ref_hint: string | null;
+    api_token_ref_hint: string | null;
+  } | null;
+}
+
+export interface ApprovalActionCommand {
+  tenantId: string;
+  approvalId: string;
+  action: 'approve' | 'edit' | 'reject' | 'escalate';
+  actorId: string;
+  editedReply: string | null;
+  idempotencyKey: string;
+}
+
+export interface ReleaseTransitionCommand {
+  tenantId: string;
+  candidateId: string;
+  action: 'start_evaluation' | 'archive';
+  actorId: string;
+  idempotencyKey: string;
+}
+
+export interface OperationsService {
+  getOverview(tenantId: string): Promise<DashboardOverviewRecord>;
+  getTrace(tenantId: string, traceId: string): Promise<TraceDetailRecord | null>;
+  applyApprovalAction(
+    command: ApprovalActionCommand,
+  ): Promise<ApprovalSummaryRecord>;
+  getRelease(
+    tenantId: string,
+    candidateId: string,
+  ): Promise<ReleaseCandidateDetailRecord | null>;
+  transitionRelease(
+    command: ReleaseTransitionCommand,
+  ): Promise<ReleaseCandidateDetailRecord>;
+  getSettings(tenantId: string): Promise<OperationsSettingsRecord | null>;
+  updateTenant(
+    tenantId: string,
+    input: {
+      displayName: string;
+      status: TenantRecord['status'];
+      metadata: Record<string, unknown>;
+      actorId: string;
+    },
+  ): Promise<TenantRecord>;
+  updateModelConfig(
+    tenantId: string,
+    input: {
+      provider: string;
+      fastModel: string;
+      strongModel: string;
+      embeddingModel: string;
+      fallbackModel: string;
+      timeoutMs: number;
+      maxCostPerTicket: number;
+      dailyBudget: number;
+      budgetCurrency: string;
+      replacementApiKey: string | null;
+      actorId: string;
+    },
+  ): Promise<SafeModelConfigRecord>;
+  updateChatwoot(
+    tenantId: string,
+    input: {
+      baseUrl: string;
+      accountId: number;
+      inboxId: number | null;
+      agentBotId: number | null;
+      runtimeMode: RuntimeMode;
+      webhookSecretRef: string | null;
+      apiTokenRef: string | null;
+      actorId: string;
+    },
+  ): Promise<OperationsSettingsRecord['chatwoot']>;
+}
+
 export interface CanonicalEventRecord extends CanonicalInboundEvent {
   id: string;
   delivery_keys: string[];
@@ -174,6 +305,7 @@ export interface AppDependencies {
   buildVersion: string;
   closeDependencies?: boolean;
   chatwootIngress?: ChatwootIngressHandler;
+  operations?: OperationsService;
 }
 
 export interface ChatwootIngressRequest {

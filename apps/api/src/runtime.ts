@@ -8,6 +8,7 @@ import { NodeRedisCoordinator } from './redis.js';
 import { PostgresAgentOpsStore } from './repositories.js';
 import { EnvironmentSecretResolver } from './secrets.js';
 import { ProductionTicketService } from './ticket-service.js';
+import { PostgresOperationsService } from './operations.js';
 
 export async function createRuntimeApp(config: ApiConfig): Promise<FastifyInstance> {
   const pool = createPostgresPool(config.databaseUrl);
@@ -19,11 +20,12 @@ export async function createRuntimeApp(config: ApiConfig): Promise<FastifyInstan
     redis = await NodeRedisCoordinator.connect(config.redisUrl);
     await redis.ping();
     const e2eRepository = new ProductionE2ERepository(pool);
+    const secrets = new EnvironmentSecretResolver();
     const ticketService = new ProductionTicketService(
       store,
       e2eRepository,
       redis,
-      new EnvironmentSecretResolver(),
+      secrets,
       new HttpLLMProviderAdapter(config.providerBaseUrls),
       {
         masterKey: config.masterKey,
@@ -41,6 +43,12 @@ export async function createRuntimeApp(config: ApiConfig): Promise<FastifyInstan
         dedupeTtlSeconds: config.dedupeTtlSeconds,
         buildVersion: config.buildVersion,
         chatwootIngress: ticketService,
+        operations: new PostgresOperationsService(
+          pool,
+          secrets,
+          config.masterKey,
+          config.masterKeyId,
+        ),
       },
       { logger: { level: config.logLevel } },
     );
