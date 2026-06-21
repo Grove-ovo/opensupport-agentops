@@ -27,17 +27,16 @@ governance, runtime modes, and guarded outbound delivery.
 
 ## Acceptance Criteria
 
-- [ ] Duplicate dual-entry Chatwoot messages produce one execution.
-- [ ] Self-outgoing and non-customer events never run the pipeline.
-- [ ] Provider requests contain masked input and produce persisted call logs.
-- [ ] Shadow, Assist, and Auto result in the expected Chatwoot or approval side
+- [x] Duplicate dual-entry Chatwoot messages produce one execution.
+- [x] Self-outgoing and non-customer events never run the pipeline.
+- [x] Provider requests contain masked input and produce persisted call logs.
+- [x] Shadow, Assist, and Auto result in the expected Chatwoot or approval side
       effects.
-- [ ] Timeouts, budgets, provider errors, and Chatwoot errors degrade safely.
-- [ ] HTTP mock E2E and all existing deterministic tests pass.
+- [x] Timeouts, budgets, provider errors, and Chatwoot errors degrade safely.
+- [x] HTTP mock E2E and all existing deterministic tests pass.
 
 ## Out Of Scope
 
 - Real commerce mutations.
 - Dashboard implementation.
 - Running public live-provider calls in CI.
-

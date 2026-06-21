@@ -250,9 +250,15 @@ export class PostgresAgentOpsStore implements AgentOpsStore {
       return { status: 'created', record: result.rows[0] };
     }
     const existing = await this.pool.query<CanonicalEventRow>(
-      `SELECT * FROM canonical_inbound_events
-       WHERE tenant_id = $1 AND dedupe_key = $2`,
-      [event.tenant_id, event.dedupe_key],
+      `UPDATE canonical_inbound_events
+       SET delivery_keys = ARRAY(
+         SELECT DISTINCT key
+         FROM unnest(delivery_keys || $3::text[]) AS key
+         ORDER BY key
+       )
+       WHERE tenant_id = $1 AND dedupe_key = $2
+       RETURNING *`,
+      [event.tenant_id, event.dedupe_key, [...new Set(input.deliveryKeys)]],
     );
     const record = existing.rows[0];
     if (!record) {

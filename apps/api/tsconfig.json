@@ -7,6 +7,16 @@
     "rootDir": "src",
     "outDir": "dist"
   },
-  "references": [{ "path": "../../packages/shared" }],
+  "references": [
+    { "path": "../../packages/shared" },
+    { "path": "../../packages/chatwoot" },
+    { "path": "../../packages/model-config" },
+    { "path": "../../packages/pii" },
+    { "path": "../../packages/trace" },
+    { "path": "../../packages/llm-runtime" },
+    { "path": "../../packages/agent-runtime" },
+    { "path": "../../packages/runtime-control" },
+    { "path": "../../packages/tools" }
+  ],
   "include": ["src/**/*.ts"]
 }

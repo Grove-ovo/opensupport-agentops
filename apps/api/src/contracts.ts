@@ -106,6 +106,10 @@ export interface CanonicalEventRecord extends CanonicalInboundEvent {
   decision: 'pipeline_seeded' | 'duplicate' | 'audit_only';
   trace_id: string | null;
   received_at: string;
+  processing_status: 'received' | 'processing' | 'completed' | 'failed';
+  error_code: string | null;
+  processing_started_at: string | null;
+  processed_at: string | null;
 }
 
 export interface CanonicalEventCreateInput {
@@ -169,4 +173,21 @@ export interface AppDependencies {
   dedupeTtlSeconds: number;
   buildVersion: string;
   closeDependencies?: boolean;
+  chatwootIngress?: ChatwootIngressHandler;
+}
+
+export interface ChatwootIngressRequest {
+  tenantId: string;
+  source: 'agent_bot' | 'account_webhook';
+  headers: Readonly<Record<string, string | readonly string[] | undefined>>;
+  rawBody: string;
+}
+
+export interface ChatwootIngressResult {
+  status: 202 | 400 | 401 | 503;
+  body: Record<string, unknown>;
+}
+
+export interface ChatwootIngressHandler {
+  handle(request: ChatwootIngressRequest): Promise<ChatwootIngressResult>;
 }

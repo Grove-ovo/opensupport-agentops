@@ -12,6 +12,7 @@ import type {
   PageQuery,
   ReadinessStatus,
 } from './contracts.js';
+import { registerChatwootRoutes } from './chatwoot-routes.js';
 import { MetricsRegistry } from './metrics.js';
 
 const APPROVAL_STATES = new Set<ApprovalState>([
@@ -220,6 +221,12 @@ export function buildApp(
         pageQuery(request),
       ),
   );
+
+  if (dependencies.chatwootIngress !== undefined) {
+    void app.register(async (scope) => {
+      await registerChatwootRoutes(scope, dependencies.chatwootIngress!);
+    });
+  }
 
   if (dependencies.closeDependencies !== false) {
     app.addHook('onClose', async () => {

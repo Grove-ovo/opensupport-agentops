@@ -30,6 +30,7 @@ export async function runConditionalTriage(
       decision: null,
       reason_code: 'deterministic_route_sufficient',
       attempts: 0,
+      usage: null,
     };
   }
 
@@ -51,6 +52,7 @@ export async function runConditionalTriage(
       decision: null,
       reason_code: result.reason_code,
       attempts: result.attempts,
+      usage: result.usage,
     };
   }
 
@@ -59,6 +61,7 @@ export async function runConditionalTriage(
     decision: result.data,
     reason_code: null,
     attempts: result.attempts,
+    usage: result.usage,
   };
 }
 

@@ -1,35 +1,27 @@
 # Chatwoot Connector
 
-Status: Phase 1B inbound foundation plus Phase 3C outbound delivery
-Package: `packages/chatwoot`
+Status: Phase 6B production API composition
+Packages: `packages/chatwoot`, `apps/api`
 
 ## Scope
 
 The connector normalizes Chatwoot Agent Bot and account webhook deliveries into
-canonical inbound events. It does not generate AI replies, call tools, run RAG,
-or execute runtime modes.
+canonical inbound events. `apps/api` composes that boundary with the Agent
+pipeline, tenant BYOK provider runtime, controlled runtime modes, approvals,
+and persistent outbound delivery.
 
 ## Endpoint Contracts
 
-Future API adapters should call the framework-neutral handlers exported from
-`@opensupport/chatwoot`.
+The production API exposes:
 
-| HTTP endpoint | Handler | Source |
-|---------------|---------|--------|
-| `POST /v1/chatwoot/agent-bot/:tenant_id` | `handleAgentBotEndpoint` | `agent_bot` |
-| `POST /v1/chatwoot/webhooks/:tenant_id` | `handleAccountWebhookEndpoint` | `account_webhook` |
+| HTTP endpoint | Source |
+|---------------|--------|
+| `POST /api/v1/chatwoot/agent-bot/:tenantId` | `agent_bot` |
+| `POST /api/v1/chatwoot/webhooks/:tenantId` | `account_webhook` |
 
-Both handlers accept:
-
-- `tenantId`
-- `headers`
-- `rawBody`
-- optional `parsedBody`
-- optional `webhookSecret`
-- optional `agentopsActorIds`
-- optional `agentopsMessageSignatures`
-
-Both handlers return:
+The API preserves the raw JSON string for HMAC verification before parsing.
+The framework-neutral handlers remain available for deterministic package
+tests. Both routes return:
 
 - HTTP `202` for accepted customer, duplicate, and audit-only events
 - HTTP `400` for invalid JSON payloads
@@ -52,6 +44,10 @@ sha256=<hmac_sha256("{timestamp}.{raw_request_body}", webhook_secret)>
 The implementation follows Chatwoot's webhook documentation for signed
 deliveries and keeps raw body hashing separate from parsed JSON.
 
+The production API requires `webhook_secret_ref`; it does not use the
+framework-neutral connector's unsigned test mode. A missing or unresolved
+reference fails closed before canonical event persistence.
+
 ## CanonicalInboundEvent
 
 `CanonicalInboundEvent` is defined in `@opensupport/shared`:
@@ -71,7 +67,7 @@ is_self_outgoing
 `source` is either `agent_bot` or `account_webhook`.
 
 `payload_hash` is a SHA-256 hash of the raw request body and is preserved for
-audit whether the event seeds the future pipeline or remains audit-only.
+audit whether the event seeds the production pipeline or remains audit-only.
 
 ## Dedupe Rules
 
@@ -89,7 +85,7 @@ when every key was absent and has been reserved by the same operation. A Redis
 adapter must preserve this contract with a transaction or Lua script; separate
 read and write operations are not sufficient.
 
-Only canonical incoming customer messages can seed later pipeline work.
+Only canonical incoming customer messages can seed pipeline work.
 
 ## Customer And Self-Outgoing Rules
 
@@ -111,12 +107,19 @@ AgentOps self-outgoing messages are audit-only. The connector detects them by:
 Human outgoing messages are also not customer messages and therefore do not
 seed the future pipeline.
 
-## Current Storage Boundary
+## Production Storage Boundary
 
-Phase 1B uses the `DedupeStore` interface and `MemoryDedupeStore` for tests and
-local composition. The memory implementation provides process-local atomic
-claims but is not shared across replicas. Redis-backed dedupe belongs to a
-later runtime/storage task.
+The production API first inserts or reads `canonical_inbound_events`, then
+claims `processing_status=received -> processing` with one guarded PostgreSQL
+update. This database claim is authoritative for exactly-once pipeline seed
+behavior across Agent Bot and account webhook requests.
+
+Redis atomically reserves delivery and canonical keys with the configured TTL
+to reduce duplicate work across replicas. A Redis miss or expiry cannot create
+a second execution because the PostgreSQL processing claim remains final.
+
+Canonical rows store hashes and identifiers only. Raw webhook bodies and
+customer text are not persisted.
 
 ## Outbound Runtime Delivery
 
@@ -131,20 +134,34 @@ with `content_type=text`. The command contains tenant, trace, conversation,
 content hash, idempotency key, and deadline, but no provider URL, account
 credential, or plaintext token.
 
-Tenant connection configuration is supplied separately. The adapter resolves
-`api_token_ref` only immediately before provider I/O. Delivery receipts retain
+Tenant connection configuration is supplied separately. The production
+resolver supports `env:NAME` references and resolves `api_token_ref` only
+immediately before provider I/O. Delivery receipts retain
 stable result codes, provider message ID, request/response hashes, and a hash
 of the credential reference. A claimed idempotency key is never sent twice;
 same-message retries return a duplicate receipt and changed-message reuse
 returns `idempotency_conflict`.
 
-Failed provider attempts are not permanently cached. Concurrent callers share
-the same failure result, while a later retry with the same semantic command
-may call Chatwoot again. Successful deliveries remain permanently deduped.
+`chatwoot_delivery_attempts` persists the claim before provider I/O. Successful
+deliveries remain deduped. A failed row can be atomically reclaimed by one
+later caller with the same semantic input; concurrent retry callers observe
+the pending claim and do not send twice.
 
 `content_attributes.agentops_generated=true` plus trace/delivery identifiers
 marks messages created by AgentOps so the inbound connector treats them as
 audit-only.
+
+Assignment and conversation reopening are used only for explicit handoff.
+Message delivery failures produce stable project-owned codes and never count
+as a successful public reply.
+
+## Verification
+
+```bash
+npm run test:chatwoot
+npm run test:e2e
+npm run db:verify:phase6b
+```
 
 ## Chatwoot References
 
