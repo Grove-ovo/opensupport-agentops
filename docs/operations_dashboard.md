@@ -4,6 +4,9 @@ The Phase 6C dashboard is a React and Vite workspace in `apps/web`. It provides
 tenant-scoped Overview, Traces, Approvals, Releases, and Settings views over the
 production API.
 
+Overview metrics are read from the latest `dashboard_overview_24h`
+`operational_aggregates` record produced by the Phase 6D worker.
+
 ## Safety Boundaries
 
 - Public approval replies and release state changes require explicit

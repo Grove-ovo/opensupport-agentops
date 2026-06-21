@@ -21,15 +21,14 @@ aggregation onto a separately runnable Redis Streams worker.
 
 ## Acceptance Criteria
 
-- [ ] Online API completion does not wait for monitor/eval/aggregation work.
-- [ ] Duplicate jobs are idempotent.
-- [ ] Worker restart resumes pending work without loss.
-- [ ] Poison jobs reach the dead-letter stream after bounded retries.
-- [ ] Failure cases and dashboard aggregates are persisted correctly.
-- [ ] Real Redis/PostgreSQL integration tests and graceful shutdown tests pass.
+- [x] Online API completion does not wait for monitor/eval/aggregation work.
+- [x] Duplicate jobs are idempotent.
+- [x] Worker restart resumes pending work without loss.
+- [x] Poison jobs reach the dead-letter stream after bounded retries.
+- [x] Failure cases and dashboard aggregates are persisted correctly.
+- [x] Real Redis/PostgreSQL integration tests and graceful shutdown tests pass.
 
 ## Out Of Scope
 
 - External workflow engines.
 - Provider-specific managed queue services.
-

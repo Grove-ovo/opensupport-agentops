@@ -38,7 +38,7 @@ export function loadApiConfig(
   const redisUrl = requiredUrl(env.REDIS_URL, 'REDIS_URL', issues);
   const port = integer(env.PORT ?? '8080', 'PORT', 1, 65_535, issues);
   const requiredMigration = integer(
-    env.AGENTOPS_REQUIRED_MIGRATION ?? '15',
+    env.AGENTOPS_REQUIRED_MIGRATION ?? '16',
     'AGENTOPS_REQUIRED_MIGRATION',
     1,
     10_000,

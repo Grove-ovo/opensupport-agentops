@@ -1298,3 +1298,36 @@ Added tenant-scoped operations APIs and a responsive React/Vite dashboard for ov
 ### Next Steps
 
 - None - task complete
+
+
+## Session 40: Complete Phase 6D async monitor worker
+
+**Date**: 2026-06-21
+**Task**: Complete Phase 6D async monitor worker
+**Branch**: `feat/phase-6d-async-monitor-worker`
+
+### Summary
+
+Added PostgreSQL identifier-only outbox triggers, atomic Redis Streams publication, durable worker leases, stale message reclaim, bounded retries and DLQ, deterministic monitor/eval/dashboard handlers, worker health and metrics, migration 16, and real PostgreSQL/Redis restart recovery tests.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `4a8cb67` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

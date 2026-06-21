@@ -214,7 +214,7 @@ integration(
     const app = buildApp({
       store,
       redis,
-      requiredMigration: 15,
+      requiredMigration: 16,
       dedupeTtlSeconds: 86_400,
       buildVersion: 'test',
       closeDependencies: false,

@@ -21,22 +21,6 @@ import type {
 import { ProductionE2ERepository } from './e2e-repository.js';
 import type { EnvironmentSecretResolver } from './secrets.js';
 
-interface OverviewRow extends QueryResultRow {
-  active_conversations: string;
-  auto_rate: string;
-  approval_backlog: string;
-  p95_latency_ms: string;
-  daily_cost: string;
-  failure_count: string;
-}
-
-interface WorkloadRow extends QueryResultRow {
-  bucket: string;
-  traces: string;
-  p95_latency_ms: string;
-  estimated_cost: string;
-}
-
 interface ApprovalActionRow extends QueryResultRow {
   action_id: string;
 }
@@ -72,62 +56,35 @@ export class PostgresOperationsService implements OperationsService {
   }
 
   async getOverview(tenantId: string): Promise<DashboardOverviewRecord> {
-    const [summary, workload] = await Promise.all([
-      this.pool.query<OverviewRow>(
-        `SELECT
-           count(DISTINCT conversation_id) FILTER (
-             WHERE created_at >= now() - interval '24 hours'
-           )::text AS active_conversations,
-           coalesce(
-             100.0 * count(*) FILTER (
-               WHERE runtime_mode = 'auto' AND execution_state = 'replied'
-             ) / nullif(count(*) FILTER (
-               WHERE created_at >= now() - interval '24 hours'
-             ), 0),
-             0
-           )::text AS auto_rate,
-           (SELECT count(*) FROM approval_requests
-             WHERE tenant_id = $1 AND state = 'pending')::text AS approval_backlog,
-           coalesce(percentile_cont(0.95) WITHIN GROUP (ORDER BY latency_ms)
-             FILTER (WHERE latency_ms IS NOT NULL), 0)::text AS p95_latency_ms,
-           coalesce((SELECT sum(estimated_cost) FROM llm_call_logs
-             WHERE tenant_id = $1
-               AND created_at >= date_trunc('day', now() AT TIME ZONE 'UTC')
-                 AT TIME ZONE 'UTC'), 0)::text AS daily_cost,
-           count(*) FILTER (WHERE execution_state = 'failed')::text AS failure_count
-         FROM agent_traces
-         WHERE tenant_id = $1
-           AND created_at >= now() - interval '24 hours'`,
-        [tenantId],
-      ),
-      this.pool.query<WorkloadRow>(
-        `SELECT
-           date_trunc('hour', created_at)::text AS bucket,
-           count(*)::text AS traces,
-           coalesce(percentile_cont(0.95) WITHIN GROUP (ORDER BY latency_ms)
-             FILTER (WHERE latency_ms IS NOT NULL), 0)::text AS p95_latency_ms,
-           coalesce(sum(estimated_cost), 0)::text AS estimated_cost
-         FROM agent_traces
-         WHERE tenant_id = $1 AND created_at >= now() - interval '24 hours'
-         GROUP BY date_trunc('hour', created_at)
-         ORDER BY date_trunc('hour', created_at)`,
-        [tenantId],
-      ),
-    ]);
-    const row = summary.rows[0];
+    const aggregate = await this.pool.query<QueryResultRow>(
+      `SELECT values
+       FROM operational_aggregates
+       WHERE tenant_id = $1
+         AND aggregate_name = 'dashboard_overview_24h'
+       ORDER BY window_end DESC
+       LIMIT 1`,
+      [tenantId],
+    );
+    const values = asRecord(aggregate.rows[0]?.values) ?? {};
+    const workload = Array.isArray(values.workload) ? values.workload : [];
     return {
-      active_conversations: Number(row?.active_conversations ?? 0),
-      auto_rate: Number(row?.auto_rate ?? 0),
-      approval_backlog: Number(row?.approval_backlog ?? 0),
-      p95_latency_ms: Number(row?.p95_latency_ms ?? 0),
-      daily_cost: Number(row?.daily_cost ?? 0),
-      failure_count: Number(row?.failure_count ?? 0),
-      workload: workload.rows.map((item) => ({
-        bucket: item.bucket,
-        traces: Number(item.traces),
-        p95_latency_ms: Number(item.p95_latency_ms),
-        estimated_cost: Number(item.estimated_cost),
-      })),
+      active_conversations: Number(values.active_conversations ?? 0),
+      auto_rate: Number(values.auto_rate ?? 0),
+      approval_backlog: Number(values.approval_backlog ?? 0),
+      p95_latency_ms: Number(values.p95_latency_ms ?? 0),
+      daily_cost: Number(values.daily_cost ?? 0),
+      failure_count: Number(values.failure_count ?? 0),
+      workload: workload.flatMap((item) => {
+        const point = asRecord(item);
+        return point
+          ? [{
+              bucket: String(point.bucket),
+              traces: Number(point.traces),
+              p95_latency_ms: Number(point.p95_latency_ms),
+              estimated_cost: Number(point.estimated_cost),
+            }]
+          : [];
+      }),
     };
   }
 
