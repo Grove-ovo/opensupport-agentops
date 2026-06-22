@@ -11,6 +11,7 @@ import type {
   TenantRecord,
 } from './contracts.js';
 import { buildApp } from './app.js';
+import { TestOperatorAccess } from './test-operator-access.js';
 
 const TENANT_ID = '00000000-0000-4000-8000-000000000001';
 const TRACE_ID = '00000000-0000-4000-8000-000000000002';
@@ -26,6 +27,7 @@ test('operations routes enforce confirmation and preserve action commands', asyn
     requiredMigration: 15,
     dedupeTtlSeconds: 86_400,
     buildVersion: 'test',
+    operatorAccess: new TestOperatorAccess(),
     closeDependencies: false,
   });
   test.after(() => app.close());
@@ -42,30 +44,54 @@ test('operations routes enforce confirmation and preserve action commands', asyn
     url: `/api/v1/tenants/${TENANT_ID}/approvals/${APPROVAL_ID}/actions`,
     payload: {
       action: 'approve',
-      actor_id: 'operator',
       idempotency_key: 'approval-1',
       confirm: false,
     },
+    headers: { 'x-csrf-token': 'test-csrf' },
   });
   assert.equal(unconfirmed.statusCode, 400);
+
+  const missingCsrf = await app.inject({
+    method: 'POST',
+    url: `/api/v1/tenants/${TENANT_ID}/approvals/${APPROVAL_ID}/actions`,
+    payload: {
+      action: 'approve',
+      idempotency_key: 'approval-missing-csrf',
+      confirm: true,
+    },
+  });
+  assert.equal(missingCsrf.statusCode, 403);
+
+  const forgedActor = await app.inject({
+    method: 'POST',
+    url: `/api/v1/tenants/${TENANT_ID}/approvals/${APPROVAL_ID}/actions`,
+    headers: { 'x-csrf-token': 'test-csrf' },
+    payload: {
+      action: 'approve',
+      actor_id: 'forged-browser-identity',
+      idempotency_key: 'approval-forged',
+      confirm: true,
+    },
+  });
+  assert.equal(forgedActor.statusCode, 403);
 
   const approved = await app.inject({
     method: 'POST',
     url: `/api/v1/tenants/${TENANT_ID}/approvals/${APPROVAL_ID}/actions`,
     payload: {
       action: 'edit',
-      actor_id: 'operator',
       edited_reply: 'Edited public reply',
       idempotency_key: 'approval-2',
       confirm: true,
     },
+    headers: { 'x-csrf-token': 'test-csrf' },
   });
   assert.equal(approved.statusCode, 200);
   assert.deepEqual(operations.approvalCommand, {
     tenantId: TENANT_ID,
     approvalId: APPROVAL_ID,
     action: 'edit',
-    actorId: 'operator',
+    actorId: 'oidc:test-operator',
     editedReply: 'Edited public reply',
     idempotencyKey: 'approval-2',
   });
@@ -75,10 +101,10 @@ test('operations routes enforce confirmation and preserve action commands', asyn
     url: `/api/v1/tenants/${TENANT_ID}/releases/${CANDIDATE_ID}/transitions`,
     payload: {
       action: 'start_evaluation',
-      actor_id: 'operator',
       idempotency_key: 'release-1',
       confirm: true,
     },
+    headers: { 'x-csrf-token': 'test-csrf' },
   });
   assert.equal(transitioned.statusCode, 200);
   assert.equal(operations.releaseCommand?.action, 'start_evaluation');
@@ -147,6 +173,14 @@ class FakeStore implements AgentOpsStore {
   }
   async listTenants(query: PageQuery): Promise<Page<TenantRecord>> {
     return { items: [tenantRecord()], total: 1, ...query };
+  }
+  async listTenantsByIds(
+    tenantIds: readonly string[],
+    query: PageQuery,
+  ): Promise<Page<TenantRecord>> {
+    const tenant = tenantRecord();
+    const items = tenantIds.includes(tenant.id) ? [tenant] : [];
+    return { items, total: items.length, ...query };
   }
   async getTenant() {
     return tenantRecord();

@@ -29,6 +29,12 @@ export {
 export { MetricsRegistry } from './metrics.js';
 export { OperationsError, PostgresOperationsService } from './operations.js';
 export { registerOperationsRoutes } from './operations-routes.js';
+export {
+  mapOperatorClaims,
+  OidcOperatorAccess,
+  OperatorAccessError,
+  type OidcOperatorAccessConfig,
+} from './operator-auth.js';
 export { NodeRedisCoordinator } from './redis.js';
 export { HttpLLMProviderAdapter, ProviderAdapterError } from './provider.js';
 export { PostgresAgentOpsStore } from './repositories.js';

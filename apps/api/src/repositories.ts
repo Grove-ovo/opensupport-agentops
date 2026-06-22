@@ -79,6 +79,30 @@ export class PostgresAgentOpsStore implements AgentOpsStore {
     return page(records.rows, query, count.rows[0]);
   }
 
+  async listTenantsByIds(
+    tenantIds: readonly string[],
+    query: PageQuery,
+  ): Promise<Page<TenantRecord>> {
+    if (tenantIds.length === 0) {
+      return { items: [], total: 0, ...query };
+    }
+    const [records, count] = await Promise.all([
+      this.pool.query<TenantRow>(
+        `SELECT id, slug, display_name, status, metadata, created_at, updated_at
+         FROM tenants
+         WHERE id = ANY($1::uuid[])
+         ORDER BY created_at DESC, id
+         LIMIT $2 OFFSET $3`,
+        [tenantIds, query.limit, query.offset],
+      ),
+      this.pool.query<CountRow>(
+        'SELECT count(*)::text AS total FROM tenants WHERE id = ANY($1::uuid[])',
+        [tenantIds],
+      ),
+    ]);
+    return page(records.rows, query, count.rows[0]);
+  }
+
   async getTenant(tenantId: string): Promise<TenantRecord | null> {
     const result = await this.pool.query<TenantRow>(
       `SELECT id, slug, display_name, status, metadata, created_at, updated_at

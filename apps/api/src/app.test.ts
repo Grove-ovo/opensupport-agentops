@@ -14,8 +14,13 @@ import type {
 } from './contracts.js';
 import { buildApp } from './app.js';
 import { ConfigError, loadApiConfig } from './config.js';
+import { TestOperatorAccess } from './test-operator-access.js';
 
 const TENANT_ID = '00000000-0000-4000-8000-000000000001';
+const CONFIG_DIRECTORY = mkdtempSync(join(tmpdir(), 'agentops-auth-config-'));
+const SESSION_KEY_PATH = join(CONFIG_DIRECTORY, 'session-key');
+writeFileSync(SESSION_KEY_PATH, Buffer.alloc(32, 7), { mode: 0o600 });
+test.after(() => rmSync(CONFIG_DIRECTORY, { recursive: true, force: true }));
 
 test('configuration rejects missing dependency URLs', () => {
   assert.throws(
@@ -41,6 +46,7 @@ test('configuration validates the deployment master key', () => {
       error.issues.includes('AGENTOPS_MASTER_KEY:invalid'),
   );
   const config = loadApiConfig({
+    ...validAuthEnvironment(),
     DATABASE_URL: 'postgresql://agentops:agentops@localhost:5432/agentops',
     REDIS_URL: 'redis://localhost:6379/0',
     AGENTOPS_MASTER_KEY: `base64url:${Buffer.alloc(32, 1).toString('base64url')}`,
@@ -56,6 +62,7 @@ test('configuration reads the deployment master key from a secret file', () => {
 
   try {
     const config = loadApiConfig({
+      ...validAuthEnvironment(),
       DATABASE_URL: 'postgresql://agentops:agentops@localhost:5432/agentops',
       REDIS_URL: 'redis://localhost:6379/0',
       AGENTOPS_MASTER_KEY_FILE: path,
@@ -66,6 +73,17 @@ test('configuration reads the deployment master key from a secret file', () => {
   }
 });
 
+function validAuthEnvironment(): NodeJS.ProcessEnv {
+  return {
+    AGENTOPS_OIDC_ISSUER: 'https://identity.example.test',
+    AGENTOPS_OIDC_CLIENT_ID: 'agentops-test',
+    AGENTOPS_OIDC_CLIENT_SECRET: 'test-secret',
+    AGENTOPS_OIDC_CALLBACK_URI:
+      'https://agentops.example.test/api/v1/auth/callback',
+    AGENTOPS_OPERATOR_SESSION_KEY_FILES: SESSION_KEY_PATH,
+  };
+}
+
 test('liveness, readiness, metrics, and tenant routes expose stable contracts', async () => {
   const store = new FakeStore();
   const redis = new FakeRedis();
@@ -75,6 +93,7 @@ test('liveness, readiness, metrics, and tenant routes expose stable contracts', 
     requiredMigration: 14,
     dedupeTtlSeconds: 86_400,
     buildVersion: 'test',
+    operatorAccess: new TestOperatorAccess(),
     closeDependencies: false,
   });
   test.after(() => app.close());
@@ -123,6 +142,7 @@ test('readiness fails when Redis is unavailable or migrations are behind', async
     requiredMigration: 14,
     dedupeTtlSeconds: 86_400,
     buildVersion: 'test',
+    operatorAccess: new TestOperatorAccess(),
     closeDependencies: false,
   });
   test.after(() => app.close());
@@ -141,6 +161,7 @@ test('invalid route parameters return a stable validation envelope', async () =>
     requiredMigration: 14,
     dedupeTtlSeconds: 86_400,
     buildVersion: 'test',
+    operatorAccess: new TestOperatorAccess(),
     closeDependencies: false,
   });
   test.after(() => app.close());
@@ -178,6 +199,13 @@ class FakeStore implements AgentOpsStore {
   }
   async listTenants(query: PageQuery): Promise<Page<TenantRecord>> {
     return { items: [this.tenant], total: 1, ...query };
+  }
+  async listTenantsByIds(
+    tenantIds: readonly string[],
+    query: PageQuery,
+  ): Promise<Page<TenantRecord>> {
+    const items = tenantIds.includes(this.tenant.id) ? [this.tenant] : [];
+    return { items, total: items.length, ...query };
   }
   async getTenant(tenantId: string): Promise<TenantRecord | null> {
     return tenantId === this.tenant.id ? this.tenant : null;

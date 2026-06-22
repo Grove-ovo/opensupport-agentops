@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/infra/phase-6a-api-storage-runtime.md", "reason": "API composition, repository boundaries, configuration, and stable errors"}
+{"file": ".trellis/spec/infra/phase-6e-production-operations.md", "reason": "Production Compose and secret-file wiring"}
+{"file": ".trellis/spec/frontend/phase-6c-operations-dashboard.md", "reason": "Dashboard API, mutation, responsive, and browser-test contracts"}
+{"file": ".trellis/tasks/06-22-phase-7-pre-deployment-hardening/research/operator-authentication.md", "reason": "OIDC, PKCE, encrypted-session, and claim-mapping decision"}

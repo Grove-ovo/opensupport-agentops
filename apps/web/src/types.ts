@@ -142,3 +142,18 @@ export interface Settings {
 export interface ApiFailure {
   error: { code: string; message: string };
 }
+
+export interface OperatorPrincipal {
+  subject: string;
+  display_name: string | null;
+  email: string | null;
+  roles: string[];
+  tenant_ids: string[];
+  admin: boolean;
+}
+
+export interface AuthSession {
+  principal: OperatorPrincipal;
+  csrf_token: string;
+  expires_at: number;
+}

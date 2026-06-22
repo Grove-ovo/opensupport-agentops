@@ -15,6 +15,7 @@ import type {
 import { registerChatwootRoutes } from './chatwoot-routes.js';
 import { registerOperationsRoutes } from './operations-routes.js';
 import { MetricsRegistry } from './metrics.js';
+import { OperatorAccessError } from './operator-auth.js';
 
 const APPROVAL_STATES = new Set<ApprovalState>([
   'pending',
@@ -57,6 +58,7 @@ export function buildApp(
     service: 'api',
     version: dependencies.buildVersion,
   });
+  dependencies.operatorAccess.register(app);
 
   app.addHook('onResponse', async (request, reply) => {
     metrics.increment('agentops_http_requests_total', {
@@ -67,6 +69,16 @@ export function buildApp(
   });
 
   app.setErrorHandler((error, request, reply) => {
+    if (error instanceof OperatorAccessError) {
+      void reply.status(error.statusCode).send({
+        error: {
+          code: error.code,
+          message: operatorAccessMessage(error.code),
+          request_id: request.id,
+        },
+      });
+      return;
+    }
     const validation = hasValidation(error);
     const statusCode = validation ? 400 : getStatusCode(error);
     request.log.error({ err: error, request_id: request.id }, 'request failed');
@@ -135,108 +147,148 @@ export function buildApp(
     reply.type('text/plain; version=0.0.4; charset=utf-8').send(metrics.render()),
   );
 
-  app.get<{ Querystring: RawPageQuery }>(
-    '/api/v1/tenants',
-    { schema: { querystring: pageQuerySchema } },
-    async (request) => dependencies.store.listTenants(pageQuery(request)),
-  );
+  void app.register(async (scope) => {
+    scope.addHook(
+      'preHandler',
+      dependencies.operatorAccess.requireSession.bind(dependencies.operatorAccess),
+    );
 
-  app.get<{ Params: TenantParams }>(
-    '/api/v1/tenants/:tenantId',
-    { schema: { params: tenantParamsSchema } },
-    async (request, reply) => {
-      const tenant = await dependencies.store.getTenant(request.params.tenantId);
-      return tenant ?? reply.status(404).send(notFound(request, 'tenant_not_found'));
-    },
-  );
+    scope.get<{ Querystring: RawPageQuery }>(
+      '/api/v1/tenants',
+      { schema: { querystring: pageQuerySchema } },
+      async (request) => {
+        const principal = dependencies.operatorAccess.principal(request);
+        return principal.admin
+          ? dependencies.store.listTenants(pageQuery(request))
+          : dependencies.store.listTenantsByIds(
+              principal.tenant_ids,
+              pageQuery(request),
+            );
+      },
+    );
 
-  app.get<{ Params: TenantParams }>(
-    '/api/v1/tenants/:tenantId/model-config',
-    { schema: { params: tenantParamsSchema } },
-    async (request, reply) => {
-      const config = await dependencies.store.getActiveModelConfig(
-        request.params.tenantId,
+    scope.get<{ Params: TenantParams }>(
+      '/api/v1/tenants/:tenantId',
+      { schema: { params: tenantParamsSchema } },
+      async (request, reply) => {
+        dependencies.operatorAccess.assertTenant(
+          request,
+          request.params.tenantId,
+        );
+        const tenant = await dependencies.store.getTenant(request.params.tenantId);
+        return tenant ?? reply.status(404).send(notFound(request, 'tenant_not_found'));
+      },
+    );
+
+    scope.get<{ Params: TenantParams }>(
+      '/api/v1/tenants/:tenantId/model-config',
+      { schema: { params: tenantParamsSchema } },
+      async (request, reply) => {
+        dependencies.operatorAccess.assertTenant(
+          request,
+          request.params.tenantId,
+        );
+        const config = await dependencies.store.getActiveModelConfig(
+          request.params.tenantId,
+        );
+        return config ?? reply.status(404).send(notFound(request, 'model_config_not_found'));
+      },
+    );
+
+    scope.get<{ Params: TenantParams; Querystring: RawPageQuery }>(
+      '/api/v1/tenants/:tenantId/traces',
+      {
+        schema: {
+          params: tenantParamsSchema,
+          querystring: pageQuerySchema,
+        },
+      },
+      async (request) => {
+        dependencies.operatorAccess.assertTenant(
+          request,
+          request.params.tenantId,
+        );
+        return dependencies.store.listTraces(
+          request.params.tenantId,
+          pageQuery(request),
+        );
+      },
+    );
+
+    scope.get<{
+      Params: TenantParams;
+      Querystring: RawPageQuery & { state?: string };
+    }>(
+      '/api/v1/tenants/:tenantId/approvals',
+      {
+        schema: {
+          params: tenantParamsSchema,
+          querystring: {
+            ...pageQuerySchema,
+            properties: {
+              ...pageQuerySchema.properties,
+              state: { type: 'string', enum: [...APPROVAL_STATES] },
+            },
+          },
+        },
+      },
+      async (request) => {
+        dependencies.operatorAccess.assertTenant(
+          request,
+          request.params.tenantId,
+        );
+        return dependencies.store.listApprovals(
+          request.params.tenantId,
+          parseState(request.query.state, APPROVAL_STATES),
+          pageQuery(request),
+        );
+      },
+    );
+
+    scope.get<{
+      Params: TenantParams;
+      Querystring: RawPageQuery & { state?: string };
+    }>(
+      '/api/v1/tenants/:tenantId/release-candidates',
+      {
+        schema: {
+          params: tenantParamsSchema,
+          querystring: {
+            ...pageQuerySchema,
+            properties: {
+              ...pageQuerySchema.properties,
+              state: { type: 'string', enum: [...RELEASE_STATES] },
+            },
+          },
+        },
+      },
+      async (request) => {
+        dependencies.operatorAccess.assertTenant(
+          request,
+          request.params.tenantId,
+        );
+        return dependencies.store.listReleaseCandidates(
+          request.params.tenantId,
+          parseState(request.query.state, RELEASE_STATES),
+          pageQuery(request),
+        );
+      },
+    );
+
+    if (dependencies.operations !== undefined) {
+      await registerOperationsRoutes(
+        scope,
+        dependencies.operations,
+        dependencies.operatorAccess,
       );
-      return config ?? reply.status(404).send(notFound(request, 'model_config_not_found'));
-    },
-  );
-
-  app.get<{ Params: TenantParams; Querystring: RawPageQuery }>(
-    '/api/v1/tenants/:tenantId/traces',
-    {
-      schema: {
-        params: tenantParamsSchema,
-        querystring: pageQuerySchema,
-      },
-    },
-    async (request) =>
-      dependencies.store.listTraces(
-        request.params.tenantId,
-        pageQuery(request),
-      ),
-  );
-
-  app.get<{
-    Params: TenantParams;
-    Querystring: RawPageQuery & { state?: string };
-  }>(
-    '/api/v1/tenants/:tenantId/approvals',
-    {
-      schema: {
-        params: tenantParamsSchema,
-        querystring: {
-          ...pageQuerySchema,
-          properties: {
-            ...pageQuerySchema.properties,
-            state: { type: 'string', enum: [...APPROVAL_STATES] },
-          },
-        },
-      },
-    },
-    async (request) =>
-      dependencies.store.listApprovals(
-        request.params.tenantId,
-        parseState(request.query.state, APPROVAL_STATES),
-        pageQuery(request),
-      ),
-  );
-
-  app.get<{
-    Params: TenantParams;
-    Querystring: RawPageQuery & { state?: string };
-  }>(
-    '/api/v1/tenants/:tenantId/release-candidates',
-    {
-      schema: {
-        params: tenantParamsSchema,
-        querystring: {
-          ...pageQuerySchema,
-          properties: {
-            ...pageQuerySchema.properties,
-            state: { type: 'string', enum: [...RELEASE_STATES] },
-          },
-        },
-      },
-    },
-    async (request) =>
-      dependencies.store.listReleaseCandidates(
-        request.params.tenantId,
-        parseState(request.query.state, RELEASE_STATES),
-        pageQuery(request),
-      ),
-  );
+    }
+  });
 
   if (dependencies.chatwootIngress !== undefined) {
     void app.register(async (scope) => {
       await registerChatwootRoutes(scope, dependencies.chatwootIngress!);
     });
   }
-  if (dependencies.operations !== undefined) {
-    void app.register(async (scope) => {
-      await registerOperationsRoutes(scope, dependencies.operations!);
-    });
-  }
-
   if (dependencies.closeDependencies !== false) {
     app.addHook('onClose', async () => {
       await Promise.allSettled([
@@ -288,6 +340,15 @@ function parseState<T extends string>(
   states: ReadonlySet<T>,
 ): T | null {
   return value !== undefined && states.has(value as T) ? (value as T) : null;
+}
+
+function operatorAccessMessage(code: OperatorAccessError['code']): string {
+  if (code === 'authentication_required') return 'Authentication required';
+  if (code === 'csrf_invalid') return 'CSRF token is missing or invalid';
+  if (code === 'actor_identity_forbidden') {
+    return 'Audit actor is derived from the authenticated identity';
+  }
+  return 'Operator is not authorized for this tenant';
 }
 
 function headerValue(value: string | string[] | undefined): string | undefined {

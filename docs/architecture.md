@@ -1,6 +1,6 @@
 # OpenSupport AgentOps Architecture
 
-Status: Implemented through Phase 6
+Status: Implemented through Phase 6; pre-deployment hardening in progress
 Created: 2026-06-16  
 Owner: Grove-ovo
 
@@ -535,6 +535,23 @@ keeps the candidate in `failed`, `shadow`, or `assist` according to severity.
 6. Productization + Real E2E + Production Operations
 
 Each milestone should become its own Trellis task before implementation.
+
+## Operator Access Boundary
+
+Dashboard and non-Chatwoot `/api/v1/tenants/*` routes use generic OIDC
+Authorization Code flow with PKCE S256. An encrypted short-lived session stores
+only verified identity and authorization scope. The OIDC `sub` is the
+authoritative audit actor; browser-provided actor IDs are rejected.
+
+Authorization remains application enforced:
+
+- `operator` identities may access only tenant UUIDs in the configured tenant
+  claim.
+- `admin` identities receive explicit wildcard tenant access.
+- cookie-authenticated mutations require a session-bound CSRF token.
+- Chatwoot ingress remains on the separate HMAC machine boundary.
+
+See `operator_authentication.md` for configuration and key rotation.
 
 ## Production Topology
 

@@ -15,13 +15,18 @@ cp .env.production.example .env.production
 mkdir -p secrets
 node -e "console.log('base64url:' + require('crypto').randomBytes(32).toString('base64url'))" \
   > secrets/agentops_master_key
-openssl rand -base64 32 > secrets/grafana_admin_password
+openssl rand -out secrets/agentops_operator_session_key 32
+openssl rand -base64 -out secrets/agentops_oidc_client_secret 48
+openssl rand -base64 -out secrets/grafana_admin_password 32
 chmod 600 .env.production secrets/*
 ```
 
 Replace every placeholder password and configure provider origins, prices,
-Chatwoot secrets, and build version. Never commit `.env.production` or
-`secrets/`.
+Chatwoot secrets, OIDC issuer/client/callback values, and build version. Never
+commit `.env.production` or `secrets/`.
+
+See [Operator Authentication](../operator_authentication.md) for identity
+claims, cookie requirements, and session-key rotation.
 
 ## Validate And Build
 

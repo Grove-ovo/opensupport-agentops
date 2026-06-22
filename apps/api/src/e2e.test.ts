@@ -4,6 +4,7 @@ import { createServer } from 'node:http';
 import { test } from 'node:test';
 import { createTenantModelConfig } from '@opensupport/model-config';
 import { buildApp } from './app.js';
+import { TestOperatorAccess } from './test-operator-access.js';
 import { createPostgresPool } from './database.js';
 import { ProductionE2ERepository } from './e2e-repository.js';
 import { HttpLLMProviderAdapter } from './provider.js';
@@ -217,6 +218,7 @@ integration(
       requiredMigration: 16,
       dedupeTtlSeconds: 86_400,
       buildVersion: 'test',
+      operatorAccess: new TestOperatorAccess(),
       closeDependencies: false,
       chatwootIngress: ticketService,
       operations,

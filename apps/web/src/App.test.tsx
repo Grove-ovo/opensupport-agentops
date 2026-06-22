@@ -38,7 +38,13 @@ describe('operations dashboard', () => {
       const fetchMock = vi.mocked(fetch);
       expect(fetchMock).toHaveBeenCalledWith(
         expect.stringContaining(`/approvals/${APPROVAL_ID}/actions`),
-        expect.objectContaining({ method: 'POST' }),
+        expect.objectContaining({
+          method: 'POST',
+          credentials: 'same-origin',
+          headers: expect.objectContaining({
+            'x-csrf-token': 'test-csrf',
+          }),
+        }),
       );
     });
   });
@@ -46,11 +52,15 @@ describe('operations dashboard', () => {
   it('shows an unavailable state when tenant loading fails', async () => {
     vi.stubGlobal(
       'fetch',
-      vi.fn(async () =>
-        new Response(
+      vi.fn(async (input: RequestInfo | URL) => {
+        if (String(input) === '/api/v1/auth/session') {
+          return authSession();
+        }
+        return new Response(
           JSON.stringify({ error: { code: 'dependency_unavailable', message: 'Unavailable' } }),
           { status: 503, headers: { 'Content-Type': 'application/json' } },
-        )),
+        );
+      }),
     );
     render(<App />);
     expect(await screen.findByText('AgentOps unavailable')).toBeInTheDocument();
@@ -60,6 +70,9 @@ describe('operations dashboard', () => {
 
 async function mockFetch(input: RequestInfo | URL, init?: RequestInit) {
   const url = String(input);
+  if (url === '/api/v1/auth/session') {
+    return authSession();
+  }
   if (url === '/api/v1/tenants?limit=100&offset=0') {
     return json({
       items: [{
@@ -118,6 +131,21 @@ async function mockFetch(input: RequestInfo | URL, init?: RequestInit) {
     return json({ state: 'approved' });
   }
   throw new Error(`Unhandled request: ${url}`);
+}
+
+function authSession() {
+  return json({
+    principal: {
+      subject: 'provider-user-1',
+      display_name: 'Provider User',
+      email: 'operator@example.test',
+      roles: ['operator'],
+      tenant_ids: [TENANT_ID],
+      admin: false,
+    },
+    csrf_token: 'test-csrf',
+    expires_at: 1_800_000_000,
+  });
 }
 
 function json(body: unknown, status = 200) {

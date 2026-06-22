@@ -26,7 +26,6 @@ export function ReleasesView({ tenantId }: ReleasesViewProps) {
     try {
       await api.releaseTransition(tenantId, selectedId, {
         action,
-        actor_id: 'dashboard-operator',
         idempotency_key: crypto.randomUUID(),
         confirm: true,
       });
