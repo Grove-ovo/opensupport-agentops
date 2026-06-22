@@ -1397,3 +1397,36 @@ Closed the Phase 6 parent task after all five child tasks were independently che
 ### Next Steps
 
 - None - task complete
+
+
+## Session 43: Finalize Phase 6 archived validation
+
+**Date**: 2026-06-22
+**Task**: Finalize Phase 6 archived validation
+**Branch**: `feat/phase-6-validation-fix`
+
+### Summary
+
+Fixed the Phase 6 aggregate validator to resolve the parent PRD from either the active or archived Trellis path, then revalidated Phase 6, type checking, lint, production readiness, and remote branch synchronization.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `cc4120d` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
