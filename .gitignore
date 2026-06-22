@@ -11,6 +11,8 @@ test-results/
 .env
 .env.*
 !.env.example
+!.env.production.example
+secrets/
 
 *.log
 *.tsbuildinfo

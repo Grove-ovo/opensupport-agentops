@@ -1,4 +1,7 @@
 import assert from 'node:assert/strict';
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import { test } from 'node:test';
 import type {
   AgentOpsStore,
@@ -43,6 +46,24 @@ test('configuration validates the deployment master key', () => {
     AGENTOPS_MASTER_KEY: `base64url:${Buffer.alloc(32, 1).toString('base64url')}`,
   });
   assert.equal(config.requiredMigration, 16);
+});
+
+test('configuration reads the deployment master key from a secret file', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'agentops-config-'));
+  const path = join(directory, 'master-key');
+  const masterKey = `base64url:${Buffer.alloc(32, 2).toString('base64url')}`;
+  writeFileSync(path, `${masterKey}\n`, { mode: 0o600 });
+
+  try {
+    const config = loadApiConfig({
+      DATABASE_URL: 'postgresql://agentops:agentops@localhost:5432/agentops',
+      REDIS_URL: 'redis://localhost:6379/0',
+      AGENTOPS_MASTER_KEY_FILE: path,
+    });
+    assert.equal(config.masterKey, masterKey);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
 });
 
 test('liveness, readiness, metrics, and tenant routes expose stable contracts', async () => {

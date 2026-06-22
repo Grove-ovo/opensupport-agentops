@@ -3,6 +3,7 @@ import { RedisStreamQueue } from './redis-streams.js';
 import { MetricsRegistry } from './metrics.js';
 import { AsyncMonitorWorker } from './worker.js';
 import type { WorkerConfig } from './config.js';
+import { createStructuredLog } from './structured-log.js';
 
 export async function createWorkerRuntime(config: WorkerConfig) {
   const repository = new PostgresJobRepository(config.databaseUrl);
@@ -16,7 +17,14 @@ export async function createWorkerRuntime(config: WorkerConfig) {
       config.deadLetterStream,
     );
     const metrics = new MetricsRegistry();
-    const worker = new AsyncMonitorWorker(repository, queue, metrics, config);
+    const structuredLog = createStructuredLog(config.buildVersion);
+    const worker = new AsyncMonitorWorker(
+      repository,
+      queue,
+      metrics,
+      config,
+      structuredLog,
+    );
     await worker.initialize();
     return { worker, repository, queue, metrics };
   } catch (error) {

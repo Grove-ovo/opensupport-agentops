@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { parseMasterKey } from '@opensupport/model-config';
 
 export interface ApiConfig {
@@ -85,7 +86,12 @@ export function loadApiConfig(
     validatePricingValue,
   );
   const masterKey = requiredMasterKey(
-    env.AGENTOPS_MASTER_KEY,
+    secretValue(
+      env.AGENTOPS_MASTER_KEY,
+      env.AGENTOPS_MASTER_KEY_FILE,
+      'AGENTOPS_MASTER_KEY',
+      issues,
+    ),
     'AGENTOPS_MASTER_KEY',
     issues,
   );
@@ -111,6 +117,23 @@ export function loadApiConfig(
     pipelineDeadlineMs,
     approvalTtlMs,
   };
+}
+
+function secretValue(
+  direct: string | undefined,
+  file: string | undefined,
+  name: string,
+  issues: string[],
+): string | undefined {
+  if (direct?.trim()) return direct;
+  const path = file?.trim();
+  if (!path) return undefined;
+  try {
+    return readFileSync(path, 'utf8').trim();
+  } catch {
+    issues.push(`${name}_FILE:unreadable`);
+    return undefined;
+  }
 }
 
 function requiredMasterKey(

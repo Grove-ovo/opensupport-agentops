@@ -33,6 +33,18 @@ export async function registerChatwootRoutes(
       headers: request.headers,
       rawBody: request.body,
     });
+    request.log.info(
+      {
+        request_id: request.id,
+        tenant_id: request.params.tenantId,
+        source,
+        canonical_event_id: result.body.canonical_event_id ?? null,
+        trace_id: result.body.trace_id ?? null,
+        outcome: result.body.outcome ?? null,
+        decision: result.body.decision ?? null,
+      },
+      'chatwoot ingress completed',
+    );
     return reply.status(result.status).send(result.body);
   };
   const options = {

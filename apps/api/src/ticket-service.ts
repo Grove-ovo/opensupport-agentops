@@ -18,6 +18,7 @@ import type {
   AgentPipelineContext,
   ChatwootDeliveryCommand,
   GeneratedResponse,
+  NewLLMCallLog,
   RuntimeModeDecision,
   TenantModelConfig,
   TraceVersionSnapshot,
@@ -45,6 +46,7 @@ import {
   type ProductionE2ERepository,
 } from './e2e-repository.js';
 import type { EnvironmentSecretResolver } from './secrets.js';
+import type { StructuredLog } from './structured-log.js';
 
 export interface ProductionTicketServiceOptions {
   masterKey: string;
@@ -52,6 +54,7 @@ export interface ProductionTicketServiceOptions {
   dedupeTtlSeconds: number;
   pipelineDeadlineMs: number;
   approvalTtlMs: number;
+  log?: StructuredLog;
 }
 
 export class ProductionTicketService implements ChatwootIngressHandler {
@@ -330,7 +333,7 @@ export class ProductionTicketService implements ChatwootIngressHandler {
             currentTicketCost: costs.ticketCost,
             currentDailyCost: costs.dailyCost,
             pricingByModel: this.options.pricingByModel,
-            log: (record) => this.repository.appendLLMCallLog(record),
+            log: (record) => this.logProviderCall(record),
             routeDecision: route,
           });
           if (result.decision === null) {
@@ -414,6 +417,14 @@ export class ProductionTicketService implements ChatwootIngressHandler {
         deadlineAt,
       );
       const receipt = await this.delivery.deliver(command, connection);
+      this.options.log?.('chatwoot_delivery', {
+        delivery_id: receipt.delivery_id,
+        tenant_id: connection.tenant_id,
+        canonical_event_id: canonicalEventId,
+        trace_id: traceId,
+        status: receipt.status,
+        code: receipt.code,
+      });
       if (
         receipt.code !== 'credential_unavailable' &&
         receipt.code !== 'idempotency_conflict'
@@ -487,6 +498,17 @@ export class ProductionTicketService implements ChatwootIngressHandler {
         outcome,
       }),
     });
+    this.options.log?.('runtime_execution', {
+      execution_id: executionId,
+      tenant_id: connection.tenant_id,
+      canonical_event_id: canonicalEventId,
+      trace_id: traceId,
+      runtime_decision_id: decision.decision_id,
+      approval_id: auditApprovalId,
+      delivery_id: auditDeliveryId,
+      outcome,
+      failure_reason: failureReason,
+    });
     return { traceId, outcome, decision, failureReason };
     } finally {
       masterKey.fill(0);
@@ -532,7 +554,7 @@ export class ProductionTicketService implements ChatwootIngressHandler {
       currentTicketCost: costs.ticketCost,
       currentDailyCost: costs.dailyCost,
       pricingByModel: this.options.pricingByModel,
-      log: (record) => this.repository.appendLLMCallLog(record),
+      log: (record) => this.logProviderCall(record),
       parse: parseReply,
     });
     if (result.status !== 'succeeded' || result.data === null || result.usage === null) {
@@ -548,6 +570,18 @@ export class ProductionTicketService implements ChatwootIngressHandler {
       output_tokens: result.usage.output_tokens,
       estimated_cost: result.usage.estimated_cost,
     };
+  }
+
+  private async logProviderCall(record: NewLLMCallLog): Promise<void> {
+    await this.repository.appendLLMCallLog(record);
+    this.options.log?.('provider_call', {
+      provider_call_id: record.id,
+      tenant_id: record.tenant_id,
+      trace_id: record.trace_id,
+      model: record.model_name,
+      status: record.call_status,
+      latency_ms: record.latency_ms,
+    });
   }
 }
 

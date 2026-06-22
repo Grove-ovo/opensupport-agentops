@@ -1,0 +1,280 @@
+name: opensupport-agentops
+
+x-service-defaults: &service-defaults
+  restart: unless-stopped
+  init: true
+  security_opt:
+    - no-new-privileges:true
+  logging:
+    driver: json-file
+    options:
+      max-size: 10m
+      max-file: "5"
+  networks:
+    - backend
+
+x-app-environment: &app-environment
+  DATABASE_URL: postgresql://${AGENTOPS_POSTGRES_USER:-agentops}:${AGENTOPS_POSTGRES_PASSWORD:?set AGENTOPS_POSTGRES_PASSWORD}@postgres:5432/${AGENTOPS_POSTGRES_DB:-agentops}
+  REDIS_URL: redis://:${AGENTOPS_REDIS_PASSWORD:?set AGENTOPS_REDIS_PASSWORD}@redis:6379/0
+  AGENTOPS_REQUIRED_MIGRATION: "16"
+  AGENTOPS_BUILD_VERSION: ${AGENTOPS_BUILD_VERSION:-local}
+  LOG_LEVEL: ${LOG_LEVEL:-info}
+
+services:
+  postgres:
+    <<: *service-defaults
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: ${AGENTOPS_POSTGRES_USER:-agentops}
+      POSTGRES_PASSWORD: ${AGENTOPS_POSTGRES_PASSWORD:?set AGENTOPS_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${AGENTOPS_POSTGRES_DB:-agentops}
+    ports:
+      - "127.0.0.1:${AGENTOPS_POSTGRES_PORT:-55432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - backups:/backups
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 2G
+        reservations:
+          memory: 512M
+    networks:
+      - backend
+      - management
+
+  redis:
+    <<: *service-defaults
+    image: redis:7.4-alpine
+    command:
+      - sh
+      - -ec
+      - exec redis-server --appendonly yes --requirepass "$${REDIS_PASSWORD}"
+    environment:
+      REDIS_PASSWORD: ${AGENTOPS_REDIS_PASSWORD:?set AGENTOPS_REDIS_PASSWORD}
+    ports:
+      - "127.0.0.1:${AGENTOPS_REDIS_PORT:-56379}:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$${REDIS_PASSWORD}\" ping | grep PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    networks:
+      - backend
+      - management
+
+  migrate:
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile.api
+    image: opensupport-agentops-api:${AGENTOPS_BUILD_VERSION:-local}
+    environment:
+      <<: *app-environment
+    command: ["node", "scripts/migrate.mjs"]
+    restart: "no"
+    security_opt:
+      - no-new-privileges:true
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - backend
+
+  api:
+    <<: *service-defaults
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile.api
+    image: opensupport-agentops-api:${AGENTOPS_BUILD_VERSION:-local}
+    environment:
+      <<: *app-environment
+      HOST: 0.0.0.0
+      PORT: "8080"
+      AGENTOPS_MASTER_KEY_FILE: /run/secrets/agentops_master_key
+      AGENTOPS_MASTER_KEY_ID: ${AGENTOPS_MASTER_KEY_ID:-production-v1}
+      AGENTOPS_PROVIDER_BASE_URLS_JSON: ${AGENTOPS_PROVIDER_BASE_URLS_JSON:-{}}
+      AGENTOPS_MODEL_PRICING_JSON: ${AGENTOPS_MODEL_PRICING_JSON:-{}}
+      CHATWOOT_WEBHOOK_SECRET: ${CHATWOOT_WEBHOOK_SECRET:-}
+      CHATWOOT_API_TOKEN: ${CHATWOOT_API_TOKEN:-}
+      SMOKE_CHATWOOT_WEBHOOK_SECRET: ${SMOKE_CHATWOOT_WEBHOOK_SECRET:-}
+      SMOKE_CHATWOOT_API_TOKEN: ${SMOKE_CHATWOOT_API_TOKEN:-}
+    secrets:
+      - agentops_master_key
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/health/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 1G
+        reservations:
+          memory: 256M
+    networks:
+      - backend
+      - outbound
+
+  worker:
+    <<: *service-defaults
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile.worker
+    image: opensupport-agentops-worker:${AGENTOPS_BUILD_VERSION:-local}
+    environment:
+      <<: *app-environment
+      AGENTOPS_WORKER_HOST: 0.0.0.0
+      AGENTOPS_WORKER_PORT: "8081"
+      AGENTOPS_STREAM_KEY: ${AGENTOPS_STREAM_KEY:-agentops:jobs}
+      AGENTOPS_STREAM_GROUP: ${AGENTOPS_STREAM_GROUP:-agentops-workers}
+      AGENTOPS_DEAD_LETTER_STREAM: ${AGENTOPS_DEAD_LETTER_STREAM:-agentops:jobs:dead}
+      AGENTOPS_WORKER_CONSUMER: ${AGENTOPS_WORKER_CONSUMER:-worker-1}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8081/health/ready"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+        reservations:
+          memory: 128M
+    networks:
+      - backend
+      - outbound
+
+  web:
+    <<: *service-defaults
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile.web
+    image: opensupport-agentops-web:${AGENTOPS_BUILD_VERSION:-local}
+    ports:
+      - "${AGENTOPS_PUBLIC_PORT:-8088}:8080"
+    depends_on:
+      api:
+        condition: service_healthy
+      worker:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/nginx-health"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - frontend
+      - backend
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 128M
+
+  prometheus:
+    <<: *service-defaults
+    image: prom/prometheus:v3.2.1
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=15d
+    ports:
+      - "127.0.0.1:${AGENTOPS_PROMETHEUS_PORT:-9090}:9090"
+    volumes:
+      - ../observability/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ../observability/alerts.yml:/etc/prometheus/alerts.yml:ro
+      - prometheus_data:/prometheus
+    depends_on:
+      api:
+        condition: service_healthy
+      worker:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+    networks:
+      - backend
+      - management
+
+  grafana:
+    <<: *service-defaults
+    image: grafana/grafana:11.5.2
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD__FILE: /run/secrets/grafana_admin_password
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_AUTH_ANONYMOUS_ENABLED: "false"
+      GF_PLUGINS_PREINSTALL: ""
+      GF_ANALYTICS_CHECK_FOR_UPDATES: "false"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+    secrets:
+      - grafana_admin_password
+    ports:
+      - "127.0.0.1:${AGENTOPS_GRAFANA_PORT:-3001}:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ../observability/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ../observability/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      prometheus:
+        condition: service_started
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+    networks:
+      - management
+
+secrets:
+  agentops_master_key:
+    file: ${AGENTOPS_MASTER_KEY_FILE:-../../secrets/agentops_master_key}
+  grafana_admin_password:
+    file: ${GRAFANA_ADMIN_PASSWORD_FILE:-../../secrets/grafana_admin_password}
+
+volumes:
+  postgres_data:
+  redis_data:
+  prometheus_data:
+  grafana_data:
+  backups:
+
+networks:
+  frontend:
+  outbound:
+  management:
+  backend:
+    internal: true
