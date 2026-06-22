@@ -1,0 +1,22 @@
+FROM node:22-alpine AS build
+WORKDIR /app
+COPY package.json package-lock.json tsconfig.json tsconfig.base.json ./
+COPY apps ./apps
+COPY packages ./packages
+COPY scripts ./scripts
+COPY infra/migrations ./infra/migrations
+RUN npm ci && npm run build -- --force && npm prune --omit=dev
+
+FROM node:22-alpine AS runtime
+ENV NODE_ENV=production
+WORKDIR /app
+RUN addgroup -S agentops && adduser -S -G agentops agentops
+COPY --from=build --chown=agentops:agentops /app/package.json /app/package-lock.json ./
+COPY --from=build --chown=agentops:agentops /app/node_modules ./node_modules
+COPY --from=build --chown=agentops:agentops /app/apps/api ./apps/api
+COPY --from=build --chown=agentops:agentops /app/packages ./packages
+COPY --from=build --chown=agentops:agentops /app/scripts/migrate.mjs ./scripts/migrate.mjs
+COPY --from=build --chown=agentops:agentops /app/infra/migrations ./infra/migrations
+USER agentops
+EXPOSE 8080
+CMD ["node", "apps/api/dist/server.js"]

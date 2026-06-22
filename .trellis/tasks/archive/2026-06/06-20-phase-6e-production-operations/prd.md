@@ -26,18 +26,33 @@ guidance, and rollback procedures.
 
 ## Acceptance Criteria
 
-- [ ] Production Compose validates and the full stack becomes healthy.
-- [ ] A local smoke test creates tenant configuration, submits a Chatwoot event,
+- [x] Production Compose validates and the full stack becomes healthy.
+- [x] A local smoke test creates tenant configuration, submits a Chatwoot event,
       observes execution, and inspects it from the dashboard.
-- [ ] Metrics targets are healthy and dashboard provisioning loads.
-- [ ] Logs correlate API request, canonical event, trace, provider call, delivery,
+- [x] Metrics targets are healthy and dashboard provisioning loads.
+- [x] Logs correlate API request, canonical event, trace, provider call, delivery,
       and worker jobs.
-- [ ] Backup/restore and rollback commands are documented and dry-run verified.
-- [ ] Final full test, browser, migration, Compose, Trellis, and repository status
+- [x] Backup/restore and rollback commands are documented and dry-run verified.
+- [x] Final full test, browser, migration, Compose, Trellis, and repository status
       checks pass.
+
+## Verification
+
+Verified on June 22, 2026:
+
+- Production Compose started PostgreSQL, Redis, API, worker, web, Prometheus,
+  and Grafana healthy; migration service exited successfully.
+- Production smoke completed a signed Chatwoot event, provider call, delivery,
+  async monitor/aggregation, trace query, and Dashboard load.
+- Prometheus reported API and worker targets `up`; Grafana provisioned the
+  AgentOps dashboard.
+- Correlated logs included request, canonical event, trace, provider call,
+  delivery, execution, outbox, stream, service, and build identifiers.
+- Full tests, real PostgreSQL/Redis integration, browser tests, dependency
+  audit, image builds, backup/restore dry-runs, and clean migration replay
+  passed.
 
 ## Out Of Scope
 
 - Kubernetes and cloud-vendor-specific deployment automation.
 - Formal compliance certification.
-

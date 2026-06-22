@@ -5,4 +5,5 @@ export * from './metrics.js';
 export * from './redis-streams.js';
 export * from './repository.js';
 export * from './runtime.js';
+export * from './structured-log.js';
 export * from './worker.js';

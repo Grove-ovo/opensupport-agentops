@@ -35,6 +35,11 @@ export { PostgresAgentOpsStore } from './repositories.js';
 export { createRuntimeApp } from './runtime.js';
 export { EnvironmentSecretResolver } from './secrets.js';
 export {
+  createStructuredLog,
+  writeStructuredLog,
+  type StructuredLog,
+} from './structured-log.js';
+export {
   ProductionTicketService,
   type ProductionTicketServiceOptions,
 } from './ticket-service.js';

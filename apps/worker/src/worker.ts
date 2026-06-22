@@ -15,6 +15,10 @@ export class AsyncMonitorWorker {
     readonly queue: StreamQueue,
     readonly metrics: WorkerMetrics,
     readonly config: WorkerConfig,
+    readonly log: (
+      event: string,
+      fields: Readonly<Record<string, unknown>>,
+    ) => void = () => {},
   ) {
     metrics.gauge('agentops_worker_info', 1, {
       version: config.buildVersion,
@@ -104,6 +108,12 @@ export class AsyncMonitorWorker {
       try {
         const streamId = await this.queue.publish(record);
         await this.repository.markOutboxPublished(record.outbox_id, streamId);
+        this.log('outbox_published', {
+          outbox_id: record.outbox_id,
+          tenant_id: record.tenant_id,
+          job_type: record.job_type,
+          stream_id: streamId,
+        });
         this.metrics.increment('agentops_worker_outbox_published_total', {
           job_type: record.job_type,
         });
@@ -143,6 +153,7 @@ export class AsyncMonitorWorker {
     try {
       await this.repository.executeJob(job);
       await this.queue.ack(job.stream_id);
+      this.log('job_completed', jobFields(job));
       this.metrics.increment('agentops_worker_jobs_completed_total', {
         job_type: job.job_type,
       });
@@ -152,12 +163,21 @@ export class AsyncMonitorWorker {
       await this.repository.markJobFailure(job, code, exhausted);
       if (exhausted) {
         await this.queue.deadLetter(job, code);
+        this.log('job_dead_lettered', {
+          ...jobFields(job),
+          error_code: code,
+        });
         this.metrics.increment('agentops_worker_dead_letter_total', {
           job_type: job.job_type,
           error_code: code,
         });
       } else {
         await this.queue.retry(job, code);
+        this.log('job_retried', {
+          ...jobFields(job),
+          error_code: code,
+          next_attempt: job.attempt + 1,
+        });
         this.metrics.increment('agentops_worker_retries_total', {
           job_type: job.job_type,
           error_code: code,
@@ -166,6 +186,18 @@ export class AsyncMonitorWorker {
       await this.queue.ack(job.stream_id);
     }
   }
+}
+
+function jobFields(job: StreamJob): Record<string, unknown> {
+  return {
+    outbox_id: job.outbox_id,
+    tenant_id: job.tenant_id,
+    job_type: job.job_type,
+    aggregate_type: job.aggregate_type,
+    aggregate_id: job.aggregate_id,
+    stream_id: job.stream_id,
+    attempt: job.attempt,
+  };
 }
 
 function dedupeJobs(jobs: readonly StreamJob[]): StreamJob[] {

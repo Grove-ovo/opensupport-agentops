@@ -1,7 +1,7 @@
 # Local Runtime Foundation
 
-Status: Phase 6B deployable Chatwoot and tenant-BYOK runtime
-Scope: AgentOps API, PostgreSQL, Redis, Chatwoot, and LLM provider execution
+Status: Phase 6 production-oriented application runtime
+Scope: API, Dashboard, worker, PostgreSQL, Redis, Chatwoot, providers, and ops
 
 ## Runtime Components
 
@@ -66,7 +66,7 @@ npm run db:migrate
 ```
 
 The command applies the complete ordered migration chain from
-`0001_phase1_foundation.sql` through `0015_chatwoot_llm_e2e.sql`.
+`0001_phase1_foundation.sql` through `0016_async_monitor_worker.sql`.
 
 Production-style environments can run the same ordered chain without `psql`:
 
@@ -240,11 +240,10 @@ endpoint. It does not create tenant or connection records.
 
 ## Phase Boundaries
 
-Phase 6B provides real Chatwoot ingress/delivery and tenant BYOK model calls.
-Dashboard UI, asynchronous worker consumption, and production reverse-proxy,
-monitoring, backup, and runbook composition are owned by later Phase 6
-subtasks. Billing, full RBAC, public accounts, and real commerce mutations
-remain out of scope.
+Phase 6 provides real Chatwoot ingress/delivery, tenant BYOK model calls,
+Dashboard workflows, asynchronous monitoring, and production Compose
+operations. Billing, full RBAC, public accounts, Kubernetes, formal compliance,
+and real commerce mutations remain out of scope.
 
 The original Phase 1A foundation does not implement those deferred product
 features; later migrations and applications add only their explicitly owned

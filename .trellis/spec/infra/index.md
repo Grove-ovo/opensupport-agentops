@@ -20,6 +20,7 @@
 | [Phase 4D Release Candidate State Machine](./phase-4d-release-candidate-state-machine.md) | Immutable seven-version snapshots, exact Eval Runs, guarded promotion state, and audit | Active |
 | [Phase 6A API And Storage Runtime](./phase-6a-api-storage-runtime.md) | Fastify composition, PostgreSQL repositories, Redis coordination, readiness, and migration idempotency | Active |
 | [Phase 6D Async Monitor Worker](./phase-6d-async-monitor-worker.md) | PostgreSQL outbox, Redis Streams, durable leases, retries, DLQ, and async materialization | Active |
+| [Phase 6E Production Operations](./phase-6e-production-operations.md) | Production images, Compose topology, secret files, observability, smoke tests, and operational recovery | Active |
 | [GitHub Release Readiness](./github-release-readiness.md) | Accurate repository entry docs, MIT license, CI quality chain, branch policy, and private publication | Active |
 
 ## Pre-Development Checklist
@@ -52,6 +53,9 @@ Before changing infra, database, or local runtime files:
 - Read [Phase 6D Async Monitor Worker](./phase-6d-async-monitor-worker.md)
   when changing outbox publication, Redis Streams, worker leases, retry/DLQ,
   monitor results, failure materialization, or dashboard aggregates.
+- Read [Phase 6E Production Operations](./phase-6e-production-operations.md)
+  when changing production images, Compose wiring, reverse-proxy routes,
+  service metrics, structured logs, secrets, backups, or rollout procedures.
 - Read [GitHub Release Readiness](./github-release-readiness.md) when changing
   repository entry documentation, CI, release branches, license, or remote
   publication.
