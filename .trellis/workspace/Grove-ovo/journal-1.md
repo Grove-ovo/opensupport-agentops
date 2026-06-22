@@ -1463,3 +1463,36 @@ Added generic OIDC PKCE login, encrypted rotating sessions, tenant-scoped operat
 ### Next Steps
 
 - None - task complete
+
+
+## Session 45: Phase 7B edge transport hardening
+
+**Date**: 2026-06-22
+**Task**: Phase 7B edge transport hardening
+**Branch**: `feat/phase-7b-edge-transport-hardening`
+
+### Summary
+
+Added endpoint-class Nginx rate limits, request and connection bounds, stable edge errors, strict browser headers, trusted proxy rebuilding, Fastify transport limits, CSP-safe UI styling, and reproducible isolated container abuse tests.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `018557c` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

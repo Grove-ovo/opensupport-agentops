@@ -45,7 +45,12 @@ export function OverviewView({ tenantId }: OverviewViewProps) {
           <div className="workload-chart" role="img" aria-label="Hourly trace workload">
             {data.workload.map((point) => (
               <div className="workload-column" key={point.bucket} title={`${point.traces} traces`}>
-                <div className="workload-bar" style={{ height: `${Math.max(8, (point.traces / maxWorkload) * 100)}%` }} />
+                <div
+                  className={`workload-bar workload-height-${Math.max(
+                    1,
+                    Math.ceil((point.traces / maxWorkload) * 10),
+                  )}`}
+                />
                 <span>{new Date(point.bucket).getHours().toString().padStart(2, '0')}</span>
               </div>
             ))}

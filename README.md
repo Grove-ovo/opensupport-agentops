@@ -50,6 +50,7 @@ remain out of scope.
 - [Async monitor worker](./docs/async_monitor_worker.md)
 - [Deployment runbook](./docs/operations/deployment-runbook.md)
 - [Operator authentication](./docs/operator_authentication.md)
+- [Edge and transport security](./docs/edge_transport_security.md)
 
 ## Repository Layout
 

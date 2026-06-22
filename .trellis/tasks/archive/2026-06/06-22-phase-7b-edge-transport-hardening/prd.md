@@ -18,12 +18,23 @@ defaults without requiring actual TLS deployment.
 
 ## Acceptance Criteria
 
-- [ ] Oversized requests fail before application processing.
-- [ ] Rate limits are isolated by endpoint class and trusted identity/source.
-- [ ] Security headers are present on HTML and API responses.
-- [ ] Spoofed forwarded identity or scheme headers are not trusted publicly.
-- [ ] Chatwoot retry behavior is compatible with limits and stable responses.
+- [x] Oversized requests fail before application processing.
+- [x] Rate limits are isolated by endpoint class and trusted identity/source.
+- [x] Security headers are present on HTML and API responses.
+- [x] Spoofed forwarded identity or scheme headers are not trusted publicly.
+- [x] Chatwoot retry behavior is compatible with limits and stable responses.
 
 ## Out Of Scope
 
 - Issuing certificates or exposing the service publicly.
+
+## Verification
+
+- `npm run test:phase7b`
+- `npm run test:phase7b:container`
+- `npm run test:api`
+- `npm run test:web`
+- `npm run test:web:e2e`
+- `npm run typecheck`
+- `npm run lint`
+- Production Compose config and image `nginx -t`

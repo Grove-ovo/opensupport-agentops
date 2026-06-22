@@ -1,0 +1,3 @@
+{"file": ".trellis/spec/infra/phase-6e-production-operations.md", "reason": "Nginx, Compose, public topology, and stable operations contracts"}
+{"file": ".trellis/spec/infra/phase-7a-operator-access.md", "reason": "Preserve auth, Chatwoot, health, and operator route boundaries"}
+{"file": ".trellis/spec/integrations/phase-6b-chatwoot-llm-e2e.md", "reason": "Preserve signed Chatwoot retry and online timeout behavior"}

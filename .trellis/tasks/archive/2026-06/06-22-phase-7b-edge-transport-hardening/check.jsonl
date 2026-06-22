@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/infra/phase-6e-production-operations.md", "reason": "Verify Compose, Nginx, secrets, probes, and smoke compatibility"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Verify CSP/security headers do not break Dashboard desktop/mobile behavior"}

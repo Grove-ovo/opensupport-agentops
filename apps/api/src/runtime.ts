@@ -63,6 +63,7 @@ export async function createRuntimeApp(config: ApiConfig): Promise<FastifyInstan
             build_version: config.buildVersion,
           },
         },
+        ...config.transport,
       },
     );
   } catch (error) {

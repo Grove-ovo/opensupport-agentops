@@ -27,6 +27,8 @@ commit `.env.production` or `secrets/`.
 
 See [Operator Authentication](../operator_authentication.md) for identity
 claims, cookie requirements, and session-key rotation.
+See [Edge And Transport Security](../edge_transport_security.md) for public
+scheme, HSTS, request limits, and trusted proxy behavior.
 
 ## Validate And Build
 

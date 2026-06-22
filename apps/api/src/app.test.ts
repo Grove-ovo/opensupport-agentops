@@ -52,6 +52,13 @@ test('configuration validates the deployment master key', () => {
     AGENTOPS_MASTER_KEY: `base64url:${Buffer.alloc(32, 1).toString('base64url')}`,
   });
   assert.equal(config.requiredMigration, 16);
+  assert.deepEqual(config.transport, {
+    bodyLimitBytes: 1_048_576,
+    requestTimeoutMs: 35_000,
+    connectionTimeoutMs: 10_000,
+    keepAliveTimeoutMs: 20_000,
+    maxRequestsPerSocket: 1_000,
+  });
 });
 
 test('configuration reads the deployment master key from a secret file', () => {
@@ -178,6 +185,38 @@ test('invalid route parameters return a stable validation envelope', async () =>
       request_id: 'invalid-1',
     },
   });
+});
+
+test('oversized request bodies fail before application processing', async () => {
+  let handled = false;
+  const app = buildApp(
+    {
+      store: new FakeStore(),
+      redis: new FakeRedis(),
+      operatorAccess: new TestOperatorAccess(undefined, false),
+      chatwootIngress: {
+        async handle() {
+          handled = true;
+          return { status: 202, body: { accepted: true } };
+        },
+      },
+      requiredMigration: 16,
+      dedupeTtlSeconds: 86_400,
+      buildVersion: 'test',
+      closeDependencies: false,
+    },
+    { bodyLimitBytes: 64 },
+  );
+  test.after(() => app.close());
+  const response = await app.inject({
+    method: 'POST',
+    url: `/api/v1/chatwoot/webhooks/${TENANT_ID}`,
+    headers: { 'content-type': 'application/json' },
+    payload: JSON.stringify({ content: 'x'.repeat(128) }),
+  });
+  assert.equal(response.statusCode, 413);
+  assert.equal(response.json().error.code, 'payload_too_large');
+  assert.equal(handled, false);
 });
 
 class FakeStore implements AgentOpsStore {
