@@ -78,7 +78,7 @@ publishing a public endpoint, or enabling live Auto traffic.
 - [x] Chatwoot HMAC ingress continues to work without operator credentials and
       cannot access operator routes.
 - [x] Tenant-scoped operator access cannot read or mutate another tenant.
-- [ ] Edge limits return stable status codes and do not expose secrets or raw
+- [x] Edge limits return stable status codes and do not expose secrets or raw
       customer/provider payloads.
 - [ ] Production preflight rejects default passwords, smoke credentials,
       missing secret files, invalid provider origins, mutable/local image tags,

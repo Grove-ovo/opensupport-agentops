@@ -71,6 +71,16 @@ main { padding: 24px 28px 42px; }
 .workload-chart { height: 260px; padding: 30px 20px 16px; display: flex; align-items: end; gap: clamp(3px, 1.1vw, 14px); border-bottom: 1px solid #edf1f1; }
 .workload-column { height: 100%; min-width: 7px; flex: 1; display: flex; flex-direction: column; justify-content: end; align-items: center; gap: 7px; }
 .workload-bar { width: 100%; max-width: 28px; min-height: 5px; background: var(--teal); border-radius: 2px 2px 0 0; }
+.workload-height-1 { height: 10%; }
+.workload-height-2 { height: 20%; }
+.workload-height-3 { height: 30%; }
+.workload-height-4 { height: 40%; }
+.workload-height-5 { height: 50%; }
+.workload-height-6 { height: 60%; }
+.workload-height-7 { height: 70%; }
+.workload-height-8 { height: 80%; }
+.workload-height-9 { height: 90%; }
+.workload-height-10 { height: 100%; }
 .workload-column span { color: #899395; font-size: 9px; }
 .failure-strip { padding: 16px 18px; display: flex; align-items: center; gap: 22px; color: #783535; background: var(--red-soft); border: 1px solid #f0cccc; border-radius: 6px; }
 .failure-strip div { display: flex; align-items: baseline; gap: 9px; }

@@ -42,6 +42,11 @@ export interface BuildAppOptions {
     level: string;
     base?: Readonly<Record<string, unknown>>;
   };
+  bodyLimitBytes?: number;
+  requestTimeoutMs?: number;
+  connectionTimeoutMs?: number;
+  keepAliveTimeoutMs?: number;
+  maxRequestsPerSocket?: number;
 }
 
 export function buildApp(
@@ -52,6 +57,11 @@ export function buildApp(
     logger: options.logger ?? false,
     genReqId: (request) => headerValue(request.headers['x-request-id']) ?? randomUUID(),
     disableRequestLogging: false,
+    bodyLimit: options.bodyLimitBytes ?? 1_048_576,
+    requestTimeout: options.requestTimeoutMs ?? 35_000,
+    connectionTimeout: options.connectionTimeoutMs ?? 10_000,
+    keepAliveTimeout: options.keepAliveTimeoutMs ?? 20_000,
+    maxRequestsPerSocket: options.maxRequestsPerSocket ?? 1_000,
   });
   const metrics = new MetricsRegistry();
   metrics.gauge('agentops_info', 1, {
@@ -81,11 +91,12 @@ export function buildApp(
     }
     const validation = hasValidation(error);
     const statusCode = validation ? 400 : getStatusCode(error);
+    const code = stableErrorCode(statusCode, validation);
     request.log.error({ err: error, request_id: request.id }, 'request failed');
     void reply.status(statusCode).send({
       error: {
-        code: validation ? 'invalid_request' : statusCode === 404 ? 'not_found' : 'internal_error',
-        message: validation ? 'Request validation failed' : statusCode === 404 ? 'Resource not found' : 'Request failed',
+        code,
+        message: stableErrorMessage(code),
         request_id: request.id,
       },
     });
@@ -384,4 +395,28 @@ function getStatusCode(error: unknown): number {
     return error.statusCode;
   }
   return 500;
+}
+
+function stableErrorCode(statusCode: number, validation: boolean): string {
+  if (validation) return 'invalid_request';
+  if (statusCode === 404) return 'not_found';
+  if (statusCode === 408) return 'request_timeout';
+  if (statusCode === 413) return 'payload_too_large';
+  if (statusCode === 429) return 'rate_limited';
+  if (statusCode === 502) return 'bad_gateway';
+  if (statusCode === 503) return 'service_unavailable';
+  if (statusCode === 504) return 'upstream_timeout';
+  return 'internal_error';
+}
+
+function stableErrorMessage(code: string): string {
+  if (code === 'invalid_request') return 'Request validation failed';
+  if (code === 'not_found') return 'Resource not found';
+  if (code === 'request_timeout') return 'Request timed out';
+  if (code === 'payload_too_large') return 'Request payload is too large';
+  if (code === 'rate_limited') return 'Request rate limit exceeded';
+  if (code === 'upstream_timeout') return 'Upstream request timed out';
+  if (code === 'bad_gateway') return 'Upstream service failed';
+  if (code === 'service_unavailable') return 'Service unavailable';
+  return 'Request failed';
 }

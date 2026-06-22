@@ -194,6 +194,9 @@ services:
       context: ../..
       dockerfile: infra/docker/Dockerfile.web
     image: opensupport-agentops-web:${AGENTOPS_BUILD_VERSION:-local}
+    environment:
+      AGENTOPS_PUBLIC_SCHEME: ${AGENTOPS_PUBLIC_SCHEME:-http}
+      AGENTOPS_HSTS_VALUE: ${AGENTOPS_HSTS_VALUE:-}
     ports:
       - "${AGENTOPS_PUBLIC_PORT:-8088}:8080"
     depends_on:

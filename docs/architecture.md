@@ -568,6 +568,20 @@ Only Nginx exposes the application port. PostgreSQL, Redis, Prometheus, and
 Grafana bind to localhost administration ports by default. Production internet
 exposure requires an external TLS terminator or load balancer.
 
+### Public Edge
+
+The Nginx public boundary applies separate source-based rate zones for OIDC
+auth, Chatwoot ingress, operator reads, and operator writes. It rejects
+oversized bodies and slow clients before application processing, bounds
+upstream timeouts, and returns stable JSON for edge-generated `413`, `429`,
+and `504` responses.
+
+Forwarded address, scheme, and identity headers from public clients are not
+trusted. Nginx rebuilds transport headers from the socket and configured public
+scheme, while Fastify continues to enforce OIDC and tenant authorization.
+Strict CSP, Permissions-Policy, explicit caching, and configurable HSTS apply
+to the Dashboard and API. See `edge_transport_security.md`.
+
 ## References
 
 - Source PRD: `../OpenSupport_AgentOps_PRD.md`

@@ -35,6 +35,13 @@ export interface ApiConfig {
     sessionTtlSeconds: number;
     secureCookie: boolean;
   };
+  transport: {
+    bodyLimitBytes: number;
+    requestTimeoutMs: number;
+    connectionTimeoutMs: number;
+    keepAliveTimeoutMs: number;
+    maxRequestsPerSocket: number;
+  };
 }
 
 export class ConfigError extends Error {
@@ -149,6 +156,41 @@ export function loadApiConfig(
     'AGENTOPS_COOKIE_SECURE',
     issues,
   );
+  const bodyLimitBytes = integer(
+    env.AGENTOPS_HTTP_BODY_LIMIT_BYTES ?? '1048576',
+    'AGENTOPS_HTTP_BODY_LIMIT_BYTES',
+    16_384,
+    10_485_760,
+    issues,
+  );
+  const requestTimeoutMs = integer(
+    env.AGENTOPS_HTTP_REQUEST_TIMEOUT_MS ?? '35000',
+    'AGENTOPS_HTTP_REQUEST_TIMEOUT_MS',
+    1_000,
+    120_000,
+    issues,
+  );
+  const connectionTimeoutMs = integer(
+    env.AGENTOPS_HTTP_CONNECTION_TIMEOUT_MS ?? '10000',
+    'AGENTOPS_HTTP_CONNECTION_TIMEOUT_MS',
+    1_000,
+    60_000,
+    issues,
+  );
+  const keepAliveTimeoutMs = integer(
+    env.AGENTOPS_HTTP_KEEPALIVE_TIMEOUT_MS ?? '20000',
+    'AGENTOPS_HTTP_KEEPALIVE_TIMEOUT_MS',
+    1_000,
+    120_000,
+    issues,
+  );
+  const maxRequestsPerSocket = integer(
+    env.AGENTOPS_HTTP_MAX_REQUESTS_PER_SOCKET ?? '1000',
+    'AGENTOPS_HTTP_MAX_REQUESTS_PER_SOCKET',
+    1,
+    100_000,
+    issues,
+  );
 
   if (issues.length > 0) {
     throw new ConfigError(issues);
@@ -183,6 +225,13 @@ export function loadApiConfig(
       sessionKeys: operatorSessionKeys,
       sessionTtlSeconds: operatorSessionTtlSeconds,
       secureCookie,
+    },
+    transport: {
+      bodyLimitBytes,
+      requestTimeoutMs,
+      connectionTimeoutMs,
+      keepAliveTimeoutMs,
+      maxRequestsPerSocket,
     },
   };
 }
