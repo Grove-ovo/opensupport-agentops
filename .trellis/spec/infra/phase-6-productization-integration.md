@@ -24,6 +24,8 @@ production smoke harness.
 `npm test` includes `test:phase6a` through `test:phase6e` followed by the
 aggregate `test:phase6`. Child validators own component structure; the
 aggregate validator owns phase completeness and stale-document detection.
+The aggregate validator reads the active parent PRD while work is in progress
+and falls back to the archived parent PRD after `trellis-finish-work`.
 
 ## 4. Validation & Error Matrix
 
@@ -33,6 +35,7 @@ aggregate validator owns phase completeness and stale-document detection.
 | Any child task status is not `completed` | Aggregate validation fails |
 | API, web, worker, migration, or deployment asset missing | Validation fails |
 | Parent PRD retains pre-Phase-6 placeholder claims | Validation fails |
+| Parent task has been archived | Validate the archived PRD path |
 | README does not report production-oriented Phase 6 | Validation fails |
 | All child and aggregate checks pass | Parent task may be archived |
 
