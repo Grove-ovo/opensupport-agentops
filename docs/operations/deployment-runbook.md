@@ -33,8 +33,7 @@ scheme, HSTS, request limits, and trusted proxy behavior.
 ## Validate And Build
 
 ```sh
-docker compose --env-file .env.production \
-  -f infra/docker/compose.production.yml config
+AGENTOPS_ENV_FILE=.env.production npm run deploy:preflight
 
 docker compose --env-file .env.production \
   -f infra/docker/compose.production.yml build
@@ -46,8 +45,7 @@ docker compose --env-file .env.production \
 npm run ops:backup:dry-run
 sh scripts/ops/backup.sh
 
-docker compose --env-file .env.production \
-  -f infra/docker/compose.production.yml up -d
+AGENTOPS_ENV_FILE=.env.production npm run deploy:up
 
 docker compose --env-file .env.production \
   -f infra/docker/compose.production.yml ps
@@ -58,6 +56,10 @@ curl -fsS http://127.0.0.1:8088/worker/health/ready
 
 The one-shot `migrate` service must exit successfully before API and worker
 start. Do not bypass migration health ordering.
+
+The committed example environment is intentionally blocked. Replace every
+placeholder and review both reports before rollout. See
+[Production Preflight](./deploy-preflight.md).
 
 ## Smoke
 
