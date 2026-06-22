@@ -80,7 +80,7 @@ publishing a public endpoint, or enabling live Auto traffic.
 - [x] Tenant-scoped operator access cannot read or mutate another tenant.
 - [x] Edge limits return stable status codes and do not expose secrets or raw
       customer/provider payloads.
-- [ ] Production preflight rejects default passwords, smoke credentials,
+- [x] Production preflight rejects default passwords, smoke credentials,
       missing secret files, invalid provider origins, mutable/local image tags,
       and incomplete monitoring configuration.
 - [ ] CI boots the production Compose stack and completes readiness plus

@@ -582,6 +582,15 @@ scheme, while Fastify continues to enforce OIDC and tenant authorization.
 Strict CSP, Permissions-Policy, explicit caching, and configurable HSTS apply
 to the Dashboard and API. See `edge_transport_security.md`.
 
+### Deployment Preflight
+
+Production startup is gated by a host-side preflight that verifies environment
+and secret-file safety, OIDC/public origin consistency, provider configuration,
+immutable build identity, ports, monitoring, migration floor, and the exact
+host backup path mounted by Compose. It emits secret-safe JSON and Markdown
+reports with `ready`, `warning`, or `blocked` status. Only `ready` permits the
+approved `deploy:up` command to start Compose.
+
 ## References
 
 - Source PRD: `../OpenSupport_AgentOps_PRD.md`

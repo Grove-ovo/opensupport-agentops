@@ -25,6 +25,7 @@
 | [GitHub Release Readiness](./github-release-readiness.md) | Accurate repository entry docs, MIT license, CI quality chain, branch policy, and private publication | Active |
 | [Phase 7A Operator Access](./phase-7a-operator-access.md) | OIDC PKCE, encrypted sessions, tenant claims, CSRF, and audit identity | Active |
 | [Phase 7B Edge Transport](./phase-7b-edge-transport.md) | Nginx/Fastify request bounds, rate classes, proxy trust, and browser headers | Active |
+| [Phase 7C Production Preflight](./phase-7c-production-preflight.md) | Fail-closed environment validation and secret-safe readiness reports | Active |
 
 ## Pre-Development Checklist
 
@@ -71,6 +72,9 @@ Before changing infra, database, or local runtime files:
 - Read [Phase 7B Edge Transport](./phase-7b-edge-transport.md) when changing
   Nginx, public proxy headers, rate limits, body/header bounds, or HTTP
   timeouts.
+- Read [Phase 7C Production Preflight](./phase-7c-production-preflight.md) when
+  changing production environment keys, secret files, deployment gates, or
+  readiness evidence.
 - Confirm whether the change belongs to the active Trellis phase.
 - Search existing migrations and docs before adding duplicate table or env names.
 - Keep secret-bearing values as references, not plaintext persisted values.

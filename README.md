@@ -51,6 +51,7 @@ remain out of scope.
 - [Deployment runbook](./docs/operations/deployment-runbook.md)
 - [Operator authentication](./docs/operator_authentication.md)
 - [Edge and transport security](./docs/edge_transport_security.md)
+- [Production preflight](./docs/operations/deploy-preflight.md)
 
 ## Repository Layout
 

@@ -18,11 +18,22 @@ unsafe, placeholder-based, or inconsistent.
 
 ## Acceptance Criteria
 
-- [ ] Known unsafe examples are blocked with stable reason codes.
-- [ ] A generated ephemeral valid configuration reports `ready`.
-- [ ] Reports contain hashes/metadata only, never secret contents.
-- [ ] Compose startup can be gated on successful preflight.
+- [x] Known unsafe examples are blocked with stable reason codes.
+- [x] A generated ephemeral valid configuration reports `ready`.
+- [x] Reports contain hashes/metadata only, never secret contents.
+- [x] Compose startup can be gated on successful preflight.
 
 ## Out Of Scope
 
 - Creating real secrets or provider accounts.
+
+## Verification
+
+- `npm run test:phase7c`
+- `AGENTOPS_ENV_FILE=.env.production.example npm run deploy:preflight`
+  exits non-zero with blocked reason codes.
+- Ephemeral valid fixture exercises the CLI and produces `ready` reports.
+- Production Compose config validates with an explicit backup bind.
+- `npm run typecheck`
+- `npm run lint`
+- `npm test`
