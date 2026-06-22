@@ -43,33 +43,49 @@ archived with `trellis-finish-work` before the next subtask begins.
 
 ## Acceptance Criteria
 
-- [ ] A clean environment can start the full stack from documented commands.
-- [ ] API readiness fails when required PostgreSQL or Redis dependencies are
+- [x] A clean environment can start the full stack from documented commands.
+- [x] API readiness fails when required PostgreSQL or Redis dependencies are
       unavailable and succeeds when migrations and dependencies are ready.
-- [ ] Duplicate Agent Bot/account webhook delivery creates one canonical
+- [x] Duplicate Agent Bot/account webhook delivery creates one canonical
       execution.
-- [ ] A configured tenant can invoke at least one real supported LLM provider
+- [x] A configured tenant can invoke at least one real supported LLM provider
       and deliver the resulting mode-controlled action through Chatwoot.
-- [ ] Provider, Chatwoot, approval, release, and worker side effects are
+- [x] Provider, Chatwoot, approval, release, and worker side effects are
       idempotent and auditable.
-- [ ] Dashboard users can inspect traces and complete approval and release
+- [x] Dashboard users can inspect traces and complete approval and release
       workflows through the API.
-- [ ] Monitor jobs retry safely, move exhausted work to a dead-letter stream,
+- [x] Monitor jobs retry safely, move exhausted work to a dead-letter stream,
       and do not block the customer response path.
-- [ ] Prometheus-compatible metrics, structured logs, health probes, and
+- [x] Prometheus-compatible metrics, structured logs, health probes, and
       operational runbooks are present.
-- [ ] Unit, integration, type-check, lint, migration, Compose, and browser
+- [x] Unit, integration, type-check, lint, migration, Compose, and browser
       verification pass.
 
 ## Definition Of Done
 
-- Every child task is implemented, checked, committed, and archived.
-- `npm run typecheck`, `npm run lint`, and the complete test suite pass.
-- Database migrations run against PostgreSQL and Redis-backed integration tests
+- [x] Every child task is implemented, checked, committed, and archived.
+- [x] `npm run typecheck`, `npm run lint`, and the complete test suite pass.
+- [x] Database migrations run against PostgreSQL and Redis-backed integration tests
   pass.
-- Production Compose configuration validates and its services become healthy.
-- Dashboard is checked at desktop and mobile widths with no broken workflows.
-- README and architecture/runbook documentation match the executable system.
+- [x] Production Compose configuration validates and its services become healthy.
+- [x] Dashboard is checked at desktop and mobile widths with no broken workflows.
+- [x] README and architecture/runbook documentation match the executable system.
+
+## Verification
+
+Verified on June 22, 2026:
+
+- Phase 6A through 6E were independently checked, committed, archived, and
+  merged through feature branches into `dev`.
+- The production Compose stack remained healthy with migration version 16,
+  API/worker readiness, two healthy Prometheus targets, and provisioned
+  Grafana dashboards.
+- A signed Chatwoot production smoke invoked a tenant BYOK-compatible provider,
+  persisted the trace and runtime audit, delivered the reply, completed async
+  monitor/aggregation jobs, and exposed the result in the Dashboard.
+- Full unit/report tests, PostgreSQL/Redis integrations, browser tests,
+  dependency audit, all image builds, backup/restore dry-runs, and clean
+  migration replay passed.
 
 ## Technical Approach
 
@@ -107,11 +123,11 @@ clear.
 
 ## Technical Notes
 
-- Existing `apps/api` and `apps/web` directories are reserved but empty.
-- Existing domain packages and migrations through `0013` are authoritative.
-- Current provider execution is injected/deterministic and must gain real
-  adapters without changing its public semantics.
-- Current frontend spec files are placeholders and must be updated when the
-  dashboard establishes actual conventions.
+- `apps/api`, `apps/web`, and `apps/worker` are independently runnable
+  application boundaries.
+- Existing domain packages remain authoritative; production adapters preserve
+  their public semantics.
+- Migrations through `0016` define the current production schema.
+- Frontend, integration, worker, and production operations contracts are
+  captured in `.trellis/spec/`.
 - Research summary: `research/productization-stack.md`.
-
