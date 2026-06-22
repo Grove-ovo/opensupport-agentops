@@ -6,46 +6,34 @@
 
 ## Overview
 
-<!--
-Document your project's hook conventions here.
-
-Questions to answer:
-- What custom hooks do you have?
-- How do you handle data fetching?
-- What are the naming conventions?
-- How do you share stateful logic?
--->
-
-(To be filled by the team)
+The dashboard uses React hooks without a global state library. `useResource`
+is the server-read primitive for the MVP.
 
 ---
 
 ## Custom Hook Patterns
 
-<!-- How to create and structure custom hooks -->
-
-(To be filled by the team)
+Custom hooks start with `use`, return a typed object, and keep effect cleanup
+inside the hook. A loader key must contain every value that changes the
+request.
 
 ---
 
 ## Data Fetching
 
-<!-- How data fetching is handled (React Query, SWR, etc.) -->
-
-(To be filled by the team)
+`useResource(key, loader)` returns `data`, `loading`, `error`, `stale`,
+`reload`, and `setData`. Keep prior data when refresh fails so views can show
+a stale banner instead of becoming blank.
 
 ---
 
 ## Naming Conventions
 
-<!-- Hook naming rules (use*, etc.) -->
-
-(To be filled by the team)
+Use `use<ResourceName>` for domain hooks and `useResource` for generic reads.
 
 ---
 
 ## Common Mistakes
 
-<!-- Hook-related mistakes your team has made -->
-
-(To be filled by the team)
+Do not omit tenant IDs, pagination offsets, filters, or selected record IDs
+from the resource key. Effects must ignore results after unmount.

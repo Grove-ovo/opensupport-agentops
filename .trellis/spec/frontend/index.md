@@ -6,7 +6,9 @@
 
 ## Overview
 
-This directory contains guidelines for frontend development. Fill in each file with your project's specific conventions.
+The operator UI is a React 19 and Vite workspace at `apps/web`. It consumes
+tenant-scoped JSON APIs from `apps/api` and never receives plaintext stored
+secrets or raw provider payloads.
 
 ---
 
@@ -14,25 +16,13 @@ This directory contains guidelines for frontend development. Fill in each file w
 
 | Guide | Description | Status |
 |-------|-------------|--------|
-| [Directory Structure](./directory-structure.md) | Module organization and file layout | To fill |
-| [Component Guidelines](./component-guidelines.md) | Component patterns, props, composition | To fill |
-| [Hook Guidelines](./hook-guidelines.md) | Custom hooks, data fetching patterns | To fill |
-| [State Management](./state-management.md) | Local state, global state, server state | To fill |
-| [Quality Guidelines](./quality-guidelines.md) | Code standards, forbidden patterns | To fill |
-| [Type Safety](./type-safety.md) | Type patterns, validation | To fill |
-
----
-
-## How to Fill These Guidelines
-
-For each guideline file:
-
-1. Document your project's **actual conventions** (not ideals)
-2. Include **code examples** from your codebase
-3. List **forbidden patterns** and why
-4. Add **common mistakes** your team has made
-
-The goal is to help AI assistants and new team members understand how YOUR project works.
+| [Directory Structure](./directory-structure.md) | Module organization and file layout | Active |
+| [Component Guidelines](./component-guidelines.md) | Component patterns, props, composition | Active |
+| [Hook Guidelines](./hook-guidelines.md) | Custom hooks and data fetching | Active |
+| [State Management](./state-management.md) | Local and server state | Active |
+| [Quality Guidelines](./quality-guidelines.md) | Testing and responsive requirements | Active |
+| [Type Safety](./type-safety.md) | API and component type patterns | Active |
+| [Phase 6C Operations Dashboard](./phase-6c-operations-dashboard.md) | Cross-layer dashboard contracts | Active |
 
 ---
 

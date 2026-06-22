@@ -1,6 +1,6 @@
 # OpenSupport AgentOps Architecture
 
-Status: Proposed  
+Status: Implemented through Phase 6
 Created: 2026-06-16  
 Owner: Grove-ovo
 
@@ -125,6 +125,12 @@ core pipeline. Controlled launch depends on five rules:
   downgrade unsafe work.
 - Online/async split: user-facing work stays on a bounded critical path;
   monitoring, eval materialization, and dashboard aggregation run async.
+
+The async boundary is implemented as PostgreSQL outbox -> Redis Streams ->
+durable worker lease. Stream delivery is at-least-once; PostgreSQL job and
+handler outputs are idempotent. Messages are acknowledged only after durable
+writes, stale pending messages are reclaimed, and exhausted retries move to a
+safe-metadata dead-letter stream.
 
 ### Canonical Inbound Events
 
@@ -526,8 +532,24 @@ keeps the candidate in `failed`, `shadow`, or `assist` according to severity.
 3. Runtime Modes + Approval
 4. Eval + Release Gate
 5. Benchmark + Load Test
+6. Productization + Real E2E + Production Operations
 
 Each milestone should become its own Trellis task before implementation.
+
+## Production Topology
+
+The production Compose topology contains:
+
+- Nginx serving immutable Dashboard assets and proxying `/api` and `/health`.
+- Fastify API for Chatwoot ingress, provider calls, operations, and metrics.
+- Redis Streams worker for monitoring, eval materialization, and aggregates.
+- PostgreSQL/pgvector as the authoritative system of record.
+- Redis with AOF for dedupe, locks, and at-least-once stream delivery.
+- Prometheus and provisioned Grafana for service health and worker outcomes.
+
+Only Nginx exposes the application port. PostgreSQL, Redis, Prometheus, and
+Grafana bind to localhost administration ports by default. Production internet
+exposure requires an external TLS terminator or load balancer.
 
 ## References
 

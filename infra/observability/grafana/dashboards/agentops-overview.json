@@ -1,0 +1,60 @@
+{
+  "annotations": { "list": [] },
+  "editable": false,
+  "panels": [
+    {
+      "type": "stat",
+      "title": "API Up",
+      "targets": [{ "expr": "up{job=\"agentops-api\"}", "refId": "A" }],
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 0 }
+    },
+    {
+      "type": "stat",
+      "title": "Worker Up",
+      "targets": [{ "expr": "up{job=\"agentops-worker\"}", "refId": "A" }],
+      "gridPos": { "h": 6, "w": 6, "x": 6, "y": 0 }
+    },
+    {
+      "type": "timeseries",
+      "title": "API Requests",
+      "targets": [
+        {
+          "expr": "sum by (status) (rate(agentops_http_requests_total[5m]))",
+          "legendFormat": "{{status}}",
+          "refId": "A"
+        }
+      ],
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 }
+    },
+    {
+      "type": "timeseries",
+      "title": "Worker Outcomes",
+      "targets": [
+        {
+          "expr": "sum(rate(agentops_worker_jobs_completed_total[5m]))",
+          "legendFormat": "completed",
+          "refId": "A"
+        },
+        {
+          "expr": "sum(rate(agentops_worker_retries_total[5m]))",
+          "legendFormat": "retries",
+          "refId": "B"
+        },
+        {
+          "expr": "sum(rate(agentops_worker_dead_letter_total[5m]))",
+          "legendFormat": "dead letters",
+          "refId": "C"
+        }
+      ],
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 }
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": ["agentops"],
+  "templating": { "list": [] },
+  "time": { "from": "now-6h", "to": "now" },
+  "timezone": "browser",
+  "title": "OpenSupport AgentOps",
+  "uid": "opensupport-agentops",
+  "version": 1
+}

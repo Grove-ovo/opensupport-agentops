@@ -18,6 +18,10 @@
 | [Phase 3D Approval Snapshots](./phase-3d-approval-snapshots.md) | Atomic pending approval creation and immutable evidence/tool/risk/version snapshots | Active |
 | [Phase 3E Approval Actions](./phase-3e-approval-actions.md) | Terminal approval state machine, actor audit, guarded delivery, and edit distance | Active |
 | [Phase 4D Release Candidate State Machine](./phase-4d-release-candidate-state-machine.md) | Immutable seven-version snapshots, exact Eval Runs, guarded promotion state, and audit | Active |
+| [Phase 6A API And Storage Runtime](./phase-6a-api-storage-runtime.md) | Fastify composition, PostgreSQL repositories, Redis coordination, readiness, and migration idempotency | Active |
+| [Phase 6D Async Monitor Worker](./phase-6d-async-monitor-worker.md) | PostgreSQL outbox, Redis Streams, durable leases, retries, DLQ, and async materialization | Active |
+| [Phase 6E Production Operations](./phase-6e-production-operations.md) | Production images, Compose topology, secret files, observability, smoke tests, and operational recovery | Active |
+| [Phase 6 Productization Integration](./phase-6-productization-integration.md) | Parent completion gate across archived child tasks, runnable applications, deployment assets, and aggregate validation | Active |
 | [GitHub Release Readiness](./github-release-readiness.md) | Accurate repository entry docs, MIT license, CI quality chain, branch policy, and private publication | Active |
 
 ## Pre-Development Checklist
@@ -44,6 +48,18 @@ Before changing infra, database, or local runtime files:
 - Read [Phase 4D Release Candidate State Machine](./phase-4d-release-candidate-state-machine.md)
   when changing release snapshots, candidate state, Eval Run scope, or
   transition persistence.
+- Read [Phase 6A API And Storage Runtime](./phase-6a-api-storage-runtime.md)
+  when changing API composition, PostgreSQL repositories, Redis dedupe/locks,
+  readiness checks, migration markers, canonical events, or async outbox rows.
+- Read [Phase 6D Async Monitor Worker](./phase-6d-async-monitor-worker.md)
+  when changing outbox publication, Redis Streams, worker leases, retry/DLQ,
+  monitor results, failure materialization, or dashboard aggregates.
+- Read [Phase 6E Production Operations](./phase-6e-production-operations.md)
+  when changing production images, Compose wiring, reverse-proxy routes,
+  service metrics, structured logs, secrets, backups, or rollout procedures.
+- Read [Phase 6 Productization Integration](./phase-6-productization-integration.md)
+  when completing or reopening the Phase 6 parent task, changing child task
+  boundaries, or changing the aggregate Phase 6 validation chain.
 - Read [GitHub Release Readiness](./github-release-readiness.md) when changing
   repository entry documentation, CI, release branches, license, or remote
   publication.

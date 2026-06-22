@@ -1,6 +1,6 @@
 # PII Masking And Trace Schema
 
-Status: Phase 1E foundation
+Status: Phase 1E schema with Phase 6B online execution
 Migration: `infra/migrations/0004_pii_mask_trace_schema.sql`
 
 ## Provider-Bound Data Flow
@@ -108,6 +108,11 @@ timestamp. Operational fields such as intent, route, risk decision, latency,
 tokens, cost, final action, and failure bucket remain mutable.
 `execution_state` changes must use `transition_ticket_execution(...)`, which
 performs expected-state validation and writes an append-only transition audit.
+
+Phase 6B creates the trace only after the canonical Chatwoot event is
+persisted and claimed. It freezes the active model config and all other version
+identifiers before any provider call. Customer text is masked first; only
+`PIIMaskResult.masked_text` reaches triage or response generation.
 
 ## TicketExecution Seed
 

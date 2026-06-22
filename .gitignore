@@ -2,6 +2,8 @@ node_modules/
 dist/
 build/
 coverage/
+playwright-report/
+test-results/
 .turbo/
 .next/
 .vite/
@@ -9,6 +11,8 @@ coverage/
 .env
 .env.*
 !.env.example
+!.env.production.example
+secrets/
 
 *.log
 *.tsbuildinfo

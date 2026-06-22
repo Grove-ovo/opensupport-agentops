@@ -1,12 +1,12 @@
 # OpenSupport AgentOps
 
-Tenant-ready ecommerce customer support AgentOps reference implementation
+Tenant-ready ecommerce customer support AgentOps application
 built around Chatwoot, deterministic safety gates, immutable execution
 snapshots, replay evaluation, and controlled runtime modes.
 
 ## Project Status
 
-The repository implements the original PRD through Phase 5:
+The repository implements the original PRD through production-oriented Phase 6:
 
 - Chatwoot Agent Bot/webhook normalization, signature verification, dedupe,
   and outbound delivery contracts.
@@ -20,10 +20,20 @@ The repository implements the original PRD through Phase 5:
   gates, failure buckets, and reproducible reports.
 - Deterministic V0-V3 architecture benchmarks and an in-process application
   load harness with bounded concurrency.
+- Deployable Fastify API, real provider adapters, PostgreSQL/Redis persistence,
+  and Chatwoot end-to-end execution.
+- Responsive operator Dashboard for traces, approvals, releases, and safe
+  tenant/model configuration.
+- Redis Streams worker with outbox publication, durable leases, retries, dead
+  letters, eval materialization, and Dashboard aggregation.
+- Multi-stage images, production Compose, Nginx routing, Prometheus/Grafana,
+  structured logs, health probes, backup/restore, rollout, rollback, incident,
+  and credential-rotation procedures.
 
-This is not yet a production SaaS deployment. The repository does not include
-a production AgentOps HTTP service, dashboard UI, live model-provider
-benchmarks, real commerce mutations, or production Chatwoot end-to-end tests.
+The deployment is self-hosted and production-style, but it is not a complete
+multi-user SaaS control plane. Billing, public signup, full RBAC, formal
+compliance certification, Kubernetes automation, and real commerce mutations
+remain out of scope.
 
 ## Architecture
 
@@ -36,12 +46,16 @@ benchmarks, real commerce mutations, or production Chatwoot end-to-end tests.
 - [Eval framework](./docs/eval_framework.md)
 - [Release gate](./docs/release_gate.md)
 - [Benchmark framework](./docs/benchmark_framework.md)
+- [Operations Dashboard](./docs/operations_dashboard.md)
+- [Async monitor worker](./docs/async_monitor_worker.md)
+- [Deployment runbook](./docs/operations/deployment-runbook.md)
 
 ## Repository Layout
 
 ```text
-apps/api                 Reserved backend API boundary
-apps/web                 Reserved operator dashboard boundary
+apps/api                 Fastify production API and Chatwoot/LLM runtime
+apps/web                 React/Vite operator Dashboard
+apps/worker              Redis Streams monitor/eval/aggregation worker
 packages/agent-core      Deterministic routing and pipeline contracts
 packages/agent-runtime   RAG/tool/risk/response orchestration
 packages/chatwoot        Chatwoot inbound and outbound connectors
@@ -90,6 +104,19 @@ See [local runtime](./docs/local_runtime.md) and
 [database schema](./docs/database_schema.md) for the complete setup and
 verification commands. A separate local/self-hosted Chatwoot instance is
 required for integration work.
+
+Run the production-style stack:
+
+```bash
+cp .env.production.example .env.production
+# Create secrets and replace placeholders as documented in the runbook.
+docker compose --env-file .env.production \
+  -f infra/docker/compose.production.yml up -d --build
+```
+
+Dashboard/API: `http://localhost:8088`
+Prometheus: `http://127.0.0.1:9090`
+Grafana: `http://127.0.0.1:3001`
 
 ## Evaluation And Reports
 

@@ -1,6 +1,6 @@
 # AgentOps Database Schema
 
-Status: Phase 1 foundation through Phase 4A eval persistence
+Status: Phase 1 foundation through Phase 6B Chatwoot and LLM runtime
 Migrations:
 
 - `infra/migrations/0001_phase1_foundation.sql`
@@ -13,6 +13,11 @@ Migrations:
 - `infra/migrations/0008_approval_snapshots.sql`
 - `infra/migrations/0009_approval_actions.sql`
 - `infra/migrations/0010_eval_foundation.sql`
+- `infra/migrations/0011_release_candidates.sql`
+- `infra/migrations/0012_release_gate_results.sql`
+- `infra/migrations/0013_failure_cases.sql`
+- `infra/migrations/0014_productization_runtime.sql`
+- `infra/migrations/0015_chatwoot_llm_e2e.sql`
 
 ## Design Rules
 
@@ -272,6 +277,84 @@ observations. Runs are scoped by tenant, dataset, candidate snapshot hash, and
 idempotency key. Results reference the run and retain hashes/reason codes
 without provider or customer payloads.
 
+### release_candidates / release_candidate_transitions
+
+Immutable seven-version release snapshots and append-only guarded state
+transitions from draft through evaluation and controlled runtime promotion.
+
+### release_gate_results / release_gate_decisions
+
+Immutable gate outcomes for the exact replay/security runs referenced by a
+release candidate. Blocking P0 decisions cap or prevent promotion.
+
+### failure_cases
+
+Append-only safe failure references and normalized metrics. Raw customer,
+provider, and evaluation payloads are excluded.
+
+### agentops_schema_migrations
+
+Records the highest applied ordered migration for application readiness.
+Migration 14 backfills markers for migrations 1 through 14; migration 15 adds
+the production Chatwoot/LLM runtime marker, and migration 16 adds the async
+worker contract.
+
+### canonical_inbound_events
+
+Stores project-owned Chatwoot event identity, source, dedupe key, payload hash,
+customer/self flags, decision, and optional trace link. The table deliberately
+does not store the raw webhook body. Phase 6B adds guarded processing state,
+start/end timestamps, and a stable failure code so only a `received` row can
+claim the online pipeline.
+
+### mock_orders
+
+Tenant/contact-scoped deterministic business records used by the Phase 6B
+local and E2E runtime. They support order status, logistics, and refund
+eligibility reads without claiming to be real commerce integrations.
+
+### chatwoot_delivery_attempts
+
+Persistent outbound idempotency records. Each row stores the tenant, trace,
+conversation, message type, semantic input hash, credential-reference hash,
+request/response hashes, stable result code, provider message ID, and attempt
+count. It never stores message content or plaintext credentials.
+
+Successful rows remain final. Failed rows can be atomically returned to
+`pending` by one same-input retry; concurrent callers cannot both claim the
+same tenant/idempotency key.
+
+### runtime_execution_audits
+
+One safe runtime outcome record per canonical execution. It references the
+trace, canonical event, runtime decision, approval or delivery when present,
+and stores latency, estimated cost, stable outcome/failure codes, and an input
+hash. Tenant plus canonical event is unique, and rows are append-only.
+
+### async_job_outbox
+
+Transactional identifier-only jobs for Monitor, eval materialization, and
+dashboard aggregation. Phase 6D publishes rows to Redis Streams with an atomic
+dedupe marker and records the resulting stream ID.
+
+### async_job_executions
+
+Durable worker leases and idempotency state. A stale `processing` lease may be
+reclaimed after the configured visibility timeout; `succeeded` and
+`dead_letter` states are terminal.
+
+### monitor_trace_results
+
+One deterministic safe monitor classification per runtime execution. It stores
+only trace/audit identifiers, outcome, decision, failure bucket, stable reason,
+severity, and an input hash.
+
+### operational_aggregates
+
+Tenant-scoped time-window aggregates materialized outside the online response
+path. The operations API reads the latest `dashboard_overview_24h` record
+instead of calculating live aggregates.
+
 ## Deferred Tables
 
 The following original PRD tables are intentionally deferred:
@@ -285,6 +368,3 @@ The following original PRD tables are intentionally deferred:
 - `intent_predictions`
 - `retrieval_events`
 - `tool_calls`
-- `release_candidates`
-- `release_gate_results`
-- `failure_cases`

@@ -1,0 +1,40 @@
+groups:
+  - name: opensupport-agentops
+    rules:
+      - alert: AgentOpsTargetDown
+        expr: up{job=~"agentops-api|agentops-worker"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "AgentOps target is unavailable"
+
+      - alert: AgentOpsHttpErrorRate
+        expr: |
+          sum(rate(agentops_http_requests_total{status=~"5.."}[5m]))
+          /
+          clamp_min(sum(rate(agentops_http_requests_total[5m])), 0.001)
+          > 0.05
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "AgentOps API 5xx rate exceeds 5%"
+
+      - alert: AgentOpsWorkerDeadLetters
+        expr: increase(agentops_worker_dead_letter_total[15m]) > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "AgentOps worker produced dead-letter jobs"
+
+      - alert: AgentOpsDependencyUnavailable
+        expr: |
+          agentops_dependency_ready == 0
+          or agentops_worker_dependency_ready == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "AgentOps dependency readiness failed"
