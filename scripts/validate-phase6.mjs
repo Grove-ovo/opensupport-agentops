@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { existsSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 
 const archivedTaskRoot = '.trellis/tasks/archive/2026-06';
@@ -29,8 +30,12 @@ const requiredFiles = [
 ];
 await Promise.all(requiredFiles.map((file) => readFile(file, 'utf8')));
 
+const activeParentPrd =
+  '.trellis/tasks/06-20-phase-6-productization-real-e2e/prd.md';
+const archivedParentPrd =
+  `${archivedTaskRoot}/06-20-phase-6-productization-real-e2e/prd.md`;
 const parentPrd = await readFile(
-  '.trellis/tasks/06-20-phase-6-productization-real-e2e/prd.md',
+  existsSync(activeParentPrd) ? activeParentPrd : archivedParentPrd,
   'utf8',
 );
 const readme = await readFile('README.md', 'utf8');
