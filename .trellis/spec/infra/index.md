@@ -23,6 +23,7 @@
 | [Phase 6E Production Operations](./phase-6e-production-operations.md) | Production images, Compose topology, secret files, observability, smoke tests, and operational recovery | Active |
 | [Phase 6 Productization Integration](./phase-6-productization-integration.md) | Parent completion gate across archived child tasks, runnable applications, deployment assets, and aggregate validation | Active |
 | [GitHub Release Readiness](./github-release-readiness.md) | Accurate repository entry docs, MIT license, CI quality chain, branch policy, and private publication | Active |
+| [Phase 7A Operator Access](./phase-7a-operator-access.md) | OIDC PKCE, encrypted sessions, tenant claims, CSRF, and audit identity | Active |
 
 ## Pre-Development Checklist
 
@@ -63,6 +64,9 @@ Before changing infra, database, or local runtime files:
 - Read [GitHub Release Readiness](./github-release-readiness.md) when changing
   repository entry documentation, CI, release branches, license, or remote
   publication.
+- Read [Phase 7A Operator Access](./phase-7a-operator-access.md) when changing
+  operator authentication, tenant authorization, session cookies, CSRF, or
+  Dashboard identity state.
 - Confirm whether the change belongs to the active Trellis phase.
 - Search existing migrations and docs before adding duplicate table or env names.
 - Keep secret-bearing values as references, not plaintext persisted values.

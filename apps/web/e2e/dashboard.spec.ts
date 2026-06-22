@@ -5,6 +5,22 @@ const TENANT_ID = '00000000-0000-4000-8000-000000000001';
 test.beforeEach(async ({ page }) => {
   await page.route('**/api/**', async (route) => {
     const url = route.request().url();
+    if (url.endsWith('/api/v1/auth/session')) {
+      return route.fulfill({
+        json: {
+          principal: {
+            subject: 'provider-user-1',
+            display_name: 'Provider User',
+            email: 'operator@example.test',
+            roles: ['operator'],
+            tenant_ids: [TENANT_ID],
+            admin: false,
+          },
+          csrf_token: 'playwright-csrf',
+          expires_at: 1_800_000_000,
+        },
+      });
+    }
     if (url.endsWith('/api/v1/tenants?limit=100&offset=0')) {
       return route.fulfill({
         json: {
@@ -124,4 +140,47 @@ test('mobile navigation does not overflow viewport', async (
     path: testInfo.outputPath('mobile-overview.png'),
     fullPage: true,
   });
+});
+
+test('signed-out operators are sent to the identity provider', async ({ page }) => {
+  await page.unroute('**/api/**');
+  await page.route('**/api/v1/auth/session', (route) =>
+    route.fulfill({
+      status: 401,
+      json: {
+        error: {
+          code: 'authentication_required',
+          message: 'Authentication required',
+        },
+      },
+    }),
+  );
+  await page.goto('/');
+  await expect(
+    page.getByRole('heading', { name: 'Operator sign-in required' }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole('link', { name: 'Sign in with identity provider' }),
+  ).toHaveAttribute('href', '/api/v1/auth/login');
+});
+
+test('operators without role or tenant scope see a forbidden state', async ({
+  page,
+}) => {
+  await page.unroute('**/api/**');
+  await page.route('**/api/v1/auth/session', (route) =>
+    route.fulfill({
+      status: 403,
+      json: {
+        error: {
+          code: 'forbidden',
+          message: 'Operator is not authorized',
+        },
+      },
+    }),
+  );
+  await page.goto('/');
+  await expect(
+    page.getByRole('heading', { name: 'Access not authorized' }),
+  ).toBeVisible();
 });

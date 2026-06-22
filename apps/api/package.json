@@ -9,6 +9,8 @@
     "start": "node dist/server.js"
   },
   "dependencies": {
+    "@fastify/oauth2": "^8.2.0",
+    "@fastify/secure-session": "^8.3.0",
     "@opensupport/agent-runtime": "0.1.0",
     "@opensupport/chatwoot": "0.1.0",
     "@opensupport/llm-runtime": "0.1.0",

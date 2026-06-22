@@ -266,6 +266,10 @@ export interface AgentOpsStore {
   close(): Promise<void>;
   getMigrationVersion(): Promise<number>;
   listTenants(query: PageQuery): Promise<Page<TenantRecord>>;
+  listTenantsByIds(
+    tenantIds: readonly string[],
+    query: PageQuery,
+  ): Promise<Page<TenantRecord>>;
   getTenant(tenantId: string): Promise<TenantRecord | null>;
   getActiveModelConfig(tenantId: string): Promise<SafeModelConfigRecord | null>;
   listTraces(
@@ -300,12 +304,39 @@ export interface RedisCoordinator {
 export interface AppDependencies {
   store: AgentOpsStore;
   redis: RedisCoordinator;
+  operatorAccess: OperatorAccess;
   requiredMigration: number;
   dedupeTtlSeconds: number;
   buildVersion: string;
   closeDependencies?: boolean;
   chatwootIngress?: ChatwootIngressHandler;
   operations?: OperationsService;
+}
+
+export interface OperatorPrincipal {
+  subject: string;
+  display_name: string | null;
+  email: string | null;
+  roles: readonly string[];
+  tenant_ids: readonly string[];
+  admin: boolean;
+}
+
+export interface OperatorAccess {
+  register(app: import('fastify').FastifyInstance): void;
+  requireSession(
+    request: import('fastify').FastifyRequest,
+    reply: import('fastify').FastifyReply,
+  ): Promise<void>;
+  requireCsrf(
+    request: import('fastify').FastifyRequest,
+    reply: import('fastify').FastifyReply,
+  ): Promise<void>;
+  principal(request: import('fastify').FastifyRequest): OperatorPrincipal;
+  assertTenant(
+    request: import('fastify').FastifyRequest,
+    tenantId: string,
+  ): OperatorPrincipal;
 }
 
 export interface ChatwootIngressRequest {

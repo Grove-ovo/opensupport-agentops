@@ -1,0 +1,3 @@
+{"file": ".trellis/spec/infra/phase-7a-operator-access.md", "reason": "Verify authentication, authorization, CSRF, audit identity, and required tests"}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Verify Vitest, production build, and desktop/mobile behavior"}
+{"file": ".trellis/spec/integrations/phase-6b-chatwoot-llm-e2e.md", "reason": "Verify Chatwoot HMAC ingress remains independent of operator sessions"}

@@ -1,5 +1,6 @@
 import type {
   ApiFailure,
+  AuthSession,
   Approval,
   Overview,
   Page,
@@ -10,6 +11,8 @@ import type {
   Trace,
   TraceDetail,
 } from './types.js';
+
+let csrfToken: string | null = null;
 
 export class ApiError extends Error {
   constructor(
@@ -22,6 +25,15 @@ export class ApiError extends Error {
 }
 
 export const api = {
+  session: async () => {
+    const session = await request<AuthSession>('/api/v1/auth/session');
+    csrfToken = session.csrf_token;
+    return session;
+  },
+  logout: async () => {
+    await request<void>('/api/v1/auth/logout', { method: 'POST' });
+    csrfToken = null;
+  },
   tenants: () => request<Page<Tenant>>('/api/v1/tenants?limit=100&offset=0'),
   ready: () =>
     request<{ status: string; checks: Record<string, unknown> }>('/health/ready'),
@@ -44,7 +56,6 @@ export const api = {
     approvalId: string,
     input: {
       action: 'approve' | 'edit' | 'reject' | 'escalate';
-      actor_id: string;
       edited_reply?: string;
       idempotency_key: string;
       confirm: true;
@@ -67,7 +78,6 @@ export const api = {
     candidateId: string,
     input: {
       action: 'start_evaluation' | 'archive';
-      actor_id: string;
       idempotency_key: string;
       confirm: true;
     },
@@ -84,7 +94,6 @@ export const api = {
       display_name: string;
       status: Tenant['status'];
       metadata: Record<string, unknown>;
-      actor_id: string;
     },
   ) =>
     request<Tenant>(`/api/v1/tenants/${tenantId}/settings/tenant`, {
@@ -106,9 +115,13 @@ export const api = {
 async function request<T>(url: string, init: RequestInit = {}): Promise<T> {
   const response = await fetch(url, {
     ...init,
+    credentials: 'same-origin',
     headers: {
       Accept: 'application/json',
       ...(init.body ? { 'Content-Type': 'application/json' } : {}),
+      ...(isMutation(init.method) && csrfToken
+        ? { 'x-csrf-token': csrfToken }
+        : {}),
       ...init.headers,
     },
   });
@@ -118,10 +131,19 @@ async function request<T>(url: string, init: RequestInit = {}): Promise<T> {
     | null;
   if (!response.ok) {
     const failure = body as ApiFailure | null;
-    throw new ApiError(
+    const error = new ApiError(
       failure?.error.code ?? `http_${response.status}`,
       response.status,
     );
+    if (response.status === 401 && url !== '/api/v1/auth/session') {
+      csrfToken = null;
+      window.dispatchEvent(new Event('agentops:session-expired'));
+    }
+    throw error;
   }
   return body as T;
+}
+
+function isMutation(method: string | undefined): boolean {
+  return method !== undefined && !['GET', 'HEAD', 'OPTIONS'].includes(method);
 }

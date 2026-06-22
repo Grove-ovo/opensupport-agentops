@@ -22,6 +22,19 @@ export interface ApiConfig {
   >;
   pipelineDeadlineMs: number;
   approvalTtlMs: number;
+  operatorAuth: {
+    issuer: string;
+    clientId: string;
+    clientSecret: string;
+    callbackUri: string;
+    roleClaim: string;
+    tenantClaim: string;
+    operatorRole: string;
+    adminRole: string;
+    sessionKeys: readonly Buffer[];
+    sessionTtlSeconds: number;
+    secureCookie: boolean;
+  };
 }
 
 export class ConfigError extends Error {
@@ -95,6 +108,47 @@ export function loadApiConfig(
     'AGENTOPS_MASTER_KEY',
     issues,
   );
+  const operatorIssuer = requiredUrl(
+    env.AGENTOPS_OIDC_ISSUER,
+    'AGENTOPS_OIDC_ISSUER',
+    issues,
+  );
+  const operatorCallbackUri = requiredUrl(
+    env.AGENTOPS_OIDC_CALLBACK_URI,
+    'AGENTOPS_OIDC_CALLBACK_URI',
+    issues,
+  );
+  const operatorClientId = requiredString(
+    env.AGENTOPS_OIDC_CLIENT_ID,
+    'AGENTOPS_OIDC_CLIENT_ID',
+    issues,
+  );
+  const operatorClientSecret = requiredString(
+    secretValue(
+      env.AGENTOPS_OIDC_CLIENT_SECRET,
+      env.AGENTOPS_OIDC_CLIENT_SECRET_FILE,
+      'AGENTOPS_OIDC_CLIENT_SECRET',
+      issues,
+    ),
+    'AGENTOPS_OIDC_CLIENT_SECRET',
+    issues,
+  );
+  const operatorSessionKeys = sessionKeys(
+    env.AGENTOPS_OPERATOR_SESSION_KEY_FILES,
+    issues,
+  );
+  const operatorSessionTtlSeconds = integer(
+    env.AGENTOPS_OPERATOR_SESSION_TTL_SECONDS ?? '3600',
+    'AGENTOPS_OPERATOR_SESSION_TTL_SECONDS',
+    300,
+    86_400,
+    issues,
+  );
+  const secureCookie = boolean(
+    env.AGENTOPS_COOKIE_SECURE ?? 'true',
+    'AGENTOPS_COOKIE_SECURE',
+    issues,
+  );
 
   if (issues.length > 0) {
     throw new ConfigError(issues);
@@ -116,6 +170,20 @@ export function loadApiConfig(
     modelPricing,
     pipelineDeadlineMs,
     approvalTtlMs,
+    operatorAuth: {
+      issuer: operatorIssuer.replace(/\/+$/, ''),
+      clientId: operatorClientId,
+      clientSecret: operatorClientSecret,
+      callbackUri: operatorCallbackUri,
+      roleClaim: env.AGENTOPS_OIDC_ROLE_CLAIM?.trim() || 'agentops_roles',
+      tenantClaim:
+        env.AGENTOPS_OIDC_TENANT_CLAIM?.trim() || 'agentops_tenants',
+      operatorRole: env.AGENTOPS_OIDC_OPERATOR_ROLE?.trim() || 'operator',
+      adminRole: env.AGENTOPS_OIDC_ADMIN_ROLE?.trim() || 'admin',
+      sessionKeys: operatorSessionKeys,
+      sessionTtlSeconds: operatorSessionTtlSeconds,
+      secureCookie,
+    },
   };
 }
 
@@ -173,6 +241,54 @@ function requiredUrl(
     issues.push(`${name}:invalid_url`);
   }
   return normalized;
+}
+
+function requiredString(
+  value: string | undefined,
+  name: string,
+  issues: string[],
+): string {
+  const normalized = value?.trim() ?? '';
+  if (normalized.length === 0) {
+    issues.push(`${name}:required`);
+  }
+  return normalized;
+}
+
+function sessionKeys(
+  value: string | undefined,
+  issues: string[],
+): readonly Buffer[] {
+  const paths = value?.split(',').map((path) => path.trim()).filter(Boolean) ?? [];
+  if (paths.length === 0) {
+    issues.push('AGENTOPS_OPERATOR_SESSION_KEY_FILES:required');
+    return [];
+  }
+  const keys: Buffer[] = [];
+  for (const path of paths) {
+    try {
+      const key = readFileSync(path);
+      if (key.length !== 32) {
+        issues.push('AGENTOPS_OPERATOR_SESSION_KEY_FILES:invalid_key_length');
+      } else {
+        keys.push(key);
+      }
+    } catch {
+      issues.push('AGENTOPS_OPERATOR_SESSION_KEY_FILES:unreadable');
+    }
+  }
+  return keys;
+}
+
+function boolean(
+  value: string,
+  name: string,
+  issues: string[],
+): boolean {
+  if (value === 'true') return true;
+  if (value === 'false') return false;
+  issues.push(`${name}:invalid_boolean`);
+  return true;
 }
 
 function integer(

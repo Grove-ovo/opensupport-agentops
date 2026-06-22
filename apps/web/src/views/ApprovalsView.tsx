@@ -33,7 +33,6 @@ export function ApprovalsView({ tenantId }: ApprovalsViewProps) {
     try {
       await api.approvalAction(tenantId, selection.approval.approval_id, {
         action: selection.action,
-        actor_id: 'dashboard-operator',
         edited_reply: selection.action === 'edit' ? editedReply : undefined,
         idempotency_key: crypto.randomUUID(),
         confirm: true,

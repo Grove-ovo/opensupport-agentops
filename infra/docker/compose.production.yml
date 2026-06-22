@@ -107,6 +107,17 @@ services:
       PORT: "8080"
       AGENTOPS_MASTER_KEY_FILE: /run/secrets/agentops_master_key
       AGENTOPS_MASTER_KEY_ID: ${AGENTOPS_MASTER_KEY_ID:-production-v1}
+      AGENTOPS_OIDC_ISSUER: ${AGENTOPS_OIDC_ISSUER:?set AGENTOPS_OIDC_ISSUER}
+      AGENTOPS_OIDC_CLIENT_ID: ${AGENTOPS_OIDC_CLIENT_ID:?set AGENTOPS_OIDC_CLIENT_ID}
+      AGENTOPS_OIDC_CLIENT_SECRET_FILE: /run/secrets/agentops_oidc_client_secret
+      AGENTOPS_OIDC_CALLBACK_URI: ${AGENTOPS_OIDC_CALLBACK_URI:?set AGENTOPS_OIDC_CALLBACK_URI}
+      AGENTOPS_OIDC_ROLE_CLAIM: ${AGENTOPS_OIDC_ROLE_CLAIM:-agentops_roles}
+      AGENTOPS_OIDC_TENANT_CLAIM: ${AGENTOPS_OIDC_TENANT_CLAIM:-agentops_tenants}
+      AGENTOPS_OIDC_OPERATOR_ROLE: ${AGENTOPS_OIDC_OPERATOR_ROLE:-operator}
+      AGENTOPS_OIDC_ADMIN_ROLE: ${AGENTOPS_OIDC_ADMIN_ROLE:-admin}
+      AGENTOPS_OPERATOR_SESSION_KEY_FILES: /run/secrets/agentops_operator_session_key
+      AGENTOPS_OPERATOR_SESSION_TTL_SECONDS: ${AGENTOPS_OPERATOR_SESSION_TTL_SECONDS:-3600}
+      AGENTOPS_COOKIE_SECURE: ${AGENTOPS_COOKIE_SECURE:-true}
       AGENTOPS_PROVIDER_BASE_URLS_JSON: ${AGENTOPS_PROVIDER_BASE_URLS_JSON:-{}}
       AGENTOPS_MODEL_PRICING_JSON: ${AGENTOPS_MODEL_PRICING_JSON:-{}}
       CHATWOOT_WEBHOOK_SECRET: ${CHATWOOT_WEBHOOK_SECRET:-}
@@ -115,6 +126,8 @@ services:
       SMOKE_CHATWOOT_API_TOKEN: ${SMOKE_CHATWOOT_API_TOKEN:-}
     secrets:
       - agentops_master_key
+      - agentops_oidc_client_secret
+      - agentops_operator_session_key
     extra_hosts:
       - host.docker.internal:host-gateway
     depends_on:
@@ -262,6 +275,10 @@ services:
 secrets:
   agentops_master_key:
     file: ${AGENTOPS_MASTER_KEY_FILE:-../../secrets/agentops_master_key}
+  agentops_oidc_client_secret:
+    file: ${AGENTOPS_OIDC_CLIENT_SECRET_FILE:-../../secrets/agentops_oidc_client_secret}
+  agentops_operator_session_key:
+    file: ${AGENTOPS_OPERATOR_SESSION_KEY_FILE:-../../secrets/agentops_operator_session_key}
   grafana_admin_password:
     file: ${GRAFANA_ADMIN_PASSWORD_FILE:-../../secrets/grafana_admin_password}
 

@@ -49,6 +49,7 @@ remain out of scope.
 - [Operations Dashboard](./docs/operations_dashboard.md)
 - [Async monitor worker](./docs/async_monitor_worker.md)
 - [Deployment runbook](./docs/operations/deployment-runbook.md)
+- [Operator authentication](./docs/operator_authentication.md)
 
 ## Repository Layout
 
