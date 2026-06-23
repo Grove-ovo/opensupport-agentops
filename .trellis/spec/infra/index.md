@@ -29,6 +29,7 @@
 | [Phase 7B Edge Transport](./phase-7b-edge-transport.md) | Nginx/Fastify request bounds, rate classes, proxy trust, and browser headers | Active |
 | [Phase 7C Production Preflight](./phase-7c-production-preflight.md) | Fail-closed environment validation and secret-safe readiness reports | Active |
 | [Phase 7D CI Security Supply Chain](./phase-7d-ci-security-supply-chain.md) | CI proves a running full stack, immutable image tags, time-bounded vulnerability gating, and SPDX SBOM evidence | Active |
+| [Phase 7E Recovery Drill](./phase-7e-recovery-drill.md) | Disposable backup/restore drill, record-integrity verification, secret-safe reports, and forward-only rollback compatibility | Active |
 
 ## Pre-Development Checklist
 
