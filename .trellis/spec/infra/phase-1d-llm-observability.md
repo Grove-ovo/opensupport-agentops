@@ -60,6 +60,21 @@ Reporting:
 - Budget evaluation requires `costCurrency === budgetCurrency`.
 - Zero ticket or daily budget means that limit is disabled.
 
+Cost-cap trace propagation (AC-08):
+
+- When projected cost exceeds the ticket or daily cap, the LLM runtime must
+  return `budget_blocked` and persist a `llm_call_logs` row with
+  `call_status = 'cancelled'` and the matching `budget_reason_code` (e.g.
+  `ticket_budget_exceeded`) **before** returning — the blocked call is still
+  logged; it is never silently swallowed.
+- The ticket service must reflect that signal on the trace: after the pipeline
+  runs it checks whether any `llm_call_logs` row for the trace carries an
+  exceeded `budget_reason_code`, and if so sets
+  `agent_traces.metadata = { "cost_cap_exceeded": true }` via a jsonb merge.
+- `agent_traces.metadata` is the trace-level flag container. Do not mutate
+  `agent_traces.runtime_mode` to record a cost-cap downgrade; the downgrade
+  itself lives in `runtime_mode_decisions`.
+
 ### 4. Validation & Error Matrix
 
 | Condition | Expected behavior |
@@ -98,6 +113,9 @@ Reporting:
 - Unit tests must cover all four budget reason codes, zero-disabled limits,
   currency mismatch, aggregate values above the per-row numeric limit, runtime
   enum validation, and status/error consistency.
+- Unit tests must assert a budget-blocked call is logged with
+  `call_status = 'cancelled'` and the exceeded `budget_reason_code` (no silent
+  swallow).
 - Static validation must assert package exports, migration constraints, views,
   verification cases, docs, and root scripts.
 - Live PostgreSQL verification must assert generated token totals,
