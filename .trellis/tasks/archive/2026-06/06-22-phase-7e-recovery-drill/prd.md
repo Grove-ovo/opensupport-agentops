@@ -17,10 +17,10 @@ compatible with the forward-only database schema.
 
 ## Acceptance Criteria
 
-- [ ] Backup and disposable restore complete automatically.
-- [ ] Representative immutable records match before and after restore.
-- [ ] Corrupted/missing backups fail safely.
-- [ ] Rollback compatibility decision is machine-readable and documented.
+- [x] Backup and disposable restore complete automatically.
+- [x] Representative immutable records match before and after restore.
+- [x] Corrupted/missing backups fail safely.
+- [x] Rollback compatibility decision is machine-readable and documented.
 
 ## Out Of Scope
 
