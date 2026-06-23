@@ -70,30 +70,168 @@ jobs:
       - name: Run Dashboard browser tests
         run: npm run test:web:e2e
 
-  containers:
+  full-stack:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v7
 
-      - name: Prepare validation secrets
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Prepare ephemeral production configuration
+        run: node scripts/prepare-ci-production.mjs
+
+      - name: Run production preflight
+        env:
+          AGENTOPS_ENV_FILE: .env.ci.preflight
+        run: npm run deploy:preflight
+
+      - name: Start deterministic OIDC/provider/Chatwoot mock
         run: |
-          mkdir -p secrets
-          printf 'base64url:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n' > secrets/agentops_master_key
-          printf 'grafana-validation-password\n' > secrets/grafana_admin_password
+          set -a
+          . ./.env.ci.smoke
+          set +a
+          mkdir -p tmp/ci-evidence
+          nohup npm run smoke:mock > tmp/ci-evidence/mock.log 2>&1 &
+          echo "$!" > tmp/ci-evidence/mock.pid
+          for attempt in $(seq 1 40); do
+            curl -fsS http://127.0.0.1:18090/__smoke/health && exit 0
+            sleep 1
+          done
+          exit 1
 
       - name: Validate production Compose
+        run: docker compose --env-file .env.ci.smoke -f infra/docker/compose.production.yml config
+
+      - name: Boot complete production stack
         run: >-
-          docker compose --env-file .env.production.example
-          -f infra/docker/compose.production.yml config
+          docker compose --env-file .env.ci.smoke
+          -f infra/docker/compose.production.yml
+          up -d --build --wait --wait-timeout 240
 
-      - name: Build API image
-        run: docker build -f infra/docker/Dockerfile.api -t agentops-api:test .
+      - name: Run authenticated production smoke
+        run: |
+          set -a
+          . ./.env.ci.smoke
+          set +a
+          export SMOKE_DATABASE_URL="postgresql://${AGENTOPS_POSTGRES_USER}:${AGENTOPS_POSTGRES_PASSWORD}@127.0.0.1:${AGENTOPS_POSTGRES_PORT}/${AGENTOPS_POSTGRES_DB}"
+          export SMOKE_MASTER_KEY_FILE=secrets/agentops_master_key
+          npm run smoke:production | tee tmp/ci-evidence/production-smoke.json
 
-      - name: Build worker image
-        run: docker build -f infra/docker/Dockerfile.worker -t agentops-worker:test .
+      - name: Verify Prometheus and Grafana provisioning
+        run: |
+          set -a
+          . ./.env.ci.smoke
+          set +a
+          export GRAFANA_ADMIN_PASSWORD_FILE=secrets/grafana_admin_password
+          npm run verify:observability | tee tmp/ci-evidence/observability.json
 
-      - name: Build web image
-        run: docker build -f infra/docker/Dockerfile.web -t agentops-web:test .
+      - name: Capture secret-safe runtime evidence
+        if: always()
+        run: |
+          docker compose --env-file .env.ci.smoke -f infra/docker/compose.production.yml ps --format json > tmp/ci-evidence/compose-ps.json || true
+          curl -fsS http://127.0.0.1:8088/health/ready > tmp/ci-evidence/api-readiness.json || true
+          curl -fsS http://127.0.0.1:8088/worker/health/ready > tmp/ci-evidence/worker-readiness.json || true
+
+      - name: Upload full-stack evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: full-stack-evidence-${{ github.sha }}
+          path: |
+            tmp/ci-evidence/*.json
+            tmp/deploy-readiness.json
+            tmp/deploy-readiness.md
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Stop production stack
+        if: always()
+        run: |
+          docker compose --env-file .env.ci.smoke -f infra/docker/compose.production.yml down -v --remove-orphans || true
+          if [ -f tmp/ci-evidence/mock.pid ]; then
+            kill "$(cat tmp/ci-evidence/mock.pid)" || true
+          fi
+
+  supply-chain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: api
+            dockerfile: infra/docker/Dockerfile.api
+          - name: worker
+            dockerfile: infra/docker/Dockerfile.worker
+          - name: web
+            dockerfile: infra/docker/Dockerfile.web
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: Validate time-bounded vulnerability allowlist
+        run: npm run security:allowlist
+
+      - name: Build immutable application image
+        run: >-
+          docker build
+          -f ${{ matrix.dockerfile }}
+          -t opensupport-agentops-${{ matrix.name }}:${{ github.sha }}
+          .
+
+      - name: Generate vulnerability report
+        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0
+        with:
+          image-ref: opensupport-agentops-${{ matrix.name }}:${{ github.sha }}
+          format: json
+          output: tmp/security/trivy-${{ matrix.name }}.json
+          severity: HIGH,CRITICAL
+          ignore-unfixed: false
+          exit-code: 0
+          trivyignores: tmp/.trivyignore
+
+      - name: Fail on unresolved critical vulnerabilities
+        uses: aquasecurity/trivy-action@a9c7b0f06e461e9d4b4d1711f154ee024b8d7ab8 # v0.36.0
+        with:
+          image-ref: opensupport-agentops-${{ matrix.name }}:${{ github.sha }}
+          format: table
+          severity: CRITICAL
+          ignore-unfixed: false
+          exit-code: 1
+          trivyignores: tmp/.trivyignore
+          skip-setup-trivy: true
+
+      - name: Generate SPDX JSON SBOM
+        uses: anchore/sbom-action@e22c389904149dbc22b58101806040fa8d37a610 # v0
+        with:
+          image: opensupport-agentops-${{ matrix.name }}:${{ github.sha }}
+          format: spdx-json
+          output-file: tmp/security/sbom-${{ matrix.name }}.spdx.json
+          artifact-name: sbom-${{ matrix.name }}-${{ github.sha }}.spdx.json
+          upload-artifact: false
+          upload-release-assets: false
+
+      - name: Upload supply-chain evidence
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7
+        with:
+          name: supply-chain-${{ matrix.name }}-${{ github.sha }}
+          path: tmp/security/
+          if-no-files-found: error
+          retention-days: 30

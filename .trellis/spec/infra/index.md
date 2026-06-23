@@ -26,6 +26,7 @@
 | [Phase 7A Operator Access](./phase-7a-operator-access.md) | OIDC PKCE, encrypted sessions, tenant claims, CSRF, and audit identity | Active |
 | [Phase 7B Edge Transport](./phase-7b-edge-transport.md) | Nginx/Fastify request bounds, rate classes, proxy trust, and browser headers | Active |
 | [Phase 7C Production Preflight](./phase-7c-production-preflight.md) | Fail-closed environment validation and secret-safe readiness reports | Active |
+| [Phase 7D CI Security Supply Chain](./phase-7d-ci-security-supply-chain.md) | CI proves a running full stack, immutable image tags, time-bounded vulnerability gating, and SPDX SBOM evidence | Active |
 
 ## Pre-Development Checklist
 
@@ -75,6 +76,10 @@ Before changing infra, database, or local runtime files:
 - Read [Phase 7C Production Preflight](./phase-7c-production-preflight.md) when
   changing production environment keys, secret files, deployment gates, or
   readiness evidence.
+- Read [Phase 7D CI Security Supply Chain](./phase-7d-ci-security-supply-chain.md)
+  when changing the GitHub CI workflow, the CI full-stack boot, image
+  scanning/SBOM jobs, ephemeral CI configuration generation, or the Trivy
+  vulnerability allowlist.
 - Confirm whether the change belongs to the active Trellis phase.
 - Search existing migrations and docs before adding duplicate table or env names.
 - Keep secret-bearing values as references, not plaintext persisted values.
