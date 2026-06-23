@@ -83,15 +83,15 @@ publishing a public endpoint, or enabling live Auto traffic.
 - [x] Production preflight rejects default passwords, smoke credentials,
       missing secret files, invalid provider origins, mutable/local image tags,
       and incomplete monitoring configuration.
-- [ ] CI boots the production Compose stack and completes readiness plus
+- [x] CI boots the production Compose stack and completes readiness plus
       deterministic end-to-end smoke.
-- [ ] CI produces dependency/image scan results and an SBOM with no unresolved
+- [x] CI produces dependency/image scan results and an SBOM with no unresolved
       critical release blocker.
-- [ ] A disposable backup/restore drill proves migration version 16 and
+- [x] A disposable backup/restore drill proves migration version 16 and
       representative tenant/trace/audit records survive restoration.
-- [ ] Full tests, type-check, lint, integration, browser, migration, Compose,
+- [x] Full tests, type-check, lint, integration, browser, migration, Compose,
       security, and Trellis validation pass.
-- [ ] A generated deploy-readiness report is `ready` with only explicitly
+- [x] A generated deploy-readiness report is `ready` with only explicitly
       accepted residual warnings.
 
 ## Definition Of Done
