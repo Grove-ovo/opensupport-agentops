@@ -6,8 +6,10 @@ import { useResource } from './hooks/useResource.js';
 import type { AuthSession, ViewName } from './types.js';
 import { ApprovalsView } from './views/ApprovalsView.js';
 import { OverviewView } from './views/OverviewView.js';
+import { PolicyKBView } from './views/PolicyKBView.js';
 import { ReleasesView } from './views/ReleasesView.js';
 import { SettingsView } from './views/SettingsView.js';
+import { ToolRiskView } from './views/ToolRiskView.js';
 import { TracesView } from './views/TracesView.js';
 
 export function App() {
@@ -94,6 +96,8 @@ function AuthenticatedApp({
     traces: <TracesView tenantId={tenantId} />,
     approvals: <ApprovalsView tenantId={tenantId} />,
     releases: <ReleasesView tenantId={tenantId} />,
+    knowledge: <PolicyKBView tenantId={tenantId} />,
+    tools: <ToolRiskView tenantId={tenantId} />,
     settings: <SettingsView tenantId={tenantId} />,
   }[view] : null;
   return (

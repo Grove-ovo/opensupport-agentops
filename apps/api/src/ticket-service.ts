@@ -313,7 +313,9 @@ export class ProductionTicketService implements ChatwootIngressHandler {
     );
     const toolExecutor = new ToolExecutor(new MockBusinessRepository(orders));
     let executionCost = 0;
-    const pipeline = await runAgentPipeline(
+    let pipeline;
+    try {
+      pipeline = await runAgentPipeline(
       {
         context,
         contactId: message.contactId,
@@ -359,6 +361,16 @@ export class ProductionTicketService implements ChatwootIngressHandler {
           ),
       },
     );
+    } catch (error) {
+      const code = stableErrorCode(error);
+      if (
+        code === 'ticket_budget_exceeded' ||
+        code === 'daily_budget_exceeded'
+      ) {
+        await this.repository.recordCostCapExceeded(traceId);
+      }
+      throw error;
+    }
     await this.repository.updateTraceFromPipeline(
       traceId,
       pipeline,
@@ -373,6 +385,9 @@ export class ProductionTicketService implements ChatwootIngressHandler {
         costs.dailyCost >= modelConfig.daily_budget,
     });
     await this.repository.saveRuntimeDecision(decision);
+    if (await this.repository.hasBudgetExceeded(traceId)) {
+      await this.repository.recordCostCapExceeded(traceId);
+    }
 
     const executionId = newExecutionId();
     const approvalId = randomUUID();

@@ -517,6 +517,244 @@ function hash(value: string): string {
   return createHash('sha256').update(value).digest('hex');
 }
 
+integration(
+  'AC-08 records cost_cap_exceeded in trace when ticket cost exceeds the cap',
+  async (context) => {
+    const providerPrompts: string[] = [];
+    const chatwootMessages: Array<Record<string, unknown>> = [];
+    const mock = createServer(async (request, response) => {
+      const body = await readBody(request);
+      if (request.url === '/v1/chat/completions') {
+        const parsed = JSON.parse(body) as { messages: Array<{ content: string }> };
+        providerPrompts.push(parsed.messages[0]?.content ?? '');
+        response.setHeader('Content-Type', 'application/json');
+        response.end(
+          JSON.stringify({
+            choices: [
+              {
+                message: {
+                  content: JSON.stringify({ reply: 'Order ORD-100 is shipped.' }),
+                },
+              },
+            ],
+            usage: { prompt_tokens: 40, completion_tokens: 12 },
+          }),
+        );
+        return;
+      }
+      if (request.url?.endsWith('/messages')) {
+        chatwootMessages.push(JSON.parse(body) as Record<string, unknown>);
+        response.setHeader('Content-Type', 'application/json');
+        response.end(JSON.stringify({ id: chatwootMessages.length }));
+        return;
+      }
+      if (request.url?.endsWith('/toggle_status')) {
+        response.setHeader('Content-Type', 'application/json');
+        response.end(JSON.stringify({ success: true }));
+        return;
+      }
+      response.statusCode = 404;
+      response.end();
+    });
+    await new Promise<void>((resolve) => mock.listen(0, '127.0.0.1', resolve));
+    const address = mock.address();
+    assert.ok(address && typeof address === 'object');
+    const baseUrl = `http://127.0.0.1:${address.port}`;
+
+    const pool = createPostgresPool(
+      process.env.DATABASE_URL ??
+        'postgresql://agentops:agentops@localhost:5432/agentops',
+    );
+    const store = new PostgresAgentOpsStore(pool);
+    const redis = await NodeRedisCoordinator.connect(
+      process.env.REDIS_URL ?? 'redis://localhost:6379/0',
+    );
+    const repository = new ProductionE2ERepository(pool);
+    const tenantId = randomUUID();
+    const masterKey = Buffer.alloc(32, 7);
+    const masterKeyReference = `base64url:${masterKey.toString('base64url')}`;
+    const modelConfig = createTenantModelConfig(
+      {
+        tenantId,
+        version: 1,
+        provider: 'openai',
+        fastModel: 'test-model',
+        strongModel: 'test-model',
+        embeddingModel: 'test-embedding',
+        fallbackModel: 'test-model',
+        timeoutMs: 5_000,
+        maxCostPerTicket: 0.000001,
+        dailyBudget: 10,
+        budgetCurrency: 'USD',
+        apiKey: 'provider-test-key',
+      },
+      { masterKey, keyId: 'local-test' },
+    );
+    await pool.query(
+      `INSERT INTO tenants (id, slug, display_name)
+       VALUES ($1, $2, 'AC-08 Cost Cap')`,
+      [tenantId, `ac08-${tenantId.slice(0, 8)}`],
+    );
+    await pool.query(
+      `INSERT INTO chatwoot_connections (
+         tenant_id, base_url, account_id, webhook_secret_ref, api_token_ref,
+         verification_status, metadata
+       )
+       VALUES ($1, $2, 1, 'env:TEST_CHATWOOT_WEBHOOK_SECRET',
+         'env:TEST_CHATWOOT_API_TOKEN', 'verified', '{"runtime_mode":"auto"}')`,
+      [tenantId, baseUrl],
+    );
+    await pool.query(
+      `INSERT INTO tenant_model_configs (
+         id, tenant_id, version, provider, fast_model, strong_model,
+         embedding_model, fallback_model, timeout_ms, max_cost_per_ticket,
+         daily_budget, budget_currency, encrypted_api_key_ref, is_active,
+         config_fingerprint
+       )
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, true, $14)`,
+      [
+        modelConfig.id,
+        modelConfig.tenant_id,
+        modelConfig.version,
+        modelConfig.provider,
+        modelConfig.fast_model,
+        modelConfig.strong_model,
+        modelConfig.embedding_model,
+        modelConfig.fallback_model,
+        modelConfig.timeout_ms,
+        modelConfig.max_cost_per_ticket,
+        modelConfig.daily_budget,
+        modelConfig.budget_currency,
+        modelConfig.encrypted_api_key_ref,
+        modelConfig.config_fingerprint,
+      ],
+    );
+    await pool.query(
+      `INSERT INTO mock_orders (
+         tenant_id, contact_id, order_id, order_status, logistics_status,
+         tracking_number, refund_eligible, refund_reason
+       )
+       VALUES ($1, '42', 'ORD-100', 'shipped', 'in_transit', 'TRACK-100', true, NULL)`,
+      [tenantId],
+    );
+    const runtimeConfig = {
+      tenant_id: tenantId,
+      version: 1,
+      allowed_auto_intents: [
+        'order_status',
+        'logistics_query',
+        'invoice_request',
+      ],
+      max_auto_risk_severity: 'P2',
+      max_auto_latency_ms: 5_000,
+      max_auto_cost_per_ticket: 1,
+      auto_downgrade_mode: 'assist',
+    };
+    await pool.query(
+      `INSERT INTO runtime_mode_configs (
+         tenant_id, version, allowed_auto_intents, max_auto_risk_severity,
+         max_auto_latency_ms, max_auto_cost_per_ticket, auto_downgrade_mode,
+         is_active, config_hash
+       )
+       VALUES ($1, 1, $2::text[], $3, $4, $5, $6, true, $7)`,
+      [
+        tenantId,
+        runtimeConfig.allowed_auto_intents,
+        runtimeConfig.max_auto_risk_severity,
+        runtimeConfig.max_auto_latency_ms,
+        runtimeConfig.max_auto_cost_per_ticket,
+        runtimeConfig.auto_downgrade_mode,
+        hash(JSON.stringify(runtimeConfig)),
+      ],
+    );
+    const secrets = new EnvironmentSecretResolver({
+      TEST_CHATWOOT_WEBHOOK_SECRET: 'webhook-secret',
+      TEST_CHATWOOT_API_TOKEN: 'chatwoot-token',
+    });
+    const ticketService = new ProductionTicketService(
+      store,
+      repository,
+      redis,
+      secrets,
+      new HttpLLMProviderAdapter({ openai: baseUrl }),
+      {
+        masterKey: masterKeyReference,
+        pricingByModel: {
+          'test-model': {
+            inputCostPerMillion: 0.5,
+            outputCostPerMillion: 1.5,
+          },
+        },
+        dedupeTtlSeconds: 86_400,
+        pipelineDeadlineMs: 10_000,
+        approvalTtlMs: 86_400_000,
+      },
+    );
+    const app = buildApp({
+      store,
+      redis,
+      requiredMigration: 16,
+      dedupeTtlSeconds: 86_400,
+      buildVersion: 'test',
+      operatorAccess: new TestOperatorAccess(),
+      closeDependencies: false,
+      chatwootIngress: ticketService,
+    });
+    context.after(async () => {
+      try {
+        await app.close();
+        await pool.query(`UPDATE tenants SET status = 'archived' WHERE id = $1`, [
+          tenantId,
+        ]);
+        await pool.query(
+          `UPDATE tenant_model_configs SET is_active = false WHERE tenant_id = $1`,
+          [tenantId],
+        );
+        await pool.query(
+          `UPDATE runtime_mode_configs SET is_active = false WHERE tenant_id = $1`,
+          [tenantId],
+        );
+        await pool.query(
+          `UPDATE chatwoot_connections SET is_active = false WHERE tenant_id = $1`,
+          [tenantId],
+        );
+      } finally {
+        await Promise.allSettled([store.close(), redis.close()]);
+        mock.closeAllConnections();
+        await new Promise<void>((resolve, reject) =>
+          mock.close((error) => (error ? reject(error) : resolve())),
+        );
+      }
+    });
+
+    const result = await sendEvent(app, tenantId, 300, 'agent-bot');
+    assert.notEqual(
+      result.json().outcome,
+      'replied',
+      'cost cap must degrade the Auto run away from an autonomous reply',
+    );
+
+    const trace = await pool.query<{ metadata: { cost_cap_exceeded?: boolean } }>(
+      `SELECT metadata
+       FROM agent_traces
+       WHERE tenant_id = $1
+       ORDER BY created_at DESC
+       LIMIT 1`,
+      [tenantId],
+    );
+    assert.equal(
+      trace.rows[0]?.metadata?.cost_cap_exceeded,
+      true,
+      'cost_cap_exceeded must be recorded in trace metadata',
+    );
+    assert.equal(
+      providerPrompts.length,
+      0,
+      'cost cap must block the provider call before it runs',
+    );
+  },
+);
+
 async function readBody(
   request: import('node:http').IncomingMessage,
 ): Promise<string> {

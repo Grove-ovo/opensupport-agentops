@@ -1,6 +1,9 @@
 import { createHash, randomUUID } from 'node:crypto';
 import type { Pool, PoolClient, QueryResultRow } from 'pg';
 import { createTenantModelConfig, decryptApiKey, parseMasterKey } from '@opensupport/model-config';
+import { createPolicyIngestionPlan } from '@opensupport/retrieval';
+import { RISK_RULE_DEFINITIONS } from '@opensupport/guardrails';
+import { TOOL_MANIFESTS, ToolExecutor, MockBusinessRepository } from '@opensupport/tools';
 import type { ChatwootDeliveryCommand, RuntimeMode } from '@opensupport/shared';
 import {
   ChatwootConversationService,
@@ -12,10 +15,16 @@ import type {
   DashboardOverviewRecord,
   OperationsService,
   OperationsSettingsRecord,
+  PolicyDocumentSummaryRecord,
+  PolicyVersionSummaryRecord,
   ReleaseCandidateDetailRecord,
   ReleaseTransitionCommand,
+  RetrievalSmokeTestResult,
+  RiskRuleRecord,
   SafeModelConfigRecord,
   TenantRecord,
+  ToolDryRunResult,
+  ToolManifestRecord,
   TraceDetailRecord,
 } from './contracts.js';
 import { ProductionE2ERepository } from './e2e-repository.js';
@@ -681,6 +690,316 @@ export class PostgresOperationsService implements OperationsService {
     return String(required(result.rows[0], 'trace').conversation_id);
   }
 
+  async getPolicyVersions(
+    tenantId: string,
+  ): Promise<readonly PolicyVersionSummaryRecord[]> {
+    const result = await this.pool.query<QueryResultRow>(
+      `SELECT pv.id, pv.tenant_id, pv.version, pv.name, pv.status,
+              pv.content_hash, pv.published_at, pv.created_at,
+              COALESCE(pd.doc_count, 0) AS document_count,
+              COALESCE(pc.chunk_count, 0) AS chunk_count
+       FROM policy_versions pv
+       LEFT JOIN LATERAL (
+         SELECT COUNT(*)::int AS doc_count
+         FROM policy_documents
+         WHERE tenant_id = pv.tenant_id AND policy_version_id = pv.id
+       ) pd ON true
+       LEFT JOIN LATERAL (
+         SELECT COUNT(*)::int AS chunk_count
+         FROM policy_chunks
+         WHERE tenant_id = pv.tenant_id AND policy_version_id = pv.id
+       ) pc ON true
+       WHERE pv.tenant_id = $1
+       ORDER BY pv.version DESC`,
+      [tenantId],
+    );
+    return result.rows.map((row) => mapPolicyVersionRow(row));
+  }
+
+  async getPolicyDocuments(
+    tenantId: string,
+    policyVersionId: string,
+  ): Promise<readonly PolicyDocumentSummaryRecord[]> {
+    const result = await this.pool.query<QueryResultRow>(
+      `SELECT pd.id, pd.tenant_id, pd.policy_version_id, pd.source_key,
+              pd.title, pd.media_type, pd.content_hash, pd.created_at,
+              COALESCE(pc.chunk_count, 0) AS chunk_count
+       FROM policy_documents pd
+       LEFT JOIN LATERAL (
+         SELECT COUNT(*)::int AS chunk_count
+         FROM policy_chunks
+         WHERE tenant_id = pd.tenant_id
+           AND policy_version_id = pd.policy_version_id
+           AND document_id = pd.id
+       ) pc ON true
+       WHERE pd.tenant_id = $1 AND pd.policy_version_id = $2
+       ORDER BY pd.source_key`,
+      [tenantId, policyVersionId],
+    );
+    return result.rows.map((row) => mapPolicyDocumentRow(row));
+  }
+
+  async createPolicyVersion(
+    tenantId: string,
+    input: {
+      name: string;
+      documents: ReadonlyArray<{
+        source_key: string;
+        title: string;
+        content: string;
+      }>;
+      actorId: string;
+    },
+  ): Promise<PolicyVersionSummaryRecord> {
+    if (input.documents.length === 0) {
+      throw new OperationsError('policy_documents_required', 400);
+    }
+    const nextVersionRow = await this.pool.query<QueryResultRow>(
+      `SELECT COALESCE(MAX(version), 0) + 1 AS next_version
+       FROM policy_versions WHERE tenant_id = $1`,
+      [tenantId],
+    );
+    const nextVersion = Number(required(nextVersionRow.rows[0], 'next version').next_version);
+    const plan = createPolicyIngestionPlan({
+      tenantId,
+      policyVersionId: randomUUID(),
+      documents: input.documents.map((doc) => ({
+        source_key: doc.source_key,
+        title: doc.title,
+        media_type: 'text/plain',
+        content: doc.content,
+        metadata: {},
+      })),
+    });
+    const client = await this.pool.connect();
+    try {
+      await client.query('BEGIN');
+      await client.query(
+        `INSERT INTO policy_versions (
+           id, tenant_id, version, name, status, content_hash, metadata
+         )
+         VALUES ($1, $2, $3, $4, 'draft', $5, '{}'::jsonb)`,
+        [plan.policy_version_id, tenantId, nextVersion, input.name, plan.content_hash],
+      );
+      for (const doc of plan.documents) {
+        await client.query(
+          `INSERT INTO policy_documents (
+             id, tenant_id, policy_version_id, source_key, title,
+             media_type, normalized_content, content_hash, metadata
+           )
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+          [
+            doc.id,
+            doc.tenant_id,
+            doc.policy_version_id,
+            doc.source_key,
+            doc.title,
+            doc.media_type,
+            doc.normalized_content,
+            doc.content_hash,
+            JSON.stringify(doc.metadata),
+          ],
+        );
+      }
+      for (const chunk of plan.chunks) {
+        await client.query(
+          `INSERT INTO policy_chunks (
+             id, tenant_id, policy_version_id, document_id, chunk_index,
+             char_start, char_end, content, content_hash, token_count, metadata
+           )
+           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, '{}'::jsonb)`,
+          [
+            chunk.id,
+            chunk.tenant_id,
+            chunk.policy_version_id,
+            chunk.document_id,
+            chunk.chunk_index,
+            chunk.char_start,
+            chunk.char_end,
+            chunk.content,
+            chunk.content_hash,
+            chunk.token_count,
+          ],
+        );
+      }
+      await client.query('COMMIT');
+      await this.audit(
+        tenantId,
+        input.actorId,
+        'policy_version_created',
+        plan.policy_version_id,
+        hashJson({ name: input.name, documentCount: input.documents.length }),
+      );
+      const created = await this.pool.query<QueryResultRow>(
+        `SELECT pv.id, pv.tenant_id, pv.version, pv.name, pv.status,
+                pv.content_hash, pv.published_at, pv.created_at,
+                (SELECT COUNT(*)::int FROM policy_documents
+                  WHERE tenant_id = pv.tenant_id AND policy_version_id = pv.id) AS document_count,
+                (SELECT COUNT(*)::int FROM policy_chunks
+                  WHERE tenant_id = pv.tenant_id AND policy_version_id = pv.id) AS chunk_count
+         FROM policy_versions pv
+         WHERE pv.tenant_id = $1 AND pv.id = $2`,
+        [tenantId, plan.policy_version_id],
+      );
+      return mapPolicyVersionRow(required(created.rows[0], 'policy version'));
+    } catch (error) {
+      await client.query('ROLLBACK');
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
+  async publishPolicyVersion(
+    tenantId: string,
+    policyVersionId: string,
+    actorId: string,
+  ): Promise<PolicyVersionSummaryRecord> {
+    const result = await this.pool.query<QueryResultRow>(
+      `UPDATE policy_versions
+       SET status = 'published', published_at = now(), updated_at = now()
+       WHERE tenant_id = $1 AND id = $2 AND status = 'draft'
+       RETURNING id`,
+      [tenantId, policyVersionId],
+    );
+    if (result.rowCount === 0) {
+      const existing = await this.pool.query<QueryResultRow>(
+        `SELECT status FROM policy_versions
+         WHERE tenant_id = $1 AND id = $2`,
+        [tenantId, policyVersionId],
+      );
+      if (existing.rows.length === 0) {
+        throw new OperationsError('policy_version_not_found', 404);
+      }
+      throw new OperationsError('policy_version_not_draft', 409);
+    }
+    await this.audit(
+      tenantId,
+      actorId,
+      'policy_version_published',
+      policyVersionId,
+      hashJson({ policyVersionId }),
+    );
+    const reloaded = await this.pool.query<QueryResultRow>(
+      `SELECT pv.id, pv.tenant_id, pv.version, pv.name, pv.status,
+              pv.content_hash, pv.published_at, pv.created_at,
+              (SELECT COUNT(*)::int FROM policy_documents
+                WHERE tenant_id = pv.tenant_id AND policy_version_id = pv.id) AS document_count,
+              (SELECT COUNT(*)::int FROM policy_chunks
+                WHERE tenant_id = pv.tenant_id AND policy_version_id = pv.id) AS chunk_count
+       FROM policy_versions pv
+       WHERE pv.tenant_id = $1 AND pv.id = $2`,
+      [tenantId, policyVersionId],
+    );
+    return mapPolicyVersionRow(required(reloaded.rows[0], 'policy version'));
+  }
+
+  async runRetrievalSmokeTest(
+    tenantId: string,
+    input: { query: string; limit?: number },
+  ): Promise<readonly RetrievalSmokeTestResult[]> {
+    const published = await this.pool.query<QueryResultRow>(
+      `SELECT id FROM policy_versions
+       WHERE tenant_id = $1 AND status = 'published'
+       ORDER BY published_at DESC LIMIT 1`,
+      [tenantId],
+    );
+    if (published.rows.length === 0) {
+      throw new OperationsError('no_published_policy_version', 409);
+    }
+    const policyVersionId = String(
+      required(published.rows[0], 'published policy version').id,
+    );
+    const limit = Math.min(Math.max(input.limit ?? 10, 1), 50);
+    const result = await this.pool.query<QueryResultRow>(
+      `SELECT chunk_id, document_id, chunk_index, content, content_hash, score
+       FROM search_policy_chunks_lexical($1, $2, $3, $4)
+       ORDER BY score DESC`,
+      [tenantId, policyVersionId, input.query, limit],
+    );
+    return result.rows.map((row) => ({
+      chunk_id: String(row.chunk_id),
+      document_id: String(row.document_id),
+      chunk_index: Number(row.chunk_index),
+      content: String(row.content),
+      content_hash: String(row.content_hash),
+      score: Number(row.score),
+    }));
+  }
+
+  async getToolManifest(
+    _tenantId: string,
+  ): Promise<readonly ToolManifestRecord[]> {
+    return Object.values(TOOL_MANIFESTS).map((manifest) => ({
+      name: manifest.name,
+      version_id: manifest.version_id,
+      description: manifest.description,
+      risk_level: manifest.risk_level,
+      timeout_ms: manifest.timeout_ms,
+      max_retries: manifest.max_retries,
+      required_permissions: [...manifest.required_permissions],
+      idempotent: manifest.idempotent,
+      dry_run: manifest.dry_run,
+    }));
+  }
+
+  async getRiskRules(_tenantId: string): Promise<readonly RiskRuleRecord[]> {
+    return RISK_RULE_DEFINITIONS.map((rule) => ({
+      gate: rule.gate,
+      reason_code: rule.reason_code,
+      severity: rule.severity,
+      recommendation: rule.recommendation,
+      blocking: rule.blocking,
+      description: rule.description,
+    }));
+  }
+
+  async runToolDryRun(
+    tenantId: string,
+    input: {
+      toolName: string;
+      arguments: Record<string, unknown>;
+      actorId: string;
+    },
+  ): Promise<ToolDryRunResult> {
+    const manifest = TOOL_MANIFESTS[input.toolName as keyof typeof TOOL_MANIFESTS];
+    if (!manifest) {
+      throw new OperationsError('tool_not_found', 404);
+    }
+    if (!manifest.dry_run) {
+      throw new OperationsError('tool_not_dry_run', 409);
+    }
+    const orders = await this.repository.listMockOrders(tenantId, 'dry-run');
+    const executor = new ToolExecutor(new MockBusinessRepository(orders));
+    const result = await executor.execute({
+      call_id: randomUUID(),
+      trace_id: randomUUID(),
+      tenant_id: tenantId,
+      contact_id: 'dry-run',
+      tool_name: input.toolName as keyof typeof TOOL_MANIFESTS,
+      tool_manifest_version_id: manifest.version_id,
+      idempotency_key: `dry-run:${randomUUID()}`,
+      arguments: input.arguments,
+      permissions: [...manifest.required_permissions],
+      deadline_at: new Date(Date.now() + 10_000).toISOString(),
+    });
+    await this.audit(
+      tenantId,
+      input.actorId,
+      'tool_dry_run',
+      result.result_id,
+      hashJson({ toolName: input.toolName, arguments: input.arguments }),
+    );
+    return {
+      tool_name: result.tool_name,
+      status: result.status,
+      code: result.code,
+      retryable: result.retryable,
+      dry_run: result.dry_run,
+      data: result.data,
+    };
+  }
+
   private async audit(
     tenantId: string,
     actorId: string,
@@ -832,4 +1151,35 @@ function required<T>(value: T | null | undefined, name: string): T {
     throw new Error(`Missing ${name}`);
   }
   return value;
+}
+
+function mapPolicyVersionRow(row: QueryResultRow): PolicyVersionSummaryRecord {
+  return {
+    id: String(row.id),
+    tenant_id: String(row.tenant_id),
+    version: Number(row.version),
+    name: String(row.name),
+    status: row.status as PolicyVersionSummaryRecord['status'],
+    content_hash: String(row.content_hash),
+    document_count: Number(row.document_count),
+    chunk_count: Number(row.chunk_count),
+    published_at: nullableString(row.published_at),
+    created_at: String(row.created_at),
+  };
+}
+
+function mapPolicyDocumentRow(
+  row: QueryResultRow,
+): PolicyDocumentSummaryRecord {
+  return {
+    id: String(row.id),
+    tenant_id: String(row.tenant_id),
+    policy_version_id: String(row.policy_version_id),
+    source_key: String(row.source_key),
+    title: String(row.title),
+    media_type: String(row.media_type),
+    content_hash: String(row.content_hash),
+    chunk_count: Number(row.chunk_count),
+    created_at: String(row.created_at),
+  };
 }

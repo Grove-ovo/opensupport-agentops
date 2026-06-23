@@ -1,10 +1,12 @@
 import {
   Activity,
+  BookOpen,
   CheckSquare,
   Gauge,
   Rocket,
   Settings,
   ShieldCheck,
+  ShieldQuestion,
   LogOut,
 } from 'lucide-react';
 import type { OperatorPrincipal, Tenant, ViewName } from '../types.js';
@@ -26,6 +28,8 @@ const NAV_ITEMS = [
   { id: 'traces', label: 'Traces', icon: Activity },
   { id: 'approvals', label: 'Approvals', icon: CheckSquare },
   { id: 'releases', label: 'Releases', icon: Rocket },
+  { id: 'knowledge', label: 'Knowledge', icon: BookOpen },
+  { id: 'tools', label: 'Tools', icon: ShieldQuestion },
   { id: 'settings', label: 'Settings', icon: Settings },
 ] as const;
 

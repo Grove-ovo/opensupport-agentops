@@ -130,6 +130,85 @@ async function mockFetch(input: RequestInfo | URL, init?: RequestInit) {
   if (url.includes(`/approvals/${APPROVAL_ID}/actions`) && init?.method === 'POST') {
     return json({ state: 'approved' });
   }
+  if (url.endsWith('/policy-versions') && init?.method === 'POST') {
+    return json({
+      id: '00000000-0000-4000-8000-000000000005',
+      tenant_id: TENANT_ID,
+      version: 1,
+      name: 'Returns policy',
+      status: 'draft',
+      content_hash: 'a'.repeat(64),
+      document_count: 1,
+      chunk_count: 3,
+      published_at: null,
+      created_at: '2026-06-23T00:00:00.000Z',
+    });
+  }
+  if (url.endsWith('/policy-versions')) {
+    return json([
+      {
+        id: '00000000-0000-4000-8000-000000000005',
+        tenant_id: TENANT_ID,
+        version: 1,
+        name: 'Returns policy',
+        status: 'draft',
+        content_hash: 'a'.repeat(64),
+        document_count: 1,
+        chunk_count: 3,
+        published_at: null,
+        created_at: '2026-06-23T00:00:00.000Z',
+      },
+    ]);
+  }
+  if (url.includes('/policy-retrieval-smoke-test') && init?.method === 'POST') {
+    return json([
+      {
+        chunk_id: '00000000-0000-4000-8000-000000000007',
+        document_id: '00000000-0000-4000-8000-000000000006',
+        chunk_index: 0,
+        content: 'Returns are accepted within 30 days.',
+        content_hash: 'c'.repeat(64),
+        score: 0.85,
+      },
+    ]);
+  }
+  if (url.endsWith('/tool-manifest')) {
+    return json([
+      {
+        name: 'get_order_status',
+        version_id: 'tools-v1',
+        description: 'Read a customer-owned order status.',
+        risk_level: 'low',
+        timeout_ms: 1500,
+        max_retries: 1,
+        required_permissions: ['order:read'],
+        idempotent: true,
+        dry_run: false,
+      },
+    ]);
+  }
+  if (url.endsWith('/risk-rules')) {
+    return json([
+      {
+        gate: 'input',
+        reason_code: 'prompt_injection',
+        severity: 'P0',
+        recommendation: 'block',
+        blocking: true,
+        description: 'Customer text matched a prompt-injection pattern.',
+      },
+    ]);
+  }
+  if (url.includes('/tool-dry-run') && init?.method === 'POST') {
+    return json({
+      tool_name: 'escalate_to_human',
+      status: 'succeeded',
+      code: 'ok',
+      retryable: false,
+      dry_run: true,
+      data: { handoff_required: true, reason: 'refund' },
+    });
+  }
   throw new Error(`Unhandled request: ${url}`);
 }
 

@@ -229,6 +229,108 @@ export interface OperationsService {
       actorId: string;
     },
   ): Promise<OperationsSettingsRecord['chatwoot']>;
+  getPolicyVersions(
+    tenantId: string,
+  ): Promise<readonly PolicyVersionSummaryRecord[]>;
+  getPolicyDocuments(
+    tenantId: string,
+    policyVersionId: string,
+  ): Promise<readonly PolicyDocumentSummaryRecord[]>;
+  createPolicyVersion(
+    tenantId: string,
+    input: {
+      name: string;
+      documents: ReadonlyArray<{
+        source_key: string;
+        title: string;
+        content: string;
+      }>;
+      actorId: string;
+    },
+  ): Promise<PolicyVersionSummaryRecord>;
+  publishPolicyVersion(
+    tenantId: string,
+    policyVersionId: string,
+    actorId: string,
+  ): Promise<PolicyVersionSummaryRecord>;
+  runRetrievalSmokeTest(
+    tenantId: string,
+    input: { query: string; limit?: number },
+  ): Promise<readonly RetrievalSmokeTestResult[]>;
+  getToolManifest(tenantId: string): Promise<readonly ToolManifestRecord[]>;
+  getRiskRules(tenantId: string): Promise<readonly RiskRuleRecord[]>;
+  runToolDryRun(
+    tenantId: string,
+    input: {
+      toolName: string;
+      arguments: Record<string, unknown>;
+      actorId: string;
+    },
+  ): Promise<ToolDryRunResult>;
+}
+
+export interface ToolManifestRecord {
+  name: string;
+  version_id: string;
+  description: string;
+  risk_level: 'low' | 'medium' | 'high';
+  timeout_ms: number;
+  max_retries: number;
+  required_permissions: readonly string[];
+  idempotent: boolean;
+  dry_run: boolean;
+}
+
+export interface RiskRuleRecord {
+  gate: string;
+  reason_code: string;
+  severity: string;
+  recommendation: string;
+  blocking: boolean;
+  description: string;
+}
+
+export interface ToolDryRunResult {
+  tool_name: string;
+  status: 'succeeded' | 'failed' | 'duplicate';
+  code: string;
+  retryable: boolean;
+  dry_run: boolean;
+  data: Record<string, unknown> | null;
+}
+
+export interface PolicyVersionSummaryRecord {
+  id: string;
+  tenant_id: string;
+  version: number;
+  name: string;
+  status: 'draft' | 'published' | 'archived';
+  content_hash: string;
+  document_count: number;
+  chunk_count: number;
+  published_at: string | null;
+  created_at: string;
+}
+
+export interface PolicyDocumentSummaryRecord {
+  id: string;
+  tenant_id: string;
+  policy_version_id: string;
+  source_key: string;
+  title: string;
+  media_type: string;
+  content_hash: string;
+  chunk_count: number;
+  created_at: string;
+}
+
+export interface RetrievalSmokeTestResult {
+  chunk_id: string;
+  document_id: string;
+  chunk_index: number;
+  content: string;
+  content_hash: string;
+  score: number;
 }
 
 export interface CanonicalEventRecord extends CanonicalInboundEvent {

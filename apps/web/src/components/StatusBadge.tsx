@@ -18,6 +18,7 @@ const SUCCESS_VALUES = new Set([
   'replied',
   'succeeded',
   'pass',
+  'published',
 ]);
 
 export function StatusBadge({ value }: StatusBadgeProps) {

@@ -177,6 +177,19 @@ main { padding: 24px 28px 42px; }
 .auth-panel .button { text-decoration: none; }
 .form-error { margin: 0; color: var(--red); font-size: 12px; }
 
+.button-sm { display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px; font-size: 11px; }
+.data-table tbody tr.selected { background: var(--teal-soft); }
+.data-table tbody tr.selected:hover { background: var(--teal-soft); }
+.kb-upload .save-message, .kb-smoke .save-message { margin: 0 17px 12px; grid-column: auto; }
+.kb-form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; padding: 17px; }
+.kb-content-field { grid-column: 1 / -1; }
+.kb-content-field textarea { font-family: inherit; line-height: 1.5; }
+.kb-upload > footer, .kb-smoke > footer { margin: 0 17px 17px; padding-top: 0; display: flex; justify-content: flex-end; border-top: 0; }
+.kb-smoke-form { display: flex; gap: 8px; padding: 17px; }
+.kb-smoke-form input { flex: 1; min-width: 0; min-height: 37px; padding: 8px 9px; }
+.kb-smoke-content { white-space: normal; max-width: 460px; }
+.kb-result-data { white-space: pre-wrap; word-break: break-word; margin: 0; font-size: 11px; line-height: 1.5; }
+
 .dialog-backdrop { position: fixed; z-index: 50; inset: 0; padding: 20px; display: grid; place-items: center; background: rgba(15,27,29,.52); }
 .confirm-dialog { width: min(520px, 100%); padding: 18px; background: #fff; border-radius: 6px; box-shadow: 0 24px 70px rgba(6,20,22,.28); }
 .confirm-dialog > header { display: flex; align-items: start; justify-content: space-between; gap: 16px; }

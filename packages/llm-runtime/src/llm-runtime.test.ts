@@ -151,6 +151,7 @@ test('falls back once after invalid primary output', async () => {
 
 test('blocks calls when projected cost exceeds the ticket budget', async () => {
   let calls = 0;
+  const logs: Array<{ call_status: string; budget_reason_code: string }> = [];
   const provider: LLMProviderAdapter = {
     async invoke() {
       calls += 1;
@@ -160,10 +161,19 @@ test('blocks calls when projected cost exceeds the ticket budget', async () => {
   const result = await runConditionalTriage({
     ...input(provider),
     currentTicketCost: 1,
+    log: async (record) => {
+      logs.push({
+        call_status: record.call_status,
+        budget_reason_code: record.budget_reason_code,
+      });
+    },
   });
   assert.equal(result.status, 'degraded');
   assert.equal(result.reason_code, 'ticket_budget_exceeded');
   assert.equal(calls, 0);
+  assert.equal(logs.length, 1);
+  assert.equal(logs[0]?.call_status, 'cancelled');
+  assert.equal(logs[0]?.budget_reason_code, 'ticket_budget_exceeded');
 });
 
 test('returns degraded after primary and fallback provider failures', async () => {
