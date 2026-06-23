@@ -9,8 +9,11 @@ import type {
   ReleaseCandidate,
   ReleaseDetail,
   RetrievalSmokeTestResult,
+  RiskRuleEntry,
   Settings,
   Tenant,
+  ToolDryRunResult,
+  ToolManifestEntry,
   Trace,
   TraceDetail,
 } from './types.js';
@@ -147,6 +150,22 @@ export const api = {
   ) =>
     request<RetrievalSmokeTestResult[]>(
       `/api/v1/tenants/${tenantId}/policy-retrieval-smoke-test`,
+      { method: 'POST', body: JSON.stringify(input) },
+    ),
+  toolManifest: (tenantId: string) =>
+    request<ToolManifestEntry[]>(
+      `/api/v1/tenants/${tenantId}/tool-manifest`,
+    ),
+  riskRules: (tenantId: string) =>
+    request<RiskRuleEntry[]>(
+      `/api/v1/tenants/${tenantId}/risk-rules`,
+    ),
+  runToolDryRun: (
+    tenantId: string,
+    input: { tool_name: string; arguments: Record<string, unknown> },
+  ) =>
+    request<ToolDryRunResult>(
+      `/api/v1/tenants/${tenantId}/tool-dry-run`,
       { method: 'POST', body: JSON.stringify(input) },
     ),
 };

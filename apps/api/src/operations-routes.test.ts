@@ -188,6 +188,56 @@ test('policy KB routes list versions, documents, create, publish, and smoke test
   });
 });
 
+test('tool/risk routes return manifest, rules, and dry-run result', async () => {
+  const operations = new FakeOperations();
+  const app = buildApp({
+    store: new FakeStore(),
+    redis: new FakeRedis(),
+    operations,
+    requiredMigration: 15,
+    dedupeTtlSeconds: 86_400,
+    buildVersion: 'test',
+    operatorAccess: new TestOperatorAccess(),
+    closeDependencies: false,
+  });
+  test.after(() => app.close());
+
+  const manifest = await app.inject({
+    method: 'GET',
+    url: `/api/v1/tenants/${TENANT_ID}/tool-manifest`,
+  });
+  assert.equal(manifest.statusCode, 200);
+  assert.equal(manifest.json().length, 1);
+  assert.equal(manifest.json()[0].name, 'get_order_status');
+
+  const rules = await app.inject({
+    method: 'GET',
+    url: `/api/v1/tenants/${TENANT_ID}/risk-rules`,
+  });
+  assert.equal(rules.statusCode, 200);
+  assert.equal(rules.json().length, 1);
+  assert.equal(rules.json()[0].reason_code, 'prompt_injection');
+
+  const dryRun = await app.inject({
+    method: 'POST',
+    url: `/api/v1/tenants/${TENANT_ID}/tool-dry-run`,
+    payload: {
+      tool_name: 'escalate_to_human',
+      arguments: { reason: 'Customer requested a refund' },
+    },
+    headers: { 'x-csrf-token': 'test-csrf' },
+  });
+  assert.equal(dryRun.statusCode, 200);
+  assert.equal(dryRun.json().status, 'succeeded');
+  assert.equal(dryRun.json().dry_run, true);
+  assert.deepEqual(operations.dryRunInput, {
+    tenantId: TENANT_ID,
+    toolName: 'escalate_to_human',
+    arguments: { reason: 'Customer requested a refund' },
+    actorId: 'oidc:test-operator',
+  });
+});
+
 class FakeOperations implements OperationsService {
   approvalCommand: ApprovalActionCommand | null = null;
   releaseCommand: ReleaseTransitionCommand | null = null;
@@ -335,6 +385,52 @@ class FakeOperations implements OperationsService {
         score: 0.85,
       },
     ];
+  }
+
+  async getToolManifest() {
+    return [
+      {
+        name: 'get_order_status',
+        version_id: 'tools-v1',
+        description: 'Read a customer-owned order status.',
+        risk_level: 'low' as const,
+        timeout_ms: 1500,
+        max_retries: 1,
+        required_permissions: ['order:read'],
+        idempotent: true,
+        dry_run: false,
+      },
+    ];
+  }
+
+  async getRiskRules() {
+    return [
+      {
+        gate: 'input',
+        reason_code: 'prompt_injection',
+        severity: 'P0',
+        recommendation: 'block',
+        blocking: true,
+        description: 'Customer text matched a prompt-injection pattern.',
+      },
+    ];
+  }
+
+  dryRunInput: { tenantId: string; toolName: string; arguments: Record<string, unknown>; actorId: string } | null = null;
+
+  async runToolDryRun(
+    tenantId: string,
+    input: { toolName: string; arguments: Record<string, unknown>; actorId: string },
+  ) {
+    this.dryRunInput = { tenantId, ...input };
+    return {
+      tool_name: input.toolName,
+      status: 'succeeded' as const,
+      code: 'ok',
+      retryable: false,
+      dry_run: true,
+      data: { handoff_required: true, reason: String(input.arguments.reason ?? '') },
+    };
   }
 }
 

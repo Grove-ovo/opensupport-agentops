@@ -4,6 +4,7 @@ export type ViewName =
   | 'approvals'
   | 'releases'
   | 'knowledge'
+  | 'tools'
   | 'settings';
 
 export interface Page<T> {
@@ -191,4 +192,34 @@ export interface RetrievalSmokeTestResult {
   content: string;
   content_hash: string;
   score: number;
+}
+
+export interface ToolManifestEntry {
+  name: string;
+  version_id: string;
+  description: string;
+  risk_level: 'low' | 'medium' | 'high';
+  timeout_ms: number;
+  max_retries: number;
+  required_permissions: string[];
+  idempotent: boolean;
+  dry_run: boolean;
+}
+
+export interface RiskRuleEntry {
+  gate: string;
+  reason_code: string;
+  severity: string;
+  recommendation: string;
+  blocking: boolean;
+  description: string;
+}
+
+export interface ToolDryRunResult {
+  tool_name: string;
+  status: 'succeeded' | 'failed' | 'duplicate';
+  code: string;
+  retryable: boolean;
+  dry_run: boolean;
+  data: Record<string, unknown> | null;
 }

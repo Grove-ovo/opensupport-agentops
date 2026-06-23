@@ -472,6 +472,50 @@ export async function registerOperationsRoutes(
         return operations.runRetrievalSmokeTest(request.params.tenantId, params);
       }),
   );
+
+  app.get<{ Params: { tenantId: string } }>(
+    '/api/v1/tenants/:tenantId/tool-manifest',
+    { schema: { params: idParamsSchema } },
+    async (request, reply) =>
+      run(reply, () => operations.getToolManifest(request.params.tenantId)),
+  );
+
+  app.get<{ Params: { tenantId: string } }>(
+    '/api/v1/tenants/:tenantId/risk-rules',
+    { schema: { params: idParamsSchema } },
+    async (request, reply) =>
+      run(reply, () => operations.getRiskRules(request.params.tenantId)),
+  );
+
+  app.post<{
+    Params: { tenantId: string };
+    Body: { tool_name: string; arguments: Record<string, unknown> };
+  }>(
+    '/api/v1/tenants/:tenantId/tool-dry-run',
+    {
+      preHandler: mutationGuards(operatorAccess),
+      schema: {
+        params: idParamsSchema,
+        body: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['tool_name', 'arguments'],
+          properties: {
+            tool_name: { type: 'string', minLength: 1, maxLength: 128 },
+            arguments: { type: 'object' },
+          },
+        },
+      },
+    },
+    async (request, reply) =>
+      run(reply, () =>
+        operations.runToolDryRun(request.params.tenantId, {
+          toolName: request.body.tool_name,
+          arguments: request.body.arguments,
+          actorId: operatorAccess.principal(request).subject,
+        }),
+      ),
+  );
 }
 
 function mutationGuards(operatorAccess: OperatorAccess) {

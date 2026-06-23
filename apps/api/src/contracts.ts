@@ -257,6 +257,46 @@ export interface OperationsService {
     tenantId: string,
     input: { query: string; limit?: number },
   ): Promise<readonly RetrievalSmokeTestResult[]>;
+  getToolManifest(tenantId: string): Promise<readonly ToolManifestRecord[]>;
+  getRiskRules(tenantId: string): Promise<readonly RiskRuleRecord[]>;
+  runToolDryRun(
+    tenantId: string,
+    input: {
+      toolName: string;
+      arguments: Record<string, unknown>;
+      actorId: string;
+    },
+  ): Promise<ToolDryRunResult>;
+}
+
+export interface ToolManifestRecord {
+  name: string;
+  version_id: string;
+  description: string;
+  risk_level: 'low' | 'medium' | 'high';
+  timeout_ms: number;
+  max_retries: number;
+  required_permissions: readonly string[];
+  idempotent: boolean;
+  dry_run: boolean;
+}
+
+export interface RiskRuleRecord {
+  gate: string;
+  reason_code: string;
+  severity: string;
+  recommendation: string;
+  blocking: boolean;
+  description: string;
+}
+
+export interface ToolDryRunResult {
+  tool_name: string;
+  status: 'succeeded' | 'failed' | 'duplicate';
+  code: string;
+  retryable: boolean;
+  dry_run: boolean;
+  data: Record<string, unknown> | null;
 }
 
 export interface PolicyVersionSummaryRecord {

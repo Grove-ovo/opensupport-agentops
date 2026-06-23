@@ -2,6 +2,8 @@ import { createHash, randomUUID } from 'node:crypto';
 import type { Pool, PoolClient, QueryResultRow } from 'pg';
 import { createTenantModelConfig, decryptApiKey, parseMasterKey } from '@opensupport/model-config';
 import { createPolicyIngestionPlan } from '@opensupport/retrieval';
+import { RISK_RULE_DEFINITIONS } from '@opensupport/guardrails';
+import { TOOL_MANIFESTS, ToolExecutor, MockBusinessRepository } from '@opensupport/tools';
 import type { ChatwootDeliveryCommand, RuntimeMode } from '@opensupport/shared';
 import {
   ChatwootConversationService,
@@ -18,8 +20,11 @@ import type {
   ReleaseCandidateDetailRecord,
   ReleaseTransitionCommand,
   RetrievalSmokeTestResult,
+  RiskRuleRecord,
   SafeModelConfigRecord,
   TenantRecord,
+  ToolDryRunResult,
+  ToolManifestRecord,
   TraceDetailRecord,
 } from './contracts.js';
 import { ProductionE2ERepository } from './e2e-repository.js';
@@ -920,6 +925,79 @@ export class PostgresOperationsService implements OperationsService {
       content_hash: String(row.content_hash),
       score: Number(row.score),
     }));
+  }
+
+  async getToolManifest(
+    _tenantId: string,
+  ): Promise<readonly ToolManifestRecord[]> {
+    return Object.values(TOOL_MANIFESTS).map((manifest) => ({
+      name: manifest.name,
+      version_id: manifest.version_id,
+      description: manifest.description,
+      risk_level: manifest.risk_level,
+      timeout_ms: manifest.timeout_ms,
+      max_retries: manifest.max_retries,
+      required_permissions: [...manifest.required_permissions],
+      idempotent: manifest.idempotent,
+      dry_run: manifest.dry_run,
+    }));
+  }
+
+  async getRiskRules(_tenantId: string): Promise<readonly RiskRuleRecord[]> {
+    return RISK_RULE_DEFINITIONS.map((rule) => ({
+      gate: rule.gate,
+      reason_code: rule.reason_code,
+      severity: rule.severity,
+      recommendation: rule.recommendation,
+      blocking: rule.blocking,
+      description: rule.description,
+    }));
+  }
+
+  async runToolDryRun(
+    tenantId: string,
+    input: {
+      toolName: string;
+      arguments: Record<string, unknown>;
+      actorId: string;
+    },
+  ): Promise<ToolDryRunResult> {
+    const manifest = TOOL_MANIFESTS[input.toolName as keyof typeof TOOL_MANIFESTS];
+    if (!manifest) {
+      throw new OperationsError('tool_not_found', 404);
+    }
+    if (!manifest.dry_run) {
+      throw new OperationsError('tool_not_dry_run', 409);
+    }
+    const orders = await this.repository.listMockOrders(tenantId, 'dry-run');
+    const executor = new ToolExecutor(new MockBusinessRepository(orders));
+    const result = await executor.execute({
+      call_id: randomUUID(),
+      trace_id: randomUUID(),
+      tenant_id: tenantId,
+      contact_id: 'dry-run',
+      tool_name: input.toolName as keyof typeof TOOL_MANIFESTS,
+      tool_manifest_version_id: manifest.version_id,
+      idempotency_key: `dry-run:${randomUUID()}`,
+      arguments: input.arguments,
+      permissions: [...manifest.required_permissions],
+      deadline_at: new Date(Date.now() + 10_000).toISOString(),
+    });
+    await this.audit(
+      tenantId,
+      input.actorId,
+      'tool_dry_run',
+      result.result_id,
+      hashJson({ toolName: input.toolName, arguments: input.arguments }),
+    );
+    return {
+      tool_name: result.tool_name,
+      status: result.status,
+      code: result.code,
+      retryable: result.retryable,
+      dry_run: result.dry_run,
+      data: result.data,
+    };
   }
 
   private async audit(
