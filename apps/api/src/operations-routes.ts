@@ -354,6 +354,124 @@ export async function registerOperationsRoutes(
         }),
       ),
   );
+
+  app.get<{ Params: { tenantId: string } }>(
+    '/api/v1/tenants/:tenantId/policy-versions',
+    { schema: { params: idParamsSchema } },
+    async (request, reply) =>
+      run(reply, () => operations.getPolicyVersions(request.params.tenantId)),
+  );
+
+  app.get<{ Params: { tenantId: string; policyVersionId: string } }>(
+    '/api/v1/tenants/:tenantId/policy-versions/:policyVersionId/documents',
+    { schema: { params: twoIdSchema('policyVersionId') } },
+    async (request, reply) =>
+      run(reply, () =>
+        operations.getPolicyDocuments(
+          request.params.tenantId,
+          request.params.policyVersionId,
+        ),
+      ),
+  );
+
+  app.post<{
+    Params: { tenantId: string };
+    Body: {
+      name: string;
+      documents: ReadonlyArray<{
+        source_key: string;
+        title: string;
+        content: string;
+      }>;
+    };
+  }>(
+    '/api/v1/tenants/:tenantId/policy-versions',
+    {
+      preHandler: mutationGuards(operatorAccess),
+      schema: {
+        params: idParamsSchema,
+        body: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['name', 'documents'],
+          properties: {
+            name: { type: 'string', minLength: 1, maxLength: 256 },
+            documents: {
+              type: 'array',
+              minItems: 1,
+              maxItems: 100,
+              items: {
+                type: 'object',
+                additionalProperties: false,
+                required: ['source_key', 'title', 'content'],
+                properties: {
+                  source_key: { type: 'string', minLength: 1, maxLength: 512 },
+                  title: { type: 'string', minLength: 1, maxLength: 512 },
+                  content: { type: 'string', minLength: 1, maxLength: 1_000_000 },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) =>
+      run(reply, () =>
+        operations.createPolicyVersion(request.params.tenantId, {
+          name: request.body.name,
+          documents: request.body.documents,
+          actorId: operatorAccess.principal(request).subject,
+        }),
+      ),
+  );
+
+  app.put<{ Params: { tenantId: string; policyVersionId: string } }>(
+    '/api/v1/tenants/:tenantId/policy-versions/:policyVersionId/publish',
+    {
+      preHandler: mutationGuards(operatorAccess),
+      schema: { params: twoIdSchema('policyVersionId') },
+    },
+    async (request, reply) =>
+      run(reply, () =>
+        operations.publishPolicyVersion(
+          request.params.tenantId,
+          request.params.policyVersionId,
+          operatorAccess.principal(request).subject,
+        ),
+      ),
+  );
+
+  app.post<{
+    Params: { tenantId: string };
+    Body: { query: string; limit?: number };
+  }>(
+    '/api/v1/tenants/:tenantId/policy-retrieval-smoke-test',
+    {
+      preHandler: mutationGuards(operatorAccess),
+      schema: {
+        params: idParamsSchema,
+        body: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['query'],
+          properties: {
+            query: { type: 'string', minLength: 1, maxLength: 2_000 },
+            limit: { type: 'integer', minimum: 1, maximum: 50 },
+          },
+        },
+      },
+    },
+    async (request, reply) =>
+      run(reply, () => {
+        const params: { query: string; limit?: number } = {
+          query: request.body.query,
+        };
+        if (request.body.limit !== undefined) {
+          params.limit = request.body.limit;
+        }
+        return operations.runRetrievalSmokeTest(request.params.tenantId, params);
+      }),
+  );
 }
 
 function mutationGuards(operatorAccess: OperatorAccess) {

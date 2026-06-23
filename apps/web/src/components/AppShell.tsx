@@ -1,5 +1,6 @@
 import {
   Activity,
+  BookOpen,
   CheckSquare,
   Gauge,
   Rocket,
@@ -26,6 +27,7 @@ const NAV_ITEMS = [
   { id: 'traces', label: 'Traces', icon: Activity },
   { id: 'approvals', label: 'Approvals', icon: CheckSquare },
   { id: 'releases', label: 'Releases', icon: Rocket },
+  { id: 'knowledge', label: 'Knowledge', icon: BookOpen },
   { id: 'settings', label: 'Settings', icon: Settings },
 ] as const;
 

@@ -4,8 +4,11 @@ import type {
   Approval,
   Overview,
   Page,
+  PolicyDocument,
+  PolicyVersion,
   ReleaseCandidate,
   ReleaseDetail,
+  RetrievalSmokeTestResult,
   Settings,
   Tenant,
   Trace,
@@ -109,6 +112,42 @@ export const api = {
     request<Settings['chatwoot']>(
       `/api/v1/tenants/${tenantId}/settings/chatwoot`,
       { method: 'PUT', body: JSON.stringify(input) },
+    ),
+  policyVersions: (tenantId: string) =>
+    request<PolicyVersion[]>(
+      `/api/v1/tenants/${tenantId}/policy-versions`,
+    ),
+  policyDocuments: (tenantId: string, policyVersionId: string) =>
+    request<PolicyDocument[]>(
+      `/api/v1/tenants/${tenantId}/policy-versions/${policyVersionId}/documents`,
+    ),
+  createPolicyVersion: (
+    tenantId: string,
+    input: {
+      name: string;
+      documents: Array<{
+        source_key: string;
+        title: string;
+        content: string;
+      }>;
+    },
+  ) =>
+    request<PolicyVersion>(
+      `/api/v1/tenants/${tenantId}/policy-versions`,
+      { method: 'POST', body: JSON.stringify(input) },
+    ),
+  publishPolicyVersion: (tenantId: string, policyVersionId: string) =>
+    request<PolicyVersion>(
+      `/api/v1/tenants/${tenantId}/policy-versions/${policyVersionId}/publish`,
+      { method: 'PUT' },
+    ),
+  runRetrievalSmokeTest: (
+    tenantId: string,
+    input: { query: string; limit?: number },
+  ) =>
+    request<RetrievalSmokeTestResult[]>(
+      `/api/v1/tenants/${tenantId}/policy-retrieval-smoke-test`,
+      { method: 'POST', body: JSON.stringify(input) },
     ),
 };
 

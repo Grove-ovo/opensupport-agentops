@@ -130,6 +130,48 @@ async function mockFetch(input: RequestInfo | URL, init?: RequestInit) {
   if (url.includes(`/approvals/${APPROVAL_ID}/actions`) && init?.method === 'POST') {
     return json({ state: 'approved' });
   }
+  if (url.endsWith('/policy-versions') && init?.method === 'POST') {
+    return json({
+      id: '00000000-0000-4000-8000-000000000005',
+      tenant_id: TENANT_ID,
+      version: 1,
+      name: 'Returns policy',
+      status: 'draft',
+      content_hash: 'a'.repeat(64),
+      document_count: 1,
+      chunk_count: 3,
+      published_at: null,
+      created_at: '2026-06-23T00:00:00.000Z',
+    });
+  }
+  if (url.endsWith('/policy-versions')) {
+    return json([
+      {
+        id: '00000000-0000-4000-8000-000000000005',
+        tenant_id: TENANT_ID,
+        version: 1,
+        name: 'Returns policy',
+        status: 'draft',
+        content_hash: 'a'.repeat(64),
+        document_count: 1,
+        chunk_count: 3,
+        published_at: null,
+        created_at: '2026-06-23T00:00:00.000Z',
+      },
+    ]);
+  }
+  if (url.includes('/policy-retrieval-smoke-test') && init?.method === 'POST') {
+    return json([
+      {
+        chunk_id: '00000000-0000-4000-8000-000000000007',
+        document_id: '00000000-0000-4000-8000-000000000006',
+        chunk_index: 0,
+        content: 'Returns are accepted within 30 days.',
+        content_hash: 'c'.repeat(64),
+        score: 0.85,
+      },
+    ]);
+  }
   throw new Error(`Unhandled request: ${url}`);
 }
 
