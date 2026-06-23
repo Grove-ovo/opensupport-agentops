@@ -1,8 +1,8 @@
 import { createHash, createHmac, randomUUID } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
-import { createServer } from 'node:http';
 import pg from 'pg';
 import { createTenantModelConfig, parseMasterKey } from '@opensupport/model-config';
+import { createProductionMockServer } from './production-mock.mjs';
 
 const { Client } = pg;
 const publicUrl = process.env.AGENTOPS_PUBLIC_URL ?? 'http://127.0.0.1:8088';
@@ -17,38 +17,13 @@ const mockPort = Number(process.env.SMOKE_MOCK_PORT ?? 18090);
 const tenantId = randomUUID();
 const modelConfigId = randomUUID();
 const slug = `smoke-${tenantId.slice(0, 8)}`;
-const mockMessages = [];
-
-const mock = createServer(async (request, response) => {
-  const body = await readBody(request);
-  response.setHeader('Content-Type', 'application/json');
-  if (request.url === '/v1/chat/completions') {
-    response.end(JSON.stringify({
-      choices: [{ message: { content: JSON.stringify({
-        reply: 'Order SMOKE-100 is currently shipped.',
-      }) } }],
-      usage: { prompt_tokens: 24, completion_tokens: 9 },
-    }));
-    return;
-  }
-  if (request.url?.endsWith('/messages')) {
-    mockMessages.push(JSON.parse(body));
-    response.end(JSON.stringify({ id: mockMessages.length }));
-    return;
-  }
-  if (request.url?.endsWith('/toggle_status')) {
-    response.end(JSON.stringify({ success: true }));
-    return;
-  }
-  response.statusCode = 404;
-  response.end(JSON.stringify({ error: 'not_found' }));
-});
-
-await new Promise((resolve) => mock.listen(mockPort, '0.0.0.0', resolve));
+const mockBaseUrl = `http://127.0.0.1:${mockPort}`;
+const localMock = await ensureMock(mockBaseUrl, mockPort);
 const client = new Client({ connectionString: databaseUrl });
 await client.connect();
 
 try {
+  await expectOk(`${mockBaseUrl}/__smoke/reset`, { method: 'POST' });
   await expectOk(`${publicUrl}/health/ready`);
   await expectOk(`${publicUrl}/worker/health/ready`);
   const masterKeyReference = (await readFile(masterKeyFile, 'utf8')).trim();
@@ -182,9 +157,12 @@ try {
     throw new Error(`unexpected_outcome:${String(result.outcome)}`);
   }
 
+  const session = await authenticateOperator(publicUrl);
+  const authHeaders = { cookie: session.cookie };
   const traces = await poll(async () => {
     const response = await expectOk(
       `${publicUrl}/api/v1/tenants/${tenantId}/traces?limit=10&offset=0`,
+      { headers: authHeaders },
     );
     const page = await response.json();
     return page.items?.length ? page : null;
@@ -192,6 +170,7 @@ try {
   const overview = await poll(async () => {
     const response = await expectOk(
       `${publicUrl}/api/v1/tenants/${tenantId}/overview`,
+      { headers: authHeaders },
     );
     const value = await response.json();
     return value.active_conversations > 0 ? value : null;
@@ -200,7 +179,13 @@ try {
   if (!dashboard.includes('OpenSupport AgentOps')) {
     throw new Error('dashboard_asset_missing');
   }
-  if (mockMessages.length !== 1 || mockMessages[0]?.private !== false) {
+  const mockState = await (
+    await expectOk(`${mockBaseUrl}/__smoke/state`)
+  ).json();
+  if (
+    mockState.messages.length !== 1 ||
+    mockState.messages[0]?.private !== false
+  ) {
     throw new Error('chatwoot_delivery_missing');
   }
   process.stdout.write(`${JSON.stringify({
@@ -208,7 +193,8 @@ try {
     tenant_id: tenantId,
     trace_id: traces.items[0].trace_id,
     active_conversations: overview.active_conversations,
-    chatwoot_messages: mockMessages.length,
+    chatwoot_messages: mockState.messages.length,
+    operator_subject: session.subject,
   })}\n`);
 } finally {
   await client.query(
@@ -228,14 +214,16 @@ try {
     [tenantId],
   ).catch(() => {});
   await client.end();
-  mock.closeAllConnections();
-  await new Promise((resolve, reject) =>
-    mock.close((error) => error ? reject(error) : resolve()),
-  );
+  if (localMock !== null) {
+    localMock.closeAllConnections();
+    await new Promise((resolve, reject) =>
+      localMock.close((error) => error ? reject(error) : resolve()),
+    );
+  }
 }
 
-async function expectOk(url) {
-  const response = await fetch(url);
+async function expectOk(url, init) {
+  const response = await fetch(url, init);
   if (!response.ok) throw new Error(`http_${response.status}:${url}`);
   return response;
 }
@@ -249,14 +237,65 @@ async function poll(operation, attempts = 40) {
   throw new Error('poll_timeout');
 }
 
-async function readBody(request) {
-  const chunks = [];
-  for await (const chunk of request) {
-    chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
-  }
-  return Buffer.concat(chunks).toString('utf8');
-}
-
 function hash(value) {
   return createHash('sha256').update(value).digest('hex');
+}
+
+async function ensureMock(baseUrl, port) {
+  try {
+    await expectOk(`${baseUrl}/__smoke/health`);
+    return null;
+  } catch {
+    const server = createProductionMockServer();
+    await new Promise((resolve) => server.listen(port, '0.0.0.0', resolve));
+    return server;
+  }
+}
+
+async function authenticateOperator(baseUrl) {
+  const cookies = new Map();
+  const login = await fetch(`${baseUrl}/api/v1/auth/login`, {
+    redirect: 'manual',
+  });
+  if (login.status !== 302) {
+    throw new Error(`oidc_login_failed:${login.status}`);
+  }
+  updateCookies(cookies, login.headers.getSetCookie());
+  const authorization = new URL(login.headers.get('location'));
+  const state = authorization.searchParams.get('state');
+  if (!state) throw new Error('oidc_state_missing');
+  const callback = await fetch(
+    `${baseUrl}/api/v1/auth/callback?code=smoke-code&state=${encodeURIComponent(state)}`,
+    {
+      redirect: 'manual',
+      headers: { cookie: cookieHeader(cookies) },
+    },
+  );
+  if (callback.status !== 302) {
+    throw new Error(`oidc_callback_failed:${callback.status}`);
+  }
+  updateCookies(cookies, callback.headers.getSetCookie());
+  const identity = await expectOk(`${baseUrl}/api/v1/auth/session`, {
+    headers: { cookie: cookieHeader(cookies) },
+  });
+  const body = await identity.json();
+  return {
+    cookie: cookieHeader(cookies),
+    subject: body.principal.subject,
+  };
+}
+
+function updateCookies(jar, setCookies) {
+  for (const value of setCookies) {
+    const pair = value.split(';', 1)[0];
+    const separator = pair.indexOf('=');
+    const name = pair.slice(0, separator);
+    const cookieValue = pair.slice(separator + 1);
+    if (cookieValue.length === 0) jar.delete(name);
+    else jar.set(name, cookieValue);
+  }
+}
+
+function cookieHeader(jar) {
+  return [...jar].map(([name, value]) => `${name}=${value}`).join('; ');
 }

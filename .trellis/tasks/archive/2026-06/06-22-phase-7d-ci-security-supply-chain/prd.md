@@ -17,10 +17,10 @@ chain security evidence.
 
 ## Acceptance Criteria
 
-- [ ] CI validates a running stack, not only Compose syntax.
-- [ ] Smoke proves ingress, provider adapter, delivery, worker, and Dashboard.
-- [ ] Image scans and SBOMs are retained as CI artifacts.
-- [ ] Critical findings fail the release gate unless explicitly time-bounded.
+- [x] CI validates a running stack, not only Compose syntax.
+- [x] Smoke proves ingress, provider adapter, delivery, worker, and Dashboard.
+- [x] Image scans and SBOMs are retained as CI artifacts.
+- [x] Critical findings fail the release gate unless explicitly time-bounded.
 
 ## Out Of Scope
 

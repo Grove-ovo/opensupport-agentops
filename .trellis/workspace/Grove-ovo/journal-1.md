@@ -1529,3 +1529,62 @@ Added fail-closed host deployment preflight, ready/warning/blocked secret-safe r
 ### Next Steps
 
 - None - task complete
+
+
+## Session 47: Phase 7D CI security supply chain
+
+**Date**: 2026-06-23
+**Task**: Phase 7D CI full stack security supply chain
+**Branch**: `feat/phase-7d-ci-security-supply-chain`
+
+### Summary
+
+Made GitHub CI prove a running full stack and produce auditable software
+supply chain evidence. Added a `full-stack` job that generates ephemeral
+secrets, runs host preflight, boots the complete production Compose stack,
+and runs an authenticated production smoke plus Prometheus/Grafana
+provisioning check. Added a `supply-chain` matrix job that builds immutable
+SHA-tagged api/worker/web images, emits Trivy reports, fails on unresolved
+CRITICAL findings via a time-bounded allowlist, and produces SPDX SBOM
+artifacts. All evidence uploads as secret-safe CI artifacts.
+
+### Main Changes
+
+- `.github/workflows/ci.yml`: replaced the syntax-only `containers` job with
+  `full-stack` (running stack + smoke + observability) and `supply-chain`
+  (Trivy + SPDX SBOM per image).
+- `scripts/prepare-ci-production.mjs`: ephemeral 0600 `.env.ci.preflight`,
+  `.env.ci.smoke`, and `secrets/*` with deterministic OIDC/provider wiring.
+- `scripts/prepare-trivy-ignore.mjs` + `security/trivy-allowlist.json`:
+  time-bounded allowlist validation (owner/reason/expiry) -> `tmp/.trivyignore`.
+- `scripts/production-mock.mjs` + `production-mock-server.mjs`: deterministic
+  OIDC + provider + Chatwoot mock shared by CI and the smoke.
+- `scripts/production-smoke.mjs`: authenticates via real OIDC PKCE before
+  reading operator-only endpoints; reuses the shared mock.
+- `scripts/verify-production-observability.mjs`: Prometheus targets + Grafana
+  datasource/dashboard provisioning check.
+- `scripts/phase7d.test.mjs`: config generation privacy + allowlist expiry tests.
+- `.trellis/spec/infra/phase-7d-ci-security-supply-chain.md` + index wiring.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `51e9313` | feat: add CI full stack security supply chain |
+| `10cce49` | chore(task): archive phase 7d ci security supply chain |
+
+### Testing
+
+- [OK] npm run lint, npm run typecheck
+- [OK] npm run test:phase7d (2 tests)
+- [OK] npm test (full chain phase1 -> release, incl. api/worker/web)
+- [OK] npm run test:release
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- Proceed to PRD completion gaps: AC-08 cost_cap_exceeded trace field,
+  Policy KB interface (17.4), Tool/Risk interface (17.5).
