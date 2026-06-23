@@ -6,7 +6,8 @@ snapshots, replay evaluation, and controlled runtime modes.
 
 ## Project Status
 
-The repository implements the original PRD through production-oriented Phase 6:
+The repository implements the original PRD through production-oriented Phase 6
+and is ready for staging deployment through pre-deployment hardening Phase 7:
 
 - Chatwoot Agent Bot/webhook normalization, signature verification, dedupe,
   and outbound delivery contracts.
@@ -29,6 +30,10 @@ The repository implements the original PRD through production-oriented Phase 6:
 - Multi-stage images, production Compose, Nginx routing, Prometheus/Grafana,
   structured logs, health probes, backup/restore, rollout, rollback, incident,
   and credential-rotation procedures.
+- Pre-deployment hardening: OIDC operator access, edge transport security,
+  fail-closed deployment preflight, CI full-stack + supply-chain security
+  (Trivy + SPDX SBOM), backup/restore recovery drill, and an aggregate
+  go/no-go staging gate with residual-risk documentation.
 
 The deployment is self-hosted and production-style, but it is not a complete
 multi-user SaaS control plane. Billing, public signup, full RBAC, formal

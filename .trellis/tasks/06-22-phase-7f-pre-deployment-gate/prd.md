@@ -17,11 +17,11 @@ real staging deployment while recording residual risks.
 
 ## Acceptance Criteria
 
-- [ ] Aggregate gate reports `ready`.
-- [ ] No P0 deployment blocker remains.
-- [ ] Residual warnings are explicit, owned, and non-secret.
-- [ ] No real external credential or public endpoint is required.
-- [ ] Full Trellis and Git branch workflow checks pass.
+- [x] Aggregate gate reports `ready`.
+- [x] No P0 deployment blocker remains.
+- [x] Residual warnings are explicit, owned, and non-secret.
+- [x] No real external credential or public endpoint is required.
+- [x] Full Trellis and Git branch workflow checks pass.
 
 ## Out Of Scope
 
