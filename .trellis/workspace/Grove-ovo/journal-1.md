@@ -1588,3 +1588,37 @@ artifacts. All evidence uploads as secret-safe CI artifacts.
 
 - Proceed to PRD completion gaps: AC-08 cost_cap_exceeded trace field,
   Policy KB interface (17.4), Tool/Risk interface (17.5).
+
+
+## Session 47: Phase 7E/7F implementation + git branch split fix
+
+**Date**: 2026-06-23
+**Task**: Phase 7E/7F implementation + git branch split fix
+**Branch**: `dev`
+
+### Summary
+
+Completed Phase 7E (backup/restore recovery drill with pg_dump -Fc, disposable restore, migration v16 + record-integrity verification, secret-safe reports, forward-only rollback compatibility) and Phase 7F (pre-deployment aggregate gate validating 7A-7E archived, CI/supply-chain/preflight/drill evidence, migration floor, production docs; emits JSON+Markdown reports with residual risks + rollback triggers). Updated README + architecture status to 'ready for staging deployment'. Then fixed git branch hygiene: split the mixed 7D branch into independent feat/phase-7e, feat/phase-7f, and feat/prd-completion-gaps branches, each merged to dev with clean merge commits. Full lint/typecheck/test/release chain passes on dev.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `25f38ff` | (see git log) |
+| `54fa63e` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
