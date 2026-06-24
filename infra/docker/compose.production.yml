@@ -138,9 +138,9 @@ services:
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8080/health/ready"]
       interval: 10s
-      timeout: 5s
-      retries: 12
-      start_period: 10s
+      timeout: 10s
+      retries: 24
+      start_period: 15s
     deploy:
       resources:
         limits:
@@ -174,9 +174,9 @@ services:
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8081/health/ready"]
       interval: 10s
-      timeout: 5s
-      retries: 12
-      start_period: 10s
+      timeout: 10s
+      retries: 24
+      start_period: 15s
     deploy:
       resources:
         limits:
