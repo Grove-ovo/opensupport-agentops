@@ -4,6 +4,8 @@ import {
   type AgentIntent,
   type EvalCase,
   type EvalDatasetSplit,
+  type MultiTurnEvalCase,
+  type MultiTurnEvalTurn,
   type ResponseAction,
   type RuntimeMode,
   type SecurityAttackCategory,
@@ -29,7 +31,7 @@ export class EvalDatasetError extends Error {
   }
 }
 
-export interface ParsedEvalDataset<TCase extends EvalCase | SecurityEvalCase> {
+export interface ParsedEvalDataset<TCase extends EvalCase | SecurityEvalCase | MultiTurnEvalCase> {
   dataset_version: string;
   cases: readonly TCase[];
   split_counts: Readonly<Record<EvalDatasetSplit, number>>;
@@ -90,6 +92,12 @@ export async function loadSecurityDatasetFile(
   return parseSecurityDataset(await readFile(path, 'utf8'));
 }
 
+export async function loadMultiTurnDatasetFile(
+  path: string,
+): Promise<ParsedEvalDataset<MultiTurnEvalCase>> {
+  return parseMultiTurnDataset(await readFile(path, 'utf8'));
+}
+
 export function parseReplayDataset(
   jsonl: string,
 ): ParsedEvalDataset<EvalCase> {
@@ -102,7 +110,13 @@ export function parseSecurityDataset(
   return parseDataset(jsonl, validateSecurityCase);
 }
 
-function parseDataset<TCase extends EvalCase | SecurityEvalCase>(
+export function parseMultiTurnDataset(
+  jsonl: string,
+): ParsedEvalDataset<MultiTurnEvalCase> {
+  return parseDataset(jsonl, validateMultiTurnCase);
+}
+
+function parseDataset<TCase extends EvalCase | SecurityEvalCase | MultiTurnEvalCase>(
   jsonl: string,
   validate: (value: unknown, line: number) => TCase,
 ): ParsedEvalDataset<TCase> {
@@ -249,6 +263,73 @@ function validateSecurityCase(
     expect_unauthorized_access_block:
       row.expect_unauthorized_access_block as boolean,
     expect_pii_safe: row.expect_pii_safe as boolean,
+    tags: Object.freeze(tags),
+  };
+}
+
+function validateMultiTurnCase(
+  value: unknown,
+  line: number,
+): MultiTurnEvalCase {
+  const row = record(value, line);
+  if (
+    !/^multiturn-\d{4}$/u.test(string(row, 'case_id')) ||
+    !validVersion(string(row, 'dataset_version')) ||
+    !SPLITS.has(string(row, 'split') as EvalDatasetSplit) ||
+    !isUuid(string(row, 'tenant_id')) ||
+    typeof row.scenario !== 'string' ||
+    row.scenario.trim().length === 0 ||
+    row.scenario.length > 128
+  ) {
+    invalid(line);
+  }
+  const rawTurns = row.turns;
+  if (
+    !Array.isArray(rawTurns) ||
+    rawTurns.length < 2 ||
+    rawTurns.length > 5
+  ) {
+    invalid(line);
+  }
+  const turns: MultiTurnEvalTurn[] = [];
+  for (const [index, rawTurn] of rawTurns.entries()) {
+    const turnRow = record(rawTurn, line);
+    const turnNumber = turnRow.turn;
+    if (
+      typeof turnNumber !== 'number' ||
+      turnNumber !== index + 1 ||
+      !INTENTS.has(string(turnRow, 'expected_intent') as AgentIntent) ||
+      !ACTIONS.has(string(turnRow, 'expected_action') as ResponseAction) ||
+      typeof turnRow.note !== 'string' ||
+      turnRow.note.trim().length === 0
+    ) {
+      invalid(line);
+    }
+    const maskedInput = safeText(turnRow, 'masked_input', line);
+    const toolNames = strings(turnRow, 'required_tool_names', line);
+    if (!toolNames.every((item) => TOOL_NAMES.has(item as ToolName))) {
+      invalid(line);
+    }
+    turns.push({
+      turn: turnNumber,
+      masked_input: maskedInput,
+      expected_intent: turnRow.expected_intent as AgentIntent,
+      expected_action: turnRow.expected_action as ResponseAction,
+      required_tool_names: Object.freeze(toolNames as ToolName[]),
+      note: turnRow.note as string,
+    });
+  }
+  const tags = strings(row, 'tags', line);
+  if (tags.length === 0) {
+    invalid(line);
+  }
+  return {
+    case_id: row.case_id as string,
+    dataset_version: row.dataset_version as string,
+    split: row.split as EvalDatasetSplit,
+    tenant_id: row.tenant_id as string,
+    scenario: row.scenario as string,
+    turns: Object.freeze(turns),
     tags: Object.freeze(tags),
   };
 }
