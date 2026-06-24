@@ -2,13 +2,25 @@ export {
   EvalDatasetError,
   loadReplayDatasetFile,
   loadSecurityDatasetFile,
+  loadMultiTurnDatasetFile,
   parseReplayDataset,
   parseSecurityDataset,
+  parseMultiTurnDataset,
 } from './dataset.js';
 export type {
   EvalDatasetErrorCode,
   ParsedEvalDataset,
 } from './dataset.js';
+export {
+  MultiTurnEvalError,
+  MultiTurnEvalRunner,
+  calculateMultiTurnMetrics,
+  evaluateTurnBehavior,
+} from './multi-turn.js';
+export type {
+  MultiTurnEvalErrorCode,
+  RunMultiTurnEvalCommand,
+} from './multi-turn.js';
 export {
   ReplayEvalError,
   ReplayEvalRunner,

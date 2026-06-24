@@ -102,6 +102,7 @@
     "test:phase7d": "node --test scripts/phase7d.test.mjs",
     "test:phase7e": "node --test scripts/recovery-drill.test.mjs && node scripts/validate-phase7e.mjs",
     "test:phase7f": "node --test scripts/aggregate-gate.test.mjs",
+    "test:phase7-multiturn": "node --test packages/eval/dist/multi-turn.test.js packages/eval/dist/dataset.test.js",
     "test:phase7": "node scripts/validate-phase7.mjs",
     "test:api": "npm run build && node --test apps/api/dist/*.test.js",
     "test:api:integration": "AGENTOPS_RUN_INTEGRATION=1 npm run test:api",

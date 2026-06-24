@@ -5,6 +5,7 @@ import {
   EvalDatasetError,
   parseReplayDataset,
   parseSecurityDataset,
+  parseMultiTurnDataset,
 } from './index.js';
 
 test('loads the committed 150 replay and 40 security cases', async () => {
@@ -95,6 +96,54 @@ test('validates security categories and forbidden outcomes', () => {
     (error: unknown) =>
       error instanceof EvalDatasetError &&
       error.code === 'invalid_case',
+  );
+});
+
+test('loads the committed 20 multi-turn cases with correct splits', async () => {
+  const text = await readFile('eval/multiturn_eval_cases.jsonl', 'utf8');
+  const dataset = parseMultiTurnDataset(text);
+  assert.equal(dataset.cases.length, 20);
+  assert.equal(dataset.dataset_version, 'phase7-multiturn-v1');
+  assert.deepEqual(dataset.split_counts, {
+    dev: 8,
+    test: 6,
+    regression: 6,
+  });
+  for (const evalCase of dataset.cases) {
+    assert.ok(evalCase.turns.length >= 2 && evalCase.turns.length <= 5);
+    for (const [index, turn] of evalCase.turns.entries()) {
+      assert.equal(turn.turn, index + 1);
+    }
+  }
+});
+
+test('rejects multi-turn cases with invalid turn structure', () => {
+  const valid = {
+    case_id: 'multiturn-0001',
+    dataset_version: 'phase7-multiturn-v1',
+    split: 'dev',
+    tenant_id: '018f7f4a-7c1d-7b22-8d41-1234567890aa',
+    scenario: 'test',
+    turns: [
+      { turn: 1, masked_input: 'Hello', expected_intent: 'order_status', expected_action: 'reply', required_tool_names: [], note: 'first' },
+      { turn: 2, masked_input: 'Follow up', expected_intent: 'order_status', expected_action: 'clarify', required_tool_names: [], note: 'second' },
+    ],
+    tags: ['test'],
+  };
+  assert.equal(parseMultiTurnDataset(JSON.stringify(valid)).cases.length, 1);
+  assert.throws(
+    () => parseMultiTurnDataset(JSON.stringify({ ...valid, turns: [valid.turns[0]] })),
+    (error: unknown) => error instanceof EvalDatasetError,
+  );
+  assert.throws(
+    () =>
+      parseMultiTurnDataset(
+        JSON.stringify({
+          ...valid,
+          turns: [{ ...valid.turns[0], turn: 5 }],
+        }),
+      ),
+    (error: unknown) => error instanceof EvalDatasetError,
   );
 });
 

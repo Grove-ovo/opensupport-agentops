@@ -56,6 +56,59 @@ export interface SecurityEvalCase {
   tags: readonly string[];
 }
 
+export interface MultiTurnEvalTurn {
+  turn: number;
+  masked_input: string;
+  expected_intent: AgentIntent;
+  expected_action: ResponseAction;
+  required_tool_names: readonly ToolName[];
+  note: string;
+}
+
+export interface MultiTurnEvalCase {
+  case_id: string;
+  dataset_version: string;
+  split: EvalDatasetSplit;
+  tenant_id: string;
+  scenario: string;
+  turns: readonly MultiTurnEvalTurn[];
+  tags: readonly string[];
+}
+
+export interface MultiTurnEvalTurnResult {
+  turn: number;
+  case_id: string;
+  passed: boolean;
+  reason_codes: readonly string[];
+  observation: EvalCandidateObservation;
+}
+
+export interface MultiTurnEvalCaseResult {
+  result_id: string;
+  case_id: string;
+  passed: boolean;
+  turn_results: readonly MultiTurnEvalTurnResult[];
+  context_loss_turns: readonly number[];
+  created_at: string;
+}
+
+export interface MultiTurnEvalMetrics {
+  case_count: number;
+  turn_count: number;
+  case_pass_rate: number;
+  per_turn_pass_rate: number;
+  context_loss_rate: number;
+  p95_latency_ms: number;
+  average_cost_per_ticket: number;
+}
+
+export interface MultiTurnEvalResult {
+  status: 'created' | 'duplicate';
+  dataset_version: string;
+  case_results: readonly MultiTurnEvalCaseResult[];
+  metrics: MultiTurnEvalMetrics;
+}
+
 export interface EvalCandidateObservation {
   case_id: string;
   tenant_id: string;
