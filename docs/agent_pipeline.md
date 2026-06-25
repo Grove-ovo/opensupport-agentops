@@ -84,6 +84,21 @@ Sensitive detection runs independently from intent routing:
 
 The router only reports these signals. Phase 2F owns blocking gate decisions.
 
+## Multi-Turn Conversation Memory
+
+The current pipeline is **stateless per message**. Each inbound customer
+message creates a new `AgentPipelineContext` and a new trace; the pipeline
+does not load prior turns or conversation history. `conversation_id` links
+traces across the same conversation in the `agent_traces` table, but the
+agent pipeline receives only the current message's `masked_text`.
+
+Multi-turn evaluation cases (`eval/multiturn_eval_cases.jsonl`) quantify
+this limitation via the `context_loss_rate` metric: follow-up turns that
+reference prior context without repeating details (e.g. "what about the
+other one?") may mismatch expected intent or action because the pipeline
+cannot see the prior turn. A future phase may introduce a dedicated memory
+adapter that loads recent conversation turns into the pipeline context.
+
 ## Validation
 
 `createAgentPipelineContext` rejects blank identities/text, invalid UUIDs,
