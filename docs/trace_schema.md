@@ -73,6 +73,26 @@ ephemeral sensitive data and must not be logged, added to trace metadata, or
 sent to the provider. Phase 1 does not persist or resolve the replacement map.
 A future encrypted adapter may store it under `replacement_map_ref`.
 
+### Replacement Map Lifecycle
+
+The replacement map is **in-memory and ephemeral**. `maskPII` generates a
+`replacement_map_ref` of the form `pii-map:<random-id>` that identifies the
+mapping within the current pipeline execution. The map is never persisted to
+the database, written to trace metadata, or sent to a provider. It exists
+only in the JavaScript scope of the pipeline run and is garbage-collected
+when the execution completes.
+
+- **Storage**: in-memory only — no database, file, or external service.
+- **Expiry**: the map is destroyed when the pipeline execution scope ends.
+- **Access**: only the PII masking and response-generation layers access it
+  within the same execution; it is never serialized or transmitted.
+- **Resolution**: no code resolves `replacement_map_ref` back to original
+  values after the execution completes. The `masked_text` hash stored in
+  the trace is a one-way SHA-256 fingerprint, not reversible.
+
+This means the replacement map cannot be used to reverse-mask trace records
+or reconstruct original PII after the fact.
+
 ## Trace Creation
 
 `@opensupport/trace` exposes `createAgentTrace`. It requires:
