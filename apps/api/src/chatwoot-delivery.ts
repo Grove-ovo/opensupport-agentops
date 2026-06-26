@@ -120,7 +120,13 @@ export class PersistentChatwootDeliveryService {
         requestHash,
         responseHash,
       );
-    } catch {
+    } catch (error) {
+      const errorInfo = error instanceof Error
+        ? { name: error.name, message: error.message }
+        : { name: 'unknown', message: String(error) };
+      process.stderr.write(
+        `delivery_failed delivery_id=${claimedCommand.delivery_id} tenant_id=${claimedCommand.tenant_id} error=${errorInfo.name}: ${errorInfo.message}\n`,
+      );
       await this.repository.completeDelivery(
         claim.record.deliveryId,
         'failed',

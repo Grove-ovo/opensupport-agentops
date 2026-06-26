@@ -1,4 +1,5 @@
 import { createHash, randomUUID } from 'node:crypto';
+import { isIP } from 'node:net';
 import type { Pool, PoolClient, QueryResultRow } from 'pg';
 import { createTenantModelConfig, decryptApiKey, parseMasterKey } from '@opensupport/model-config';
 import { createPolicyIngestionPlan } from '@opensupport/retrieval';
@@ -253,7 +254,7 @@ export class PostgresOperationsService implements OperationsService {
     }
 
     const inputHash = hashJson(command);
-    await this.pool.query<ApprovalActionRow>(
+    const result = await this.pool.query<ApprovalActionRow>(
       `SELECT * FROM apply_approval_action(
          $1, $2, $3, $4, 'pending', $5, 'operator', $6, $7,
          $8, $9, $10, $11, $12, now()
@@ -273,6 +274,9 @@ export class PostgresOperationsService implements OperationsService {
         inputHash,
       ],
     );
+    if (result.rows.length === 0 || !result.rows[0]?.action_id) {
+      throw new OperationsError('approval_not_pending', 409);
+    }
     if (command.action === 'escalate') {
       const connection = await this.repository.getChatwootConnection(command.tenantId);
       if (connection !== null) {
@@ -290,6 +294,7 @@ export class PostgresOperationsService implements OperationsService {
             command.approvalId,
             inputHash,
           );
+          throw new OperationsError('escalate_handoff_failed', 502);
         }
       }
     }
@@ -1104,10 +1109,34 @@ function normalizeHttpUrl(value: string): string {
   try {
     const url = new URL(value.trim());
     if (url.protocol !== 'http:' && url.protocol !== 'https:') throw new Error();
+    if (isPrivateHost(url.hostname)) throw new OperationsError('unsafe_chatwoot_url', 400);
     return url.toString().replace(/\/$/, '');
-  } catch {
+  } catch (error) {
+    if (error instanceof OperationsError) throw error;
     throw new OperationsError('invalid_chatwoot_url', 400);
   }
+}
+
+function isPrivateHost(hostname: string): boolean {
+  if (hostname === 'localhost' || hostname === '0.0.0.0') return true;
+  const ip = isIP(hostname);
+  if (ip === 0) return false;
+  if (ip === 4) {
+    return (
+      hostname.startsWith('127.') ||
+      hostname.startsWith('10.') ||
+      hostname.startsWith('169.254.') ||
+      hostname.startsWith('192.168.') ||
+      /^172\.(1[6-9]|2\d|3[01])\./.test(hostname) ||
+      hostname === '0.0.0.0'
+    );
+  }
+  return (
+    hostname === '::1' ||
+    hostname.startsWith('fc') ||
+    hostname.startsWith('fd') ||
+    hostname.startsWith('fe80:')
+  );
 }
 
 function secretHint(value: unknown): string | null {

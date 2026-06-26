@@ -34,6 +34,18 @@ async function handleChatwootEndpoint(
     secret: request.webhookSecret,
   });
 
+  if (!signature.configured) {
+    return {
+      status: 503,
+      body: {
+        accepted: false,
+        decision: 'rejected',
+        reason_code: 'webhook_signature_not_configured',
+        should_seed_pipeline: false,
+      },
+    };
+  }
+
   if (!signature.verified) {
     return {
       status: 401,
