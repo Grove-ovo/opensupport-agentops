@@ -56,8 +56,12 @@ test('dedupes the same customer message across Agent Bot and webhook paths', asy
   const agentBotResponse = await handleAgentBotEndpoint(
     {
       tenantId,
-      headers: {},
+      headers: {
+        'x-chatwoot-timestamp': timestamp,
+        'x-chatwoot-signature': sign(timestamp, rawBody, secret),
+      },
       rawBody,
+      webhookSecret: secret,
     },
     { dedupeStore: store },
   );
@@ -85,10 +89,15 @@ test('dedupes the same customer message across Agent Bot and webhook paths', asy
 test('atomically dedupes concurrent Agent Bot and webhook requests', async () => {
   const store = new MemoryDedupeStore();
   const rawBody = JSON.stringify(messageCreatedPayload({ id: 102 }));
+  const timestamp = '1720000000';
   const request = {
     tenantId,
-    headers: {},
+    headers: {
+      'x-chatwoot-timestamp': timestamp,
+      'x-chatwoot-signature': sign(timestamp, rawBody, secret),
+    },
     rawBody,
+    webhookSecret: secret,
   };
 
   const responses = await Promise.all([
@@ -131,14 +140,20 @@ test('dedupes repeated webhook deliveries by Chatwoot delivery id', async () => 
 });
 
 test('ignores AgentOps self-created outgoing messages', async () => {
+  const rawBody = JSON.stringify(messageCreatedPayload({
+    message_type: 'outgoing',
+    sender: { id: 7 },
+    content_attributes: { agentops_generated: true },
+  }));
+  const timestamp = '1720000000';
   const response = await handleAccountWebhookEndpoint({
     tenantId,
-    headers: {},
-    rawBody: JSON.stringify(messageCreatedPayload({
-      message_type: 'outgoing',
-      sender: { id: 7 },
-      content_attributes: { agentops_generated: true },
-    })),
+    headers: {
+      'x-chatwoot-timestamp': timestamp,
+      'x-chatwoot-signature': sign(timestamp, rawBody, secret),
+    },
+    rawBody,
+    webhookSecret: secret,
     agentopsActorIds: ['7'],
   });
 
@@ -151,10 +166,15 @@ test('ignores AgentOps self-created outgoing messages', async () => {
 
 test('preserves raw payload hash for audit responses', async () => {
   const rawBody = JSON.stringify(messageCreatedPayload({ private: true }));
+  const timestamp = '1720000000';
   const response = await handleAccountWebhookEndpoint({
     tenantId,
-    headers: {},
+    headers: {
+      'x-chatwoot-timestamp': timestamp,
+      'x-chatwoot-signature': sign(timestamp, rawBody, secret),
+    },
     rawBody,
+    webhookSecret: secret,
   });
 
   assert.equal(response.body.decision, 'audit_only');

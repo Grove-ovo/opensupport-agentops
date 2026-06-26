@@ -242,6 +242,9 @@ function headerValue(value: string | readonly string[] | undefined): string | nu
 function safeEqual(left: string, right: string): boolean {
   const leftBuffer = Buffer.from(left);
   const rightBuffer = Buffer.from(right);
-  return leftBuffer.length === rightBuffer.length &&
-    timingSafeEqual(leftBuffer, rightBuffer);
+  if (leftBuffer.length !== rightBuffer.length) {
+    timingSafeEqual(leftBuffer, leftBuffer);
+    return false;
+  }
+  return timingSafeEqual(leftBuffer, rightBuffer);
 }

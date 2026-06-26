@@ -43,8 +43,8 @@ export class HttpLLMProviderAdapter implements LLMProviderAdapter {
       },
     );
     if (!response.ok) {
-      await response.arrayBuffer();
-      throw new ProviderAdapterError(mapProviderStatus(response.status));
+      const providerMessage = await extractProviderError(response);
+      throw new ProviderAdapterError(mapProviderStatus(response.status), providerMessage);
     }
     const body = await readJson(response);
     const content = nested(body, ['choices', 0, 'message', 'content']);
@@ -79,8 +79,8 @@ export class HttpLLMProviderAdapter implements LLMProviderAdapter {
       signal: request.signal,
     });
     if (!response.ok) {
-      await response.arrayBuffer();
-      throw new ProviderAdapterError(mapProviderStatus(response.status));
+      const providerMessage = await extractProviderError(response);
+      throw new ProviderAdapterError(mapProviderStatus(response.status), providerMessage);
     }
     const body = await readJson(response);
     const blocks = nested(body, ['content']);
@@ -110,8 +110,8 @@ export class HttpLLMProviderAdapter implements LLMProviderAdapter {
 }
 
 export class ProviderAdapterError extends Error {
-  constructor(readonly code: string) {
-    super(code);
+  constructor(readonly code: string, providerMessage?: string) {
+    super(providerMessage ? `${code}: ${providerMessage}` : code);
     this.name = 'ProviderAdapterError';
   }
 }
@@ -156,4 +156,17 @@ function mapProviderStatus(status: number): string {
 
 function stripTrailingSlash(value: string): string {
   return value.replace(/\/+$/, '');
+}
+
+async function extractProviderError(response: Response): Promise<string | undefined> {
+  try {
+    const body = await readJson(response);
+    const message =
+      nested(body, ['error', 'message']) ??
+      nested(body, ['message']) ??
+      nested(body, ['error']);
+    return typeof message === 'string' ? message.slice(0, 500) : undefined;
+  } catch {
+    return undefined;
+  }
 }
