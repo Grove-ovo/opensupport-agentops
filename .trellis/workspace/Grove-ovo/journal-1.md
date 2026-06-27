@@ -1690,3 +1690,36 @@ Ran comprehensive E2E tests with real step-3.7-flash LLM API. Discovered and fix
 ### Next Steps
 
 - None - task complete
+
+
+## Session 50: PRD completeness audit + missing artifacts
+
+**Date**: 2026-06-27
+**Task**: PRD completeness audit + missing artifacts
+**Branch**: `dev`
+
+### Summary
+
+Audited all 25 PRD chapters against implementation. Found and fixed 3 gaps: (1) docs/security_eval.md missing — created with full coverage of 40-case dataset, metrics, gate requirements; (2) docs/cost_governance.md missing — created documenting budget evaluation, AC-08 degradation, llm_call_logs schema; (3) multi-turn eval cases insufficient (20 vs required 30) — added 10 new scenarios covering multi-order tracking, refund denial escalation, cancellation policy, partial delivery, mixed-intent, and anger-to-resolution. Updated dataset.test.ts assertions. All 18 Chapter 23 artifacts now present. All 9 ACs implemented. 150+40+30=220 eval cases.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `d9eb649` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
