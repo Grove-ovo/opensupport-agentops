@@ -1,5 +1,5 @@
-import { Check, MessageSquareText, Pencil, ShieldAlert, X } from 'lucide-react';
-import { useState } from 'react';
+import { Check, MessageSquareText, Pencil, ShieldAlert, SquareCheck, X } from 'lucide-react';
+import { useCallback, useMemo, useState } from 'react';
 import { api } from '../api.js';
 import { ConfirmDialog } from '../components/ConfirmDialog.js';
 import { StatePanel } from '../components/StatePanel.js';
@@ -19,13 +19,36 @@ export function ApprovalsView({ tenantId }: ApprovalsViewProps) {
   const [editedReply, setEditedReply] = useState('');
   const [busy, setBusy] = useState(false);
   const [mutationError, setMutationError] = useState<string | null>(null);
-  const approvals = useResource(`approvals:${tenantId}:${state}`, () => api.approvals(tenantId, state || undefined));
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const approvals = useResource(`approvals:${tenantId}:${state}`, () => api.approvals(tenantId, state || undefined), { refreshInterval: 15_000 });
+
+  const pendingApprovals = useMemo(
+    () => (approvals.data?.items ?? []).filter((a) => a.state === 'pending'),
+    [approvals.data],
+  );
+
+  const toggleSelect = useCallback((id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
+
+  const toggleAll = useCallback(() => {
+    setSelectedIds((prev) => {
+      if (prev.size === pendingApprovals.length) return new Set();
+      return new Set(pendingApprovals.map((a) => a.approval_id));
+    });
+  }, [pendingApprovals]);
 
   const openAction = (approval: Approval, action: ApprovalAction) => {
     setMutationError(null);
     setEditedReply(approval.suggested_reply);
     setSelection({ approval, action });
   };
+
   const apply = async () => {
     if (!selection) return;
     setBusy(true);
@@ -46,21 +69,67 @@ export function ApprovalsView({ tenantId }: ApprovalsViewProps) {
     }
   };
 
+  const batchApprove = async () => {
+    if (selectedIds.size === 0) return;
+    setBusy(true);
+    setMutationError(null);
+    let successCount = 0;
+    let failCount = 0;
+    for (const id of selectedIds) {
+      try {
+        await api.approvalAction(tenantId, id, {
+          action: 'approve',
+          idempotency_key: crypto.randomUUID(),
+          confirm: true,
+        });
+        successCount++;
+      } catch {
+        failCount++;
+      }
+    }
+    setSelectedIds(new Set());
+    approvals.reload();
+    setBusy(false);
+    if (failCount > 0) {
+      setMutationError(`Approved ${successCount}, failed ${failCount}`);
+    }
+  };
+
   return (
     <div className="view-stack">
       <section className="filter-bar">
         <select aria-label="Approval state" value={state} onChange={(event) => setState(event.target.value as Approval['state'] | '')}>
           <option value="">All states</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="edited">Edited</option><option value="rejected">Rejected</option><option value="escalated">Escalated</option><option value="expired">Expired</option>
         </select>
+        {selectedIds.size > 0 ? (
+          <div className="batch-actions">
+            <span className="muted">{selectedIds.size} selected</span>
+            <button className="button button-primary button-sm" type="button" disabled={busy} onClick={batchApprove}>
+              <SquareCheck size={14} />Batch Approve
+            </button>
+          </div>
+        ) : null}
       </section>
       {approvals.loading && !approvals.data ? <StatePanel kind="loading" title="Loading approval queue" /> : null}
       {approvals.error && !approvals.data ? <StatePanel kind="error" title="Approval queue unavailable" detail={approvals.error} onRetry={approvals.reload} /> : null}
       {approvals.data?.items.length === 0 ? <StatePanel kind="empty" title="Approval queue is clear" /> : null}
+      {mutationError ? <p className="form-error" role="alert" style={{ padding: '8px 12px', background: 'var(--red-soft)', borderRadius: 4 }}>{mutationError}</p> : null}
       <section className="approval-list">
         {approvals.data?.items.map((approval) => (
-          <article className="approval-item" key={approval.approval_id}>
+          <article className={`approval-item ${selectedIds.has(approval.approval_id) ? 'selected' : ''}`} key={approval.approval_id}>
             <header>
-              <div><StatusBadge value={approval.state} /><span className="muted">Trace {approval.trace_id.slice(0, 8)}</span></div>
+              <div>
+                {approval.state === 'pending' ? (
+                  <label className="approval-checkbox">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.has(approval.approval_id)}
+                      onChange={() => toggleSelect(approval.approval_id)}
+                    />
+                  </label>
+                ) : null}
+                <StatusBadge value={approval.state} /><span className="muted">Trace {approval.trace_id.slice(0, 8)}</span>
+              </div>
               <time>{new Date(approval.created_at).toLocaleString()}</time>
             </header>
             <blockquote>{approval.suggested_reply}</blockquote>
@@ -80,6 +149,18 @@ export function ApprovalsView({ tenantId }: ApprovalsViewProps) {
           </article>
         ))}
       </section>
+      {pendingApprovals.length > 0 ? (
+        <footer className="batch-select-all">
+          <label>
+            <input
+              type="checkbox"
+              checked={selectedIds.size === pendingApprovals.length && pendingApprovals.length > 0}
+              onChange={toggleAll}
+            />
+            <span>Select all pending ({pendingApprovals.length})</span>
+          </label>
+        </footer>
+      ) : null}
       <ConfirmDialog
         open={selection !== null}
         title={`${capitalize(selection?.action ?? '')} approval`}
@@ -90,7 +171,13 @@ export function ApprovalsView({ tenantId }: ApprovalsViewProps) {
         onCancel={() => setSelection(null)}
         onConfirm={apply}
       >
-        {selection?.action === 'edit' ? <label className="field"><span>Reply</span><textarea rows={7} value={editedReply} onChange={(event) => setEditedReply(event.target.value)} /></label> : null}
+        {selection?.action === 'edit' ? (
+          <label className="field">
+            <span>Reply</span>
+            <textarea rows={7} value={editedReply} onChange={(event) => setEditedReply(event.target.value)} />
+            <span className="muted" style={{ fontSize: 10 }}>{editedReply.length} characters</span>
+          </label>
+        ) : null}
         {selection?.action === 'approve' ? <div className="reply-preview"><MessageSquareText size={17} /><p>{selection.approval.suggested_reply}</p></div> : null}
         {mutationError ? <p className="form-error" role="alert">{mutationError}</p> : null}
       </ConfirmDialog>

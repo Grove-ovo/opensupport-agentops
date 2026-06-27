@@ -95,9 +95,51 @@ function TraceBody({ trace }: { trace: TraceDetail }) {
       </dl>
       <section><h3>Evidence</h3><div className="token-list">{trace.retrieved_doc_ids.length ? trace.retrieved_doc_ids.map((id) => <code key={id}>{id}</code>) : <span>None</span>}</div></section>
       <section><h3>Version snapshot</h3><dl className="snapshot-list">{Object.entries(trace.version_snapshot).map(([key, value]) => <div key={key}><dt>{key.replaceAll('_', ' ')}</dt><dd><code>{value}</code></dd></div>)}</dl></section>
+      {trace.llm_calls.length > 0 ? (
+        <section>
+          <h3>LLM Calls</h3>
+          <div className="data-table-wrap">
+            <table className="data-table">
+              <thead><tr><th>Model</th><th>Status</th><th>Tokens</th><th>Latency</th><th>Cost</th></tr></thead>
+              <tbody>{trace.llm_calls.map((call, index) => (
+                <tr key={String(call.id ?? index)}>
+                  <td><strong>{String(call.model_name ?? 'unknown')}</strong><small>{String(call.model_provider ?? '')}</small></td>
+                  <td><StatusBadge value={String(call.call_status ?? 'unknown')} /></td>
+                  <td>{formatTokenCount(call.input_tokens, call.output_tokens)}</td>
+                  <td>{call.latency_ms != null ? `${call.latency_ms} ms` : '—'}</td>
+                  <td>${typeof call.estimated_cost === 'number' ? call.estimated_cost.toFixed(4) : '0.0000'}</td>
+                </tr>
+              ))}</tbody>
+            </table>
+          </div>
+        </section>
+      ) : null}
+      {trace.runtime_decision ? (
+        <section>
+          <h3>Runtime Decision</h3>
+          <dl className="key-values">
+            <div><dt>Requested</dt><dd><StatusBadge value={String(trace.runtime_decision.requested_mode ?? 'unknown')} /></dd></div>
+            <div><dt>Effective</dt><dd><StatusBadge value={String(trace.runtime_decision.effective_mode ?? 'unknown')} /></dd></div>
+            <div><dt>Action</dt><dd>{String(trace.runtime_decision.action ?? 'none')}</dd></div>
+            <div><dt>Blocking</dt><dd>{trace.runtime_decision.blocking ? 'Yes' : 'No'}</dd></div>
+          </dl>
+          {Array.isArray(trace.runtime_decision.reason_codes) && trace.runtime_decision.reason_codes.length > 0 ? (
+            <div className="token-list" style={{ marginTop: 8 }}>
+              {(trace.runtime_decision.reason_codes as string[]).map((code) => <code key={code}>{code}</code>)}
+            </div>
+          ) : null}
+        </section>
+      ) : null}
       <section><h3>Transitions</h3><div className="timeline">{trace.transitions.map((item, index) => <div key={String(item.transition_id ?? index)}><span /><p>{String(item.from_state ?? 'start')} → {String(item.to_state ?? 'unknown')}</p></div>)}</div></section>
     </div>
   );
+}
+
+function formatTokenCount(input: unknown, output: unknown): string {
+  const inTokens = typeof input === 'number' ? input : 0;
+  const outTokens = typeof output === 'number' ? output : 0;
+  if (inTokens === 0 && outTokens === 0) return '—';
+  return `${inTokens.toLocaleString()} → ${outTokens.toLocaleString()}`;
 }
 
 function formatTime(value: string) {

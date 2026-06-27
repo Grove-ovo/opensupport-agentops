@@ -8,7 +8,7 @@ interface OverviewViewProps {
 }
 
 export function OverviewView({ tenantId }: OverviewViewProps) {
-  const resource = useResource(`overview:${tenantId}`, () => api.overview(tenantId));
+  const resource = useResource(`overview:${tenantId}`, () => api.overview(tenantId), { refreshInterval: 30_000 });
   if (resource.loading && !resource.data) return <StatePanel kind="loading" title="Loading operational metrics" />;
   if (resource.error && !resource.data) {
     return <StatePanel kind="error" title="Overview unavailable" detail={resource.error} onRetry={resource.reload} />;
