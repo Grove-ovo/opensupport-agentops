@@ -99,15 +99,15 @@ test('validates security categories and forbidden outcomes', () => {
   );
 });
 
-test('loads the committed 20 multi-turn cases with correct splits', async () => {
+test('loads the committed 30 multi-turn cases with correct splits', async () => {
   const text = await readFile('eval/multiturn_eval_cases.jsonl', 'utf8');
   const dataset = parseMultiTurnDataset(text);
-  assert.equal(dataset.cases.length, 20);
+  assert.equal(dataset.cases.length, 30);
   assert.equal(dataset.dataset_version, 'phase7-multiturn-v1');
   assert.deepEqual(dataset.split_counts, {
-    dev: 8,
-    test: 6,
-    regression: 6,
+    dev: 11,
+    test: 10,
+    regression: 9,
   });
   for (const evalCase of dataset.cases) {
     assert.ok(evalCase.turns.length >= 2 && evalCase.turns.length <= 5);
