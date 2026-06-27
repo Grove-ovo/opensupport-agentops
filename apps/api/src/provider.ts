@@ -37,7 +37,6 @@ export class HttpLLMProviderAdapter implements LLMProviderAdapter {
           model: request.model,
           messages: [{ role: 'user', content: request.prompt }],
           max_tokens: request.maxOutputTokens,
-          response_format: { type: 'json_object' },
         }),
         signal: request.signal,
       },
@@ -52,6 +51,7 @@ export class HttpLLMProviderAdapter implements LLMProviderAdapter {
     const outputTokens = nested(body, ['usage', 'completion_tokens']);
     if (
       typeof content !== 'string' ||
+      content.length === 0 ||
       typeof inputTokens !== 'number' ||
       typeof outputTokens !== 'number'
     ) {
