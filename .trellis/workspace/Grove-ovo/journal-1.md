@@ -1656,3 +1656,37 @@ Fixed GitHub CI supply-chain failures (tmp/security dir missing, Trivy critical 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 49: E2E testing with real LLM + provider fixes + Docker fix
+
+**Date**: 2026-06-27
+**Task**: E2E testing with real LLM + provider fixes + Docker fix
+**Branch**: `dev`
+
+### Summary
+
+Ran comprehensive E2E tests with real step-3.7-flash LLM API. Discovered and fixed: (1) reasoning chain consumes all tokens when response_format json_object is set — removed it; (2) empty content not handled by provider adapter — added content.length check; (3) maxOutputTokens too small for reasoning models — increased triage 300→1000, response gen 500→1500; (4) Docker Alpine ARM64 incompatible with sodium-native — switched to node:22-slim. Added E2E test report documenting all findings. Dashboard UI enhancements: batch selection, auto-refresh, release detail panel.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `90349ef` | (see git log) |
+| `3afd86d` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete

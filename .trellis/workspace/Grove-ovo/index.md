@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 48
-- **Last Active**: 2026-06-24
+- **Total Sessions**: 49
+- **Last Active**: 2026-06-27
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1658 | Active |
+| `journal-1.md` | ~1692 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 49 | 2026-06-27 | E2E testing with real LLM + provider fixes + Docker fix | `90349ef`, `3afd86d` | `dev` |
 | 48 | 2026-06-24 | CI fix + multi-turn eval cases | `b715f01`, `e751537` | `dev` |
 | 47 | 2026-06-23 | Phase 7E/7F implementation + git branch split fix | `25f38ff`, `54fa63e` | `dev` |
 | 46 | 2026-06-22 | Phase 7C production preflight | `885ef89` | `feat/phase-7c-production-preflight` |
