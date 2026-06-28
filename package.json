@@ -118,6 +118,7 @@
     "start:api": "npm run build && node apps/api/dist/server.js",
     "smoke:live": "node scripts/live-smoke.mjs",
     "smoke:production": "npm run build && node scripts/production-smoke.mjs",
+    "smoke:production:demo": "SMOKE_KEEP_DEMO_DATA=1 npm run smoke:production",
     "smoke:mock": "node scripts/production-mock-server.mjs",
     "verify:observability": "node scripts/verify-production-observability.mjs",
     "security:allowlist": "node scripts/prepare-trivy-ignore.mjs",

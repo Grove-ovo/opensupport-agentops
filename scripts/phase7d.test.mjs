@@ -4,6 +4,7 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { test } from 'node:test';
+import { createProductionMockServer } from './production-mock.mjs';
 
 test('CI production preparation writes private ephemeral configuration', () => {
   const directory = mkdtempSync(join(tmpdir(), 'agentops-ci-production-'));
@@ -34,9 +35,34 @@ test('CI production preparation writes private ephemeral configuration', () => {
     }
     const smoke = readFileSync(join(directory, '.env.ci.smoke'), 'utf8');
     assert.match(smoke, /AGENTOPS_OIDC_ISSUER=http:\/\/host\.docker\.internal:18090/);
+    assert.match(smoke, /SMOKE_OIDC_PUBLIC_ISSUER=http:\/\/127\.0\.0\.1:18090/);
+    assert.match(smoke, /SMOKE_KEEP_DEMO_DATA=0/);
     assert.ok(!result.stdout.includes('AGENTOPS_POSTGRES_PASSWORD'));
   } finally {
     rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test('production mock uses browser-safe authorize endpoint', async () => {
+  const server = createProductionMockServer({
+    issuer: 'http://host.docker.internal:18090',
+    publicIssuer: 'http://127.0.0.1:18090',
+  });
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+  try {
+    const { port } = server.address();
+    const response = await fetch(
+      `http://127.0.0.1:${port}/.well-known/openid-configuration`,
+    );
+    const discovery = await response.json();
+    assert.equal(discovery.issuer, 'http://host.docker.internal:18090');
+    assert.equal(discovery.authorization_endpoint, 'http://127.0.0.1:18090/authorize');
+    assert.equal(discovery.token_endpoint, 'http://host.docker.internal:18090/token');
+  } finally {
+    server.closeAllConnections();
+    await new Promise((resolve, reject) =>
+      server.close((error) => error ? reject(error) : resolve()),
+    );
   }
 });
 

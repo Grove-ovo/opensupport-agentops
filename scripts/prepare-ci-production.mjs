@@ -78,6 +78,7 @@ writeEnv('.env.ci.smoke', {
   AGENTOPS_OIDC_ISSUER: 'http://host.docker.internal:18090',
   AGENTOPS_OIDC_CALLBACK_URI:
     'http://127.0.0.1:8088/api/v1/auth/callback',
+  SMOKE_OIDC_PUBLIC_ISSUER: 'http://127.0.0.1:18090',
   AGENTOPS_COOKIE_SECURE: 'false',
   AGENTOPS_PROVIDER_BASE_URLS_JSON:
     '{"openai":"http://host.docker.internal:18090"}',
@@ -87,6 +88,7 @@ writeEnv('.env.ci.smoke', {
   CHATWOOT_API_TOKEN: '',
   SMOKE_CHATWOOT_WEBHOOK_SECRET: values.chatwootWebhook,
   SMOKE_CHATWOOT_API_TOKEN: values.chatwootToken,
+  SMOKE_KEEP_DEMO_DATA: '0',
 });
 
 process.stdout.write(

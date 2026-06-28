@@ -6,6 +6,10 @@ export function createProductionMockServer(options = {}) {
     options.issuer ??
     process.env.SMOKE_OIDC_ISSUER ??
     'http://host.docker.internal:18090';
+  const publicIssuer =
+    options.publicIssuer ??
+    process.env.SMOKE_OIDC_PUBLIC_ISSUER ??
+    issuer;
   return createServer(async (request, response) => {
     const url = new URL(request.url ?? '/', issuer);
     const body = await readBody(request);
@@ -27,7 +31,7 @@ export function createProductionMockServer(options = {}) {
     if (url.pathname === '/.well-known/openid-configuration') {
       response.end(JSON.stringify({
         issuer,
-        authorization_endpoint: `${issuer}/authorize`,
+        authorization_endpoint: `${publicIssuer}/authorize`,
         token_endpoint: `${issuer}/token`,
         userinfo_endpoint: `${issuer}/userinfo`,
         code_challenge_methods_supported: ['S256'],

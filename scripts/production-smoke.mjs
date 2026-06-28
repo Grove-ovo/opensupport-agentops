@@ -14,6 +14,7 @@ const masterKeyFile =
 const webhookSecret =
   process.env.SMOKE_CHATWOOT_WEBHOOK_SECRET ?? 'smoke-webhook-secret';
 const mockPort = Number(process.env.SMOKE_MOCK_PORT ?? 18090);
+const keepDemoData = process.env.SMOKE_KEEP_DEMO_DATA === '1';
 const tenantId = randomUUID();
 const modelConfigId = randomUUID();
 const slug = `smoke-${tenantId.slice(0, 8)}`;
@@ -195,24 +196,27 @@ try {
     active_conversations: overview.active_conversations,
     chatwoot_messages: mockState.messages.length,
     operator_subject: session.subject,
+    demo_data_retained: keepDemoData,
   })}\n`);
 } finally {
-  await client.query(
-    `UPDATE tenants SET status = 'archived' WHERE id = $1`,
-    [tenantId],
-  ).catch(() => {});
-  await client.query(
-    `UPDATE tenant_model_configs SET is_active = false WHERE tenant_id = $1`,
-    [tenantId],
-  ).catch(() => {});
-  await client.query(
-    `UPDATE runtime_mode_configs SET is_active = false WHERE tenant_id = $1`,
-    [tenantId],
-  ).catch(() => {});
-  await client.query(
-    `UPDATE chatwoot_connections SET is_active = false WHERE tenant_id = $1`,
-    [tenantId],
-  ).catch(() => {});
+  if (!keepDemoData) {
+    await client.query(
+      `UPDATE tenants SET status = 'archived' WHERE id = $1`,
+      [tenantId],
+    ).catch(() => {});
+    await client.query(
+      `UPDATE tenant_model_configs SET is_active = false WHERE tenant_id = $1`,
+      [tenantId],
+    ).catch(() => {});
+    await client.query(
+      `UPDATE runtime_mode_configs SET is_active = false WHERE tenant_id = $1`,
+      [tenantId],
+    ).catch(() => {});
+    await client.query(
+      `UPDATE chatwoot_connections SET is_active = false WHERE tenant_id = $1`,
+      [tenantId],
+    ).catch(() => {});
+  }
   await client.end();
   if (localMock !== null) {
     localMock.closeAllConnections();
