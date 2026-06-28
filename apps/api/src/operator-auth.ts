@@ -243,7 +243,7 @@ function safeEqual(left: string, right: string): boolean {
   const leftBuffer = Buffer.from(left);
   const rightBuffer = Buffer.from(right);
   if (leftBuffer.length !== rightBuffer.length) {
-    timingSafeEqual(leftBuffer, leftBuffer);
+    timingSafeEqual(rightBuffer, rightBuffer);
     return false;
   }
   return timingSafeEqual(leftBuffer, rightBuffer);
