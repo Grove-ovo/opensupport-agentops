@@ -14,6 +14,7 @@ const requiredFiles = [
   'infra/observability/grafana/provisioning/dashboards/dashboards.yml',
   'infra/observability/grafana/dashboards/agentops-overview.json',
   'scripts/production-smoke.mjs',
+  'scripts/ci-compose-core-boot.sh',
   'scripts/ops/backup.sh',
   'scripts/ops/restore.sh',
   'docs/operations/deployment-runbook.md',
@@ -43,6 +44,7 @@ const deployment = await readFile(
   'utf8',
 );
 const ciWorkflow = await readFile('.github/workflows/ci.yml', 'utf8');
+const ciCoreBoot = await readFile('scripts/ci-compose-core-boot.sh', 'utf8');
 
 for (const service of [
   'postgres:',
@@ -78,12 +80,14 @@ assert.match(deployment, /## Rollback/);
 assert.match(deployment, /npm run smoke:production/);
 assert.doesNotMatch(ciWorkflow, /Boot complete production stack/);
 assert.match(ciWorkflow, /Boot production core stack/);
+assert.match(ciWorkflow, /bash scripts\/ci-compose-core-boot\.sh/);
 assert.match(ciWorkflow, /compose\.ci-smoke\.yml/);
 assert.match(ciWorkflow, /up -d --wait --wait-timeout 120 smoke-mock/);
-assert.match(
-  ciWorkflow,
-  /up -d --build --wait --wait-timeout 480 postgres redis migrate api worker web/,
-);
+assert.match(ciCoreBoot, /wait_healthy postgres/);
+assert.match(ciCoreBoot, /wait_completed migrate/);
+assert.match(ciCoreBoot, /wait_healthy api/);
+assert.match(ciCoreBoot, /wait_healthy worker/);
+assert.match(ciCoreBoot, /wait_healthy web/);
 assert.match(ciWorkflow, /Boot production observability stack/);
 assert.match(
   ciWorkflow,

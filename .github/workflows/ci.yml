@@ -111,18 +111,7 @@ jobs:
           config
 
       - name: Boot production core stack
-        run: |
-          compose() {
-            docker compose --env-file .env.ci.smoke \
-              -f infra/docker/compose.production.yml \
-              -f infra/docker/compose.ci-smoke.yml \
-              "$@"
-          }
-          compose up -d --build --wait --wait-timeout 480 postgres redis migrate api worker web || {
-            compose ps --all
-            compose logs --no-color --tail=200 postgres redis migrate api worker web
-            exit 1
-          }
+        run: bash scripts/ci-compose-core-boot.sh
 
       - name: Run authenticated production smoke
         run: |
@@ -168,7 +157,7 @@ jobs:
           compose ps --all --format json > tmp/ci-evidence/compose-ps.json || true
           compose logs --no-color --tail=400 postgres redis migrate api worker web prometheus grafana smoke-mock > tmp/ci-evidence/compose-services.log || true
           for service in postgres redis migrate api worker web prometheus grafana smoke-mock; do
-            container_id="$(compose ps -q "$service" || true)"
+            container_id="$(compose ps --all -q "$service" || true)"
             if [ -n "$container_id" ]; then
               docker inspect --format '{{json .State}}' "$container_id" > "tmp/ci-evidence/state-${service}.json" || true
             fi
