@@ -1,0 +1,60 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: chatwoot
+      POSTGRES_PASSWORD: chatwoot-password
+      POSTGRES_DB: chatwoot
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chatwoot"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    volumes:
+      - ./redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  chatwoot:
+    image: chatwoot/chatwoot:latest
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    ports:
+      - "4000:3000"
+    environment:
+      - NODE_ENV=production
+      - RAILS_ENV=production
+      - POSTGRES_HOST=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=chatwoot
+      - POSTGRES_USERNAME=chatwoot
+      - POSTGRES_PASSWORD=chatwoot-password
+      - REDIS_URL=redis://redis:6379
+      - SECRET_KEY_BASE=${SECRET_KEY_BASE}
+      - FRONTEND_URL=http://localhost:3000
+      - CHATWOOT_HOST=http://localhost:3000
+      - ACTIVE_JOB_QUEUE_ADAPTER=redis
+      - ACTIVE_JOB_QUEUE=chatwoot
+    volumes:
+      - ./storage:/app/storage
+    command: >
+      sh -c "
+        bundle exec rails db:prepare &&
+        bundle exec rails server -b 0.0.0.0 -p 3000
+      "
