@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/infra/github-release-readiness.md", "reason": "Verify CI commands, permissions, artifacts, and release blockers"}
+{"file": ".trellis/spec/infra/phase-6e-production-operations.md", "reason": "Verify full stack smoke and observability evidence"}

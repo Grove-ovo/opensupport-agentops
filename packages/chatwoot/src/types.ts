@@ -16,7 +16,8 @@ export type ChatwootReasonCode =
   | 'invalid_payload'
   | 'missing_message_identity'
   | 'non_customer_message'
-  | 'self_outgoing_message';
+  | 'self_outgoing_message'
+  | 'webhook_signature_not_configured';
 
 export interface DedupeStore {
   claim(keys: readonly string[]): boolean | Promise<boolean>;
@@ -47,7 +48,7 @@ export interface ChatwootEndpointResponseBody {
 }
 
 export interface ChatwootEndpointResponse {
-  status: 202 | 400 | 401;
+  status: 202 | 400 | 401 | 503;
   body: ChatwootEndpointResponseBody;
 }
 
@@ -77,5 +78,5 @@ export interface SignatureVerificationInput {
 export interface SignatureVerificationResult {
   configured: boolean;
   verified: boolean;
-  reason?: 'missing_signature_headers' | 'mismatch';
+  reason?: 'missing_signature_headers' | 'mismatch' | 'secret_not_configured';
 }

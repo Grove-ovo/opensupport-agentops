@@ -7,6 +7,7 @@ import type {
   GateSeverity,
   RiskAssessment,
 } from '@opensupport/shared';
+import { maskPII } from '@opensupport/pii';
 import { GuardrailValidationError } from './errors.js';
 import type {
   GuardrailInput,
@@ -37,12 +38,6 @@ const INPUT_INJECTION_PATTERNS = [
   /\bignore\s+(?:all\s+)?(?:previous|prior)\s+instructions?\b/iu,
   /\bact\s+as\s+(?:the\s+)?system\b/iu,
   /忽略(?:之前|以上)(?:所有)?指令|扮演系统/iu,
-] as const;
-const OUTPUT_PII_PATTERNS = [
-  /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/iu,
-  /(?<!\d)(?:\+?1[-.\s]?)?(?:\(?[2-9]\d{2}\)?[-.\s]?)\d{3}[-.\s]?\d{4}(?!\d)/u,
-  /(?<!\d)1[3-9]\d{9}(?!\d)/u,
-  /\b(?:\d[ -]*?){13,19}\b/u,
 ] as const;
 
 export async function evaluateRiskGuardrails(
@@ -238,7 +233,8 @@ function evaluateOutputGate(
   const output = input.proposed_output;
   if (output === null) return [];
   const decisions: GateDecision[] = [];
-  if (OUTPUT_PII_PATTERNS.some((pattern) => pattern.test(output))) {
+  const piiResult = maskPII(output);
+  if (piiResult.replacements.length > 0) {
     decisions.push(
       createDecision(
         input,
@@ -248,7 +244,10 @@ function evaluateOutputGate(
         'P0',
         'sanitize',
         true,
-        { output },
+        {
+          output,
+          categories: piiResult.result.detected_categories,
+        },
       ),
     );
   }

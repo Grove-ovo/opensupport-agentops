@@ -21,5 +21,15 @@ secrets/
 tmp/
 temp/
 
+# Local AI/editor assistant state
+.codebuddy/
+.workbuddy/
+
+# Local Chatwoot runtime data and generated secrets
+infra/chatwoot/postgres-data/
+infra/chatwoot/redis-data/
+infra/chatwoot/storage/
+infra/chatwoot/secret.key
+
 # Trellis local runtime state
 .trellis/.runtime/

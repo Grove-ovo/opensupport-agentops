@@ -447,6 +447,32 @@ export class ProductionE2ERepository {
     );
   }
 
+  async recordCostCapExceeded(traceId: string): Promise<void> {
+    await this.pool.query(
+      `UPDATE agent_traces
+       SET metadata = metadata || '{"cost_cap_exceeded":true}'::jsonb,
+           updated_at = now()
+       WHERE trace_id = $1`,
+      [traceId],
+    );
+  }
+
+  async hasBudgetExceeded(traceId: string): Promise<boolean> {
+    const result = await this.pool.query<{ exists: boolean }>(
+      `SELECT EXISTS (
+         SELECT 1 FROM llm_call_logs
+         WHERE trace_id = $1
+           AND budget_reason_code IN (
+             'ticket_budget_exceeded',
+             'daily_budget_exceeded',
+             'ticket_and_daily_budget_exceeded'
+           )
+       ) AS exists`,
+      [traceId],
+    );
+    return result.rows[0]?.exists === true;
+  }
+
   async createApproval(input: {
     approvalId: string;
     tenantId: string;

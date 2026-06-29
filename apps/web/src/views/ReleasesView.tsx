@@ -26,7 +26,6 @@ export function ReleasesView({ tenantId }: ReleasesViewProps) {
     try {
       await api.releaseTransition(tenantId, selectedId, {
         action,
-        actor_id: 'dashboard-operator',
         idempotency_key: crypto.randomUUID(),
         confirm: true,
       });
@@ -53,7 +52,39 @@ export function ReleasesView({ tenantId }: ReleasesViewProps) {
           {detail.data ? (
             <div className="detail-content">
               <dl className="key-values"><div><dt>State</dt><dd><StatusBadge value={detail.data.state} /></dd></div><div><dt>Snapshot</dt><dd><code>{detail.data.snapshot_hash.slice(0, 16)}</code></dd></div></dl>
-              <section><h3>Gate decisions</h3><div className="gate-list">{detail.data.gate_decisions.length ? detail.data.gate_decisions.map((gate, index) => <div key={String(gate.gate_name ?? index)}><span>{String(gate.gate_name ?? 'gate')}</span><StatusBadge value={String(gate.decision ?? 'unknown')} /></div>) : <span className="muted">Evaluation not completed</span>}</div></section>
+              <section>
+                <h3>Gate decisions</h3>
+                <div className="gate-list">
+                  {detail.data.gate_decisions.length ? detail.data.gate_decisions.map((gate, index) => (
+                    <div key={String(gate.gate_name ?? index)}>
+                      <div className="gate-info">
+                        <span className="gate-name">{String(gate.gate_name ?? 'gate')}</span>
+                        {gate.actual_value != null && gate.threshold_value != null ? (
+                          <span className="gate-metrics">
+                            <code>{formatGateValue(gate.actual_value)}</code>
+                            <span className="gate-operator">{String(gate.threshold_operator ?? '>=')}</span>
+                            <code>{formatGateValue(gate.threshold_value)}</code>
+                          </span>
+                        ) : null}
+                        {gate.reason_code ? <span className="muted gate-reason">{String(gate.reason_code)}</span> : null}
+                      </div>
+                      <div className="gate-status">
+                        <StatusBadge value={String(gate.decision ?? 'unknown')} />
+                        {gate.blocking ? <span className="gate-blocking">Blocking</span> : null}
+                      </div>
+                    </div>
+                  )) : <span className="muted">Evaluation not completed</span>}
+                </div>
+              </section>
+              {detail.data.gate_result ? (
+                <section>
+                  <h3>Overall Result</h3>
+                  <dl className="key-values">
+                    <div><dt>Promotion State</dt><dd><StatusBadge value={String(detail.data.gate_result.promotion_state ?? 'unknown')} /></dd></div>
+                    <div><dt>Snapshot</dt><dd><code>{String(detail.data.gate_result.candidate_snapshot_hash ?? '').slice(0, 16)}</code></dd></div>
+                  </dl>
+                </section>
+              ) : null}
               <div className="action-row">
                 {detail.data.state === 'draft' ? <button className="button button-primary" type="button" onClick={() => setAction('start_evaluation')}><Play size={16} />Start evaluation</button> : null}
                 {['failed', 'shadow', 'assist', 'auto'].includes(detail.data.state) ? <button className="button button-secondary" type="button" onClick={() => setAction('archive')}><Archive size={16} />Archive</button> : null}
@@ -69,4 +100,9 @@ export function ReleasesView({ tenantId }: ReleasesViewProps) {
 
 function ReleaseTable({ items, onSelect }: { items: ReleaseCandidate[]; onSelect(id: string): void }) {
   return <div className="data-table-wrap"><table className="data-table"><thead><tr><th>Candidate</th><th>State</th><th>Agent</th><th>Prompt</th><th>Updated</th></tr></thead><tbody>{items.map((item) => <tr key={item.candidate_id} onClick={() => onSelect(item.candidate_id)}><td><strong>{item.candidate_id.slice(0, 12)}</strong><small>{item.snapshot_hash.slice(0, 12)}</small></td><td><StatusBadge value={item.state} /></td><td>{item.agent_version_id}</td><td>{item.prompt_version_id}</td><td>{new Date(item.updated_at).toLocaleDateString()}</td></tr>)}</tbody></table></div>;
+}
+
+function formatGateValue(value: unknown): string {
+  if (typeof value === 'number') return value >= 1 ? `${value}%` : `${(value * 100).toFixed(1)}%`;
+  return String(value ?? '—');
 }

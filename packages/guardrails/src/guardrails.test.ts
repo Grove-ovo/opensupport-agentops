@@ -101,6 +101,20 @@ test('blocks PII leakage and policy claims without evidence', async () => {
   );
 });
 
+test('output PII gate reuses canonical PII categories', async () => {
+  const input = baseInput();
+  input.proposed_output =
+    '请核对身份证 110101199001011234，电话 +86 13800138000，卡号 4111111111111111。';
+  const assessment = await evaluateRiskGuardrails(input, undefined, { now });
+  const piiDecision = assessment.decisions.find(
+    (decision) => decision.reason_code === 'pii_leak',
+  );
+
+  assert.equal(assessment.blocking, true);
+  assert.equal(piiDecision?.gate_name, 'output');
+  assert.equal(piiDecision?.severity, 'P0');
+});
+
 test('optional model decisions cannot override rule P0 decisions', async () => {
   const input = baseInput();
   input.context = {

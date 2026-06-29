@@ -3,6 +3,8 @@ export type ViewName =
   | 'traces'
   | 'approvals'
   | 'releases'
+  | 'knowledge'
+  | 'tools'
   | 'settings';
 
 export interface Page<T> {
@@ -141,4 +143,83 @@ export interface Settings {
 
 export interface ApiFailure {
   error: { code: string; message: string };
+}
+
+export interface OperatorPrincipal {
+  subject: string;
+  display_name: string | null;
+  email: string | null;
+  roles: string[];
+  tenant_ids: string[];
+  admin: boolean;
+}
+
+export interface AuthSession {
+  principal: OperatorPrincipal;
+  csrf_token: string;
+  expires_at: number;
+}
+
+export interface PolicyVersion {
+  id: string;
+  tenant_id: string;
+  version: number;
+  name: string;
+  status: 'draft' | 'published' | 'archived';
+  content_hash: string;
+  document_count: number;
+  chunk_count: number;
+  published_at: string | null;
+  created_at: string;
+}
+
+export interface PolicyDocument {
+  id: string;
+  tenant_id: string;
+  policy_version_id: string;
+  source_key: string;
+  title: string;
+  media_type: string;
+  content_hash: string;
+  chunk_count: number;
+  created_at: string;
+}
+
+export interface RetrievalSmokeTestResult {
+  chunk_id: string;
+  document_id: string;
+  chunk_index: number;
+  content: string;
+  content_hash: string;
+  score: number;
+}
+
+export interface ToolManifestEntry {
+  name: string;
+  version_id: string;
+  description: string;
+  risk_level: 'low' | 'medium' | 'high';
+  timeout_ms: number;
+  max_retries: number;
+  required_permissions: string[];
+  idempotent: boolean;
+  dry_run: boolean;
+}
+
+export interface RiskRuleEntry {
+  gate: string;
+  reason_code: string;
+  severity: string;
+  recommendation: string;
+  blocking: boolean;
+  description: string;
+}
+
+export interface ToolDryRunResult {
+  tool_name: string;
+  status: 'succeeded' | 'failed' | 'duplicate';
+  code: string;
+  retryable: boolean;
+  dry_run: boolean;
+  data: Record<string, unknown> | null;
 }

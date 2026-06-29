@@ -17,9 +17,14 @@ actions, release transitions, or tenant/model/Chatwoot settings.
 
 ## 3. Contracts
 
-Approval actions accept `approve | edit | reject | escalate`, `actor_id`,
+Approval actions accept `approve | edit | reject | escalate`,
 `idempotency_key`, optional `edited_reply`, and literal `confirm: true`.
 Release transitions accept only `start_evaluation | archive`.
+
+The Dashboard first loads `/api/v1/auth/session`, uses
+`credentials=same-origin`, and sends the returned session-bound CSRF token on
+mutations. It never submits `actor_id`; the API derives the audit actor from
+the verified OIDC `sub`.
 
 Settings responses expose boolean secret presence and masked reference hints.
 They never expose API keys, webhook secrets, access tokens, encrypted
@@ -30,6 +35,10 @@ references, or provider request/response payloads.
 | Condition | Result |
 |---|---|
 | `confirm` missing or false | `400 invalid_request` |
+| Session missing or expired | `401 authentication_required` |
+| Tenant outside OIDC claim | `403 forbidden` |
+| CSRF missing or invalid | `403 csrf_invalid` |
+| Browser submits `actor_id` | `403 actor_identity_forbidden` |
 | Approval not pending | `409 approval_not_pending` |
 | Public Chatwoot delivery fails | `502 chatwoot_<code>`; approval unchanged |
 | Release transition not allowed | `409 release_transition_not_allowed` |
@@ -45,8 +54,8 @@ references, or provider request/response payloads.
 
 ## 6. Tests Required
 
-- API route test: false confirmation is rejected and commands preserve actor,
-  action, edited reply, and idempotency key.
+- API route test: false confirmation and forged actor are rejected; commands
+  preserve server-derived actor, action, edited reply, and idempotency key.
 - Integration test: Assist creates a pending approval; operator approval sends
   one public Chatwoot message and persists `approved`.
 - Vitest: overview, explicit approval confirmation, and dependency failure.

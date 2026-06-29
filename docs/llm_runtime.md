@@ -52,6 +52,17 @@ Provider HTTP statuses map to stable adapter errors:
 The Agent pipeline converts exhausted provider failures into a guarded
 clarification or handoff. It does not produce an ungrounded Auto reply.
 
+## Budget Block And Cost Cap Trace
+
+Both ticket and daily budget blocks are recorded as `cost_cap_exceeded` in
+trace metadata. When a projected cost exceeds the configured cap, the
+runtime returns `budget_blocked` without invoking the provider, persists a
+`llm_call_logs` row with `call_status = 'cancelled'` and the matching
+`budget_reason_code` (`ticket_budget_exceeded`,
+`daily_budget_exceeded`, or `ticket_and_daily_budget_exceeded`), and the
+ticket service merges `cost_cap_exceeded = true` into
+`agent_traces.metadata`. No provider call is attempted.
+
 ## Verification
 
 ```bash

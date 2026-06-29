@@ -9,7 +9,7 @@ services:
       POSTGRES_PASSWORD: ${AGENTOPS_POSTGRES_PASSWORD:-agentops}
       POSTGRES_DB: ${AGENTOPS_POSTGRES_DB:-agentops}
     ports:
-      - "${AGENTOPS_POSTGRES_PORT:-5432}:5432"
+      - "127.0.0.1:${AGENTOPS_POSTGRES_PORT:-5432}:5432"
     volumes:
       - agentops_postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -21,13 +21,20 @@ services:
   redis:
     image: redis:7-alpine
     container_name: agentops-redis
-    command: ["redis-server", "--appendonly", "yes"]
+    environment:
+      AGENTOPS_REDIS_PASSWORD: ${AGENTOPS_REDIS_PASSWORD:-agentops}
+    command:
+      - redis-server
+      - --appendonly
+      - "yes"
+      - --requirepass
+      - ${AGENTOPS_REDIS_PASSWORD:-agentops}
     ports:
-      - "${AGENTOPS_REDIS_PORT:-6379}:6379"
+      - "127.0.0.1:${AGENTOPS_REDIS_PORT:-6379}:6379"
     volumes:
       - agentops_redis_data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
+      test: ["CMD-SHELL", "redis-cli -a \"$${AGENTOPS_REDIS_PASSWORD:-agentops}\" ping"]
       interval: 10s
       timeout: 5s
       retries: 5

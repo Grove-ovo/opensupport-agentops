@@ -16,7 +16,9 @@
     { "path": "../../packages/llm-runtime" },
     { "path": "../../packages/agent-runtime" },
     { "path": "../../packages/runtime-control" },
-    { "path": "../../packages/tools" }
+    { "path": "../../packages/tools" },
+    { "path": "../../packages/retrieval" },
+    { "path": "../../packages/guardrails" }
   ],
   "include": ["src/**/*.ts"]
 }

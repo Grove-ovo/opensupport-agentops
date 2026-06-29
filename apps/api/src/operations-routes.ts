@@ -1,7 +1,12 @@
 import type { FastifyInstance, FastifyReply } from 'fastify';
 import type { RuntimeMode } from '@opensupport/shared';
-import type { OperationsService, TenantRecord } from './contracts.js';
+import type {
+  OperationsService,
+  OperatorAccess,
+  TenantRecord,
+} from './contracts.js';
 import { OperationsError } from './operations.js';
+import { OperatorAccessError } from './operator-auth.js';
 
 const UUID_PATTERN =
   '^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$';
@@ -15,7 +20,15 @@ const idParamsSchema = {
 export async function registerOperationsRoutes(
   app: FastifyInstance,
   operations: OperationsService,
+  operatorAccess: OperatorAccess,
 ): Promise<void> {
+  app.addHook('preHandler', async (request) => {
+    const tenantId = (request.params as { tenantId?: string }).tenantId;
+    if (tenantId !== undefined) {
+      operatorAccess.assertTenant(request, tenantId);
+    }
+  });
+
   app.get<{ Params: { tenantId: string } }>(
     '/api/v1/tenants/:tenantId/overview',
     { schema: { params: idParamsSchema } },
@@ -41,7 +54,6 @@ export async function registerOperationsRoutes(
     Params: { tenantId: string; approvalId: string };
     Body: {
       action: 'approve' | 'edit' | 'reject' | 'escalate';
-      actor_id: string;
       edited_reply?: string;
       idempotency_key: string;
       confirm: boolean;
@@ -49,19 +61,20 @@ export async function registerOperationsRoutes(
   }>(
     '/api/v1/tenants/:tenantId/approvals/:approvalId/actions',
     {
+      preHandler: mutationGuards(operatorAccess),
       schema: {
         params: twoIdSchema('approvalId'),
         body: {
           type: 'object',
           additionalProperties: false,
-          required: ['action', 'actor_id', 'idempotency_key', 'confirm'],
+          required: ['action', 'idempotency_key', 'confirm'],
           properties: {
             action: {
               type: 'string',
               enum: ['approve', 'edit', 'reject', 'escalate'],
             },
-            actor_id: { type: 'string', minLength: 1, maxLength: 256 },
             edited_reply: { type: 'string', minLength: 1, maxLength: 20_000 },
+            actor_id: { type: 'string', minLength: 1, maxLength: 256 },
             idempotency_key: {
               type: 'string',
               minLength: 1,
@@ -79,7 +92,7 @@ export async function registerOperationsRoutes(
           tenantId: request.params.tenantId,
           approvalId: request.params.approvalId,
           action: request.body.action,
-          actorId: request.body.actor_id,
+          actorId: operatorAccess.principal(request).subject,
           editedReply: request.body.edited_reply ?? null,
           idempotencyKey: request.body.idempotency_key,
         }),
@@ -106,19 +119,19 @@ export async function registerOperationsRoutes(
     Params: { tenantId: string; candidateId: string };
     Body: {
       action: 'start_evaluation' | 'archive';
-      actor_id: string;
       idempotency_key: string;
       confirm: boolean;
     };
   }>(
     '/api/v1/tenants/:tenantId/releases/:candidateId/transitions',
     {
+      preHandler: mutationGuards(operatorAccess),
       schema: {
         params: twoIdSchema('candidateId'),
         body: {
           type: 'object',
           additionalProperties: false,
-          required: ['action', 'actor_id', 'idempotency_key', 'confirm'],
+          required: ['action', 'idempotency_key', 'confirm'],
           properties: {
             action: {
               type: 'string',
@@ -142,7 +155,7 @@ export async function registerOperationsRoutes(
           tenantId: request.params.tenantId,
           candidateId: request.params.candidateId,
           action: request.body.action,
-          actorId: request.body.actor_id,
+          actorId: operatorAccess.principal(request).subject,
           idempotencyKey: request.body.idempotency_key,
         }),
       ),
@@ -165,17 +178,17 @@ export async function registerOperationsRoutes(
       display_name: string;
       status: TenantRecord['status'];
       metadata: Record<string, unknown>;
-      actor_id: string;
     };
   }>(
     '/api/v1/tenants/:tenantId/settings/tenant',
     {
+      preHandler: mutationGuards(operatorAccess),
       schema: {
         params: idParamsSchema,
         body: {
           type: 'object',
           additionalProperties: false,
-          required: ['display_name', 'status', 'metadata', 'actor_id'],
+          required: ['display_name', 'status', 'metadata'],
           properties: {
             display_name: { type: 'string', minLength: 1, maxLength: 200 },
             status: {
@@ -194,7 +207,7 @@ export async function registerOperationsRoutes(
           displayName: request.body.display_name,
           status: request.body.status,
           metadata: request.body.metadata,
-          actorId: request.body.actor_id,
+          actorId: operatorAccess.principal(request).subject,
         }),
       ),
   );
@@ -212,11 +225,11 @@ export async function registerOperationsRoutes(
       daily_budget: number;
       budget_currency: string;
       replacement_api_key?: string;
-      actor_id: string;
     };
   }>(
     '/api/v1/tenants/:tenantId/settings/model-config',
     {
+      preHandler: mutationGuards(operatorAccess),
       schema: {
         params: idParamsSchema,
         body: {
@@ -232,7 +245,6 @@ export async function registerOperationsRoutes(
             'max_cost_per_ticket',
             'daily_budget',
             'budget_currency',
-            'actor_id',
           ],
           properties: {
             provider: { type: 'string', minLength: 1, maxLength: 64 },
@@ -270,7 +282,7 @@ export async function registerOperationsRoutes(
           dailyBudget: request.body.daily_budget,
           budgetCurrency: request.body.budget_currency,
           replacementApiKey: request.body.replacement_api_key ?? null,
-          actorId: request.body.actor_id,
+          actorId: operatorAccess.principal(request).subject,
         }),
       ),
   );
@@ -285,11 +297,11 @@ export async function registerOperationsRoutes(
       runtime_mode: RuntimeMode;
       webhook_secret_ref?: string;
       api_token_ref?: string;
-      actor_id: string;
     };
   }>(
     '/api/v1/tenants/:tenantId/settings/chatwoot',
     {
+      preHandler: mutationGuards(operatorAccess),
       schema: {
         params: idParamsSchema,
         body: {
@@ -301,7 +313,6 @@ export async function registerOperationsRoutes(
             'inbox_id',
             'agent_bot_id',
             'runtime_mode',
-            'actor_id',
           ],
           properties: {
             base_url: { type: 'string', minLength: 1, maxLength: 2048 },
@@ -339,10 +350,187 @@ export async function registerOperationsRoutes(
           runtimeMode: request.body.runtime_mode,
           webhookSecretRef: request.body.webhook_secret_ref ?? null,
           apiTokenRef: request.body.api_token_ref ?? null,
-          actorId: request.body.actor_id,
+          actorId: operatorAccess.principal(request).subject,
         }),
       ),
   );
+
+  app.get<{ Params: { tenantId: string } }>(
+    '/api/v1/tenants/:tenantId/policy-versions',
+    { schema: { params: idParamsSchema } },
+    async (request, reply) =>
+      run(reply, () => operations.getPolicyVersions(request.params.tenantId)),
+  );
+
+  app.get<{ Params: { tenantId: string; policyVersionId: string } }>(
+    '/api/v1/tenants/:tenantId/policy-versions/:policyVersionId/documents',
+    { schema: { params: twoIdSchema('policyVersionId') } },
+    async (request, reply) =>
+      run(reply, () =>
+        operations.getPolicyDocuments(
+          request.params.tenantId,
+          request.params.policyVersionId,
+        ),
+      ),
+  );
+
+  app.post<{
+    Params: { tenantId: string };
+    Body: {
+      name: string;
+      documents: ReadonlyArray<{
+        source_key: string;
+        title: string;
+        content: string;
+      }>;
+    };
+  }>(
+    '/api/v1/tenants/:tenantId/policy-versions',
+    {
+      preHandler: mutationGuards(operatorAccess),
+      schema: {
+        params: idParamsSchema,
+        body: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['name', 'documents'],
+          properties: {
+            name: { type: 'string', minLength: 1, maxLength: 256 },
+            documents: {
+              type: 'array',
+              minItems: 1,
+              maxItems: 100,
+              items: {
+                type: 'object',
+                additionalProperties: false,
+                required: ['source_key', 'title', 'content'],
+                properties: {
+                  source_key: { type: 'string', minLength: 1, maxLength: 512 },
+                  title: { type: 'string', minLength: 1, maxLength: 512 },
+                  content: { type: 'string', minLength: 1, maxLength: 1_000_000 },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) =>
+      run(reply, () =>
+        operations.createPolicyVersion(request.params.tenantId, {
+          name: request.body.name,
+          documents: request.body.documents,
+          actorId: operatorAccess.principal(request).subject,
+        }),
+      ),
+  );
+
+  app.put<{ Params: { tenantId: string; policyVersionId: string } }>(
+    '/api/v1/tenants/:tenantId/policy-versions/:policyVersionId/publish',
+    {
+      preHandler: mutationGuards(operatorAccess),
+      schema: { params: twoIdSchema('policyVersionId') },
+    },
+    async (request, reply) =>
+      run(reply, () =>
+        operations.publishPolicyVersion(
+          request.params.tenantId,
+          request.params.policyVersionId,
+          operatorAccess.principal(request).subject,
+        ),
+      ),
+  );
+
+  app.post<{
+    Params: { tenantId: string };
+    Body: { query: string; limit?: number };
+  }>(
+    '/api/v1/tenants/:tenantId/policy-retrieval-smoke-test',
+    {
+      preHandler: mutationGuards(operatorAccess),
+      schema: {
+        params: idParamsSchema,
+        body: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['query'],
+          properties: {
+            query: { type: 'string', minLength: 1, maxLength: 2_000 },
+            limit: { type: 'integer', minimum: 1, maximum: 50 },
+          },
+        },
+      },
+    },
+    async (request, reply) =>
+      run(reply, () => {
+        const params: { query: string; limit?: number } = {
+          query: request.body.query,
+        };
+        if (request.body.limit !== undefined) {
+          params.limit = request.body.limit;
+        }
+        return operations.runRetrievalSmokeTest(request.params.tenantId, params);
+      }),
+  );
+
+  app.get<{ Params: { tenantId: string } }>(
+    '/api/v1/tenants/:tenantId/tool-manifest',
+    { schema: { params: idParamsSchema } },
+    async (request, reply) =>
+      run(reply, () => operations.getToolManifest(request.params.tenantId)),
+  );
+
+  app.get<{ Params: { tenantId: string } }>(
+    '/api/v1/tenants/:tenantId/risk-rules',
+    { schema: { params: idParamsSchema } },
+    async (request, reply) =>
+      run(reply, () => operations.getRiskRules(request.params.tenantId)),
+  );
+
+  app.post<{
+    Params: { tenantId: string };
+    Body: { tool_name: string; arguments: Record<string, unknown> };
+  }>(
+    '/api/v1/tenants/:tenantId/tool-dry-run',
+    {
+      preHandler: mutationGuards(operatorAccess),
+      schema: {
+        params: idParamsSchema,
+        body: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['tool_name', 'arguments'],
+          properties: {
+            tool_name: { type: 'string', minLength: 1, maxLength: 128 },
+            arguments: { type: 'object' },
+          },
+        },
+      },
+    },
+    async (request, reply) =>
+      run(reply, () =>
+        operations.runToolDryRun(request.params.tenantId, {
+          toolName: request.body.tool_name,
+          arguments: request.body.arguments,
+          actorId: operatorAccess.principal(request).subject,
+        }),
+      ),
+  );
+}
+
+function mutationGuards(operatorAccess: OperatorAccess) {
+  return [
+    operatorAccess.requireCsrf.bind(operatorAccess),
+    async (request: import('fastify').FastifyRequest) => {
+      if (
+        typeof request.body === 'object' &&
+        request.body !== null &&
+        Reflect.has(request.body, 'actor_id')
+      ) {
+        throw new OperatorAccessError('actor_identity_forbidden', 403);
+      }
+    },
+  ];
 }
 
 function twoIdSchema(name: string) {

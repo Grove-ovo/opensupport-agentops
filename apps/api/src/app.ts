@@ -15,6 +15,7 @@ import type {
 import { registerChatwootRoutes } from './chatwoot-routes.js';
 import { registerOperationsRoutes } from './operations-routes.js';
 import { MetricsRegistry } from './metrics.js';
+import { OperatorAccessError } from './operator-auth.js';
 
 const APPROVAL_STATES = new Set<ApprovalState>([
   'pending',
@@ -41,6 +42,11 @@ export interface BuildAppOptions {
     level: string;
     base?: Readonly<Record<string, unknown>>;
   };
+  bodyLimitBytes?: number;
+  requestTimeoutMs?: number;
+  connectionTimeoutMs?: number;
+  keepAliveTimeoutMs?: number;
+  maxRequestsPerSocket?: number;
 }
 
 export function buildApp(
@@ -51,12 +57,18 @@ export function buildApp(
     logger: options.logger ?? false,
     genReqId: (request) => headerValue(request.headers['x-request-id']) ?? randomUUID(),
     disableRequestLogging: false,
+    bodyLimit: options.bodyLimitBytes ?? 1_048_576,
+    requestTimeout: options.requestTimeoutMs ?? 35_000,
+    connectionTimeout: options.connectionTimeoutMs ?? 10_000,
+    keepAliveTimeout: options.keepAliveTimeoutMs ?? 20_000,
+    maxRequestsPerSocket: options.maxRequestsPerSocket ?? 1_000,
   });
   const metrics = new MetricsRegistry();
   metrics.gauge('agentops_info', 1, {
     service: 'api',
     version: dependencies.buildVersion,
   });
+  dependencies.operatorAccess.register(app);
 
   app.addHook('onResponse', async (request, reply) => {
     metrics.increment('agentops_http_requests_total', {
@@ -67,13 +79,24 @@ export function buildApp(
   });
 
   app.setErrorHandler((error, request, reply) => {
+    if (error instanceof OperatorAccessError) {
+      void reply.status(error.statusCode).send({
+        error: {
+          code: error.code,
+          message: operatorAccessMessage(error.code),
+          request_id: request.id,
+        },
+      });
+      return;
+    }
     const validation = hasValidation(error);
     const statusCode = validation ? 400 : getStatusCode(error);
+    const code = stableErrorCode(statusCode, validation);
     request.log.error({ err: error, request_id: request.id }, 'request failed');
     void reply.status(statusCode).send({
       error: {
-        code: validation ? 'invalid_request' : statusCode === 404 ? 'not_found' : 'internal_error',
-        message: validation ? 'Request validation failed' : statusCode === 404 ? 'Resource not found' : 'Request failed',
+        code,
+        message: stableErrorMessage(code),
         request_id: request.id,
       },
     });
@@ -135,108 +158,148 @@ export function buildApp(
     reply.type('text/plain; version=0.0.4; charset=utf-8').send(metrics.render()),
   );
 
-  app.get<{ Querystring: RawPageQuery }>(
-    '/api/v1/tenants',
-    { schema: { querystring: pageQuerySchema } },
-    async (request) => dependencies.store.listTenants(pageQuery(request)),
-  );
+  void app.register(async (scope) => {
+    scope.addHook(
+      'preHandler',
+      dependencies.operatorAccess.requireSession.bind(dependencies.operatorAccess),
+    );
 
-  app.get<{ Params: TenantParams }>(
-    '/api/v1/tenants/:tenantId',
-    { schema: { params: tenantParamsSchema } },
-    async (request, reply) => {
-      const tenant = await dependencies.store.getTenant(request.params.tenantId);
-      return tenant ?? reply.status(404).send(notFound(request, 'tenant_not_found'));
-    },
-  );
+    scope.get<{ Querystring: RawPageQuery }>(
+      '/api/v1/tenants',
+      { schema: { querystring: pageQuerySchema } },
+      async (request) => {
+        const principal = dependencies.operatorAccess.principal(request);
+        return principal.admin
+          ? dependencies.store.listTenants(pageQuery(request))
+          : dependencies.store.listTenantsByIds(
+              principal.tenant_ids,
+              pageQuery(request),
+            );
+      },
+    );
 
-  app.get<{ Params: TenantParams }>(
-    '/api/v1/tenants/:tenantId/model-config',
-    { schema: { params: tenantParamsSchema } },
-    async (request, reply) => {
-      const config = await dependencies.store.getActiveModelConfig(
-        request.params.tenantId,
+    scope.get<{ Params: TenantParams }>(
+      '/api/v1/tenants/:tenantId',
+      { schema: { params: tenantParamsSchema } },
+      async (request, reply) => {
+        dependencies.operatorAccess.assertTenant(
+          request,
+          request.params.tenantId,
+        );
+        const tenant = await dependencies.store.getTenant(request.params.tenantId);
+        return tenant ?? reply.status(404).send(notFound(request, 'tenant_not_found'));
+      },
+    );
+
+    scope.get<{ Params: TenantParams }>(
+      '/api/v1/tenants/:tenantId/model-config',
+      { schema: { params: tenantParamsSchema } },
+      async (request, reply) => {
+        dependencies.operatorAccess.assertTenant(
+          request,
+          request.params.tenantId,
+        );
+        const config = await dependencies.store.getActiveModelConfig(
+          request.params.tenantId,
+        );
+        return config ?? reply.status(404).send(notFound(request, 'model_config_not_found'));
+      },
+    );
+
+    scope.get<{ Params: TenantParams; Querystring: RawPageQuery }>(
+      '/api/v1/tenants/:tenantId/traces',
+      {
+        schema: {
+          params: tenantParamsSchema,
+          querystring: pageQuerySchema,
+        },
+      },
+      async (request) => {
+        dependencies.operatorAccess.assertTenant(
+          request,
+          request.params.tenantId,
+        );
+        return dependencies.store.listTraces(
+          request.params.tenantId,
+          pageQuery(request),
+        );
+      },
+    );
+
+    scope.get<{
+      Params: TenantParams;
+      Querystring: RawPageQuery & { state?: string };
+    }>(
+      '/api/v1/tenants/:tenantId/approvals',
+      {
+        schema: {
+          params: tenantParamsSchema,
+          querystring: {
+            ...pageQuerySchema,
+            properties: {
+              ...pageQuerySchema.properties,
+              state: { type: 'string', enum: [...APPROVAL_STATES] },
+            },
+          },
+        },
+      },
+      async (request) => {
+        dependencies.operatorAccess.assertTenant(
+          request,
+          request.params.tenantId,
+        );
+        return dependencies.store.listApprovals(
+          request.params.tenantId,
+          parseState(request.query.state, APPROVAL_STATES),
+          pageQuery(request),
+        );
+      },
+    );
+
+    scope.get<{
+      Params: TenantParams;
+      Querystring: RawPageQuery & { state?: string };
+    }>(
+      '/api/v1/tenants/:tenantId/release-candidates',
+      {
+        schema: {
+          params: tenantParamsSchema,
+          querystring: {
+            ...pageQuerySchema,
+            properties: {
+              ...pageQuerySchema.properties,
+              state: { type: 'string', enum: [...RELEASE_STATES] },
+            },
+          },
+        },
+      },
+      async (request) => {
+        dependencies.operatorAccess.assertTenant(
+          request,
+          request.params.tenantId,
+        );
+        return dependencies.store.listReleaseCandidates(
+          request.params.tenantId,
+          parseState(request.query.state, RELEASE_STATES),
+          pageQuery(request),
+        );
+      },
+    );
+
+    if (dependencies.operations !== undefined) {
+      await registerOperationsRoutes(
+        scope,
+        dependencies.operations,
+        dependencies.operatorAccess,
       );
-      return config ?? reply.status(404).send(notFound(request, 'model_config_not_found'));
-    },
-  );
-
-  app.get<{ Params: TenantParams; Querystring: RawPageQuery }>(
-    '/api/v1/tenants/:tenantId/traces',
-    {
-      schema: {
-        params: tenantParamsSchema,
-        querystring: pageQuerySchema,
-      },
-    },
-    async (request) =>
-      dependencies.store.listTraces(
-        request.params.tenantId,
-        pageQuery(request),
-      ),
-  );
-
-  app.get<{
-    Params: TenantParams;
-    Querystring: RawPageQuery & { state?: string };
-  }>(
-    '/api/v1/tenants/:tenantId/approvals',
-    {
-      schema: {
-        params: tenantParamsSchema,
-        querystring: {
-          ...pageQuerySchema,
-          properties: {
-            ...pageQuerySchema.properties,
-            state: { type: 'string', enum: [...APPROVAL_STATES] },
-          },
-        },
-      },
-    },
-    async (request) =>
-      dependencies.store.listApprovals(
-        request.params.tenantId,
-        parseState(request.query.state, APPROVAL_STATES),
-        pageQuery(request),
-      ),
-  );
-
-  app.get<{
-    Params: TenantParams;
-    Querystring: RawPageQuery & { state?: string };
-  }>(
-    '/api/v1/tenants/:tenantId/release-candidates',
-    {
-      schema: {
-        params: tenantParamsSchema,
-        querystring: {
-          ...pageQuerySchema,
-          properties: {
-            ...pageQuerySchema.properties,
-            state: { type: 'string', enum: [...RELEASE_STATES] },
-          },
-        },
-      },
-    },
-    async (request) =>
-      dependencies.store.listReleaseCandidates(
-        request.params.tenantId,
-        parseState(request.query.state, RELEASE_STATES),
-        pageQuery(request),
-      ),
-  );
+    }
+  });
 
   if (dependencies.chatwootIngress !== undefined) {
     void app.register(async (scope) => {
       await registerChatwootRoutes(scope, dependencies.chatwootIngress!);
     });
   }
-  if (dependencies.operations !== undefined) {
-    void app.register(async (scope) => {
-      await registerOperationsRoutes(scope, dependencies.operations!);
-    });
-  }
-
   if (dependencies.closeDependencies !== false) {
     app.addHook('onClose', async () => {
       await Promise.allSettled([
@@ -290,6 +353,15 @@ function parseState<T extends string>(
   return value !== undefined && states.has(value as T) ? (value as T) : null;
 }
 
+function operatorAccessMessage(code: OperatorAccessError['code']): string {
+  if (code === 'authentication_required') return 'Authentication required';
+  if (code === 'csrf_invalid') return 'CSRF token is missing or invalid';
+  if (code === 'actor_identity_forbidden') {
+    return 'Audit actor is derived from the authenticated identity';
+  }
+  return 'Operator is not authorized for this tenant';
+}
+
 function headerValue(value: string | string[] | undefined): string | undefined {
   return Array.isArray(value) ? value[0] : value;
 }
@@ -323,4 +395,28 @@ function getStatusCode(error: unknown): number {
     return error.statusCode;
   }
   return 500;
+}
+
+function stableErrorCode(statusCode: number, validation: boolean): string {
+  if (validation) return 'invalid_request';
+  if (statusCode === 404) return 'not_found';
+  if (statusCode === 408) return 'request_timeout';
+  if (statusCode === 413) return 'payload_too_large';
+  if (statusCode === 429) return 'rate_limited';
+  if (statusCode === 502) return 'bad_gateway';
+  if (statusCode === 503) return 'service_unavailable';
+  if (statusCode === 504) return 'upstream_timeout';
+  return 'internal_error';
+}
+
+function stableErrorMessage(code: string): string {
+  if (code === 'invalid_request') return 'Request validation failed';
+  if (code === 'not_found') return 'Resource not found';
+  if (code === 'request_timeout') return 'Request timed out';
+  if (code === 'payload_too_large') return 'Request payload is too large';
+  if (code === 'rate_limited') return 'Request rate limit exceeded';
+  if (code === 'upstream_timeout') return 'Upstream request timed out';
+  if (code === 'bad_gateway') return 'Upstream service failed';
+  if (code === 'service_unavailable') return 'Service unavailable';
+  return 'Request failed';
 }

@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 43
-- **Last Active**: 2026-06-22
+- **Total Sessions**: 51
+- **Last Active**: 2026-06-29
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1432 | Active |
+| `journal-1.md` | ~1759 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,14 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 51 | 2026-06-29 | Production demo usability finish | `55f55cb`, `10ee19b` | `dev` |
+| 50 | 2026-06-27 | PRD completeness audit + missing artifacts | `d9eb649` | `dev` |
+| 49 | 2026-06-27 | E2E testing with real LLM + provider fixes + Docker fix | `90349ef`, `3afd86d` | `dev` |
+| 48 | 2026-06-24 | CI fix + multi-turn eval cases | `b715f01`, `e751537` | `dev` |
+| 47 | 2026-06-23 | Phase 7E/7F implementation + git branch split fix | `25f38ff`, `54fa63e` | `dev` |
+| 46 | 2026-06-22 | Phase 7C production preflight | `885ef89` | `feat/phase-7c-production-preflight` |
+| 45 | 2026-06-22 | Phase 7B edge transport hardening | `018557c` | `feat/phase-7b-edge-transport-hardening` |
+| 44 | 2026-06-22 | Phase 7A OIDC operator access | `d57f494` | `feat/phase-7a-oidc-operator-access` |
 | 43 | 2026-06-22 | Finalize Phase 6 archived validation | `cc4120d` | `feat/phase-6-validation-fix` |
 | 42 | 2026-06-22 | Complete Phase 6 productization | `9a610b2` | `feat/phase-6-complete` |
 | 41 | 2026-06-22 | Complete Phase 6E production operations | `ce5df4b` | `feat/phase-6e-production-operations` |

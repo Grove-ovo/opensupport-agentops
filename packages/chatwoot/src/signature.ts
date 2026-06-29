@@ -4,7 +4,7 @@ import type { SignatureVerificationInput, SignatureVerificationResult } from './
 
 export function verifyChatwootSignature(input: SignatureVerificationInput): SignatureVerificationResult {
   if (!input.secret) {
-    return { configured: false, verified: true };
+    return { configured: false, verified: false, reason: 'secret_not_configured' };
   }
 
   const timestamp = getHeader(input.headers, 'x-chatwoot-timestamp');

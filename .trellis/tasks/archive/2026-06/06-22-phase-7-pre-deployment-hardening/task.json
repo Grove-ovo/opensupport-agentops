@@ -1,0 +1,33 @@
+{
+  "id": "phase-7-pre-deployment-hardening",
+  "name": "phase-7-pre-deployment-hardening",
+  "title": "Phase 7: Pre-Deployment Hardening",
+  "description": "",
+  "status": "completed",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "Grove-ovo",
+  "assignee": "Grove-ovo",
+  "createdAt": "2026-06-22",
+  "completedAt": "2026-06-23",
+  "branch": null,
+  "base_branch": "dev",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "06-22-phase-7a-oidc-operator-access",
+    "06-22-phase-7b-edge-transport-hardening",
+    "06-22-phase-7c-production-preflight",
+    "06-22-phase-7d-ci-security-supply-chain",
+    "06-22-phase-7e-recovery-drill",
+    "06-22-phase-7f-pre-deployment-gate"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}

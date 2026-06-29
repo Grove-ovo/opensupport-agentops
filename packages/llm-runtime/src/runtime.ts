@@ -4,7 +4,7 @@ import {
   evaluateCostBudget,
 } from '@opensupport/llm-observability';
 import { decryptApiKey } from '@opensupport/model-config';
-import type { NewLLMCallLog } from '@opensupport/shared';
+import type { BudgetReasonCode, NewLLMCallLog } from '@opensupport/shared';
 import type {
   InvokeTenantModelInput,
   LLMProviderResponse,
@@ -37,6 +37,16 @@ export async function invokeTenantModel<T>(
   });
 
   if (budget.reasonCode !== 'within_budget') {
+    const startedAt = (input.now ?? Date.now)();
+    await writeLog(input, {
+      model: models[0] as string,
+      pricing: preflightPricing,
+      response: null,
+      startedAt,
+      status: 'cancelled',
+      errorCode: budget.reasonCode,
+      budgetReasonCode: budget.reasonCode,
+    });
     return {
       status: 'budget_blocked',
       data: null,
@@ -72,6 +82,7 @@ export async function invokeTenantModel<T>(
           startedAt,
           status: 'succeeded',
           errorCode: null,
+          budgetReasonCode: 'within_budget',
         });
         return {
           status: 'succeeded',
@@ -100,6 +111,7 @@ export async function invokeTenantModel<T>(
           startedAt,
           status: reason === 'model_timeout' ? 'timed_out' : 'failed',
           errorCode: reason,
+          budgetReasonCode: 'within_budget',
         });
       }
     }
@@ -160,8 +172,9 @@ async function writeLog(
     pricing: ModelPricing;
     response: LLMProviderResponse | null;
     startedAt: number;
-    status: 'succeeded' | 'failed' | 'timed_out';
+    status: 'succeeded' | 'failed' | 'timed_out' | 'cancelled';
     errorCode: string | null;
+    budgetReasonCode: BudgetReasonCode;
   },
 ): Promise<void> {
   const finishedAt = (input.now ?? Date.now)();
@@ -181,7 +194,7 @@ async function writeLog(
     costCurrency: input.config.budget_currency,
     latencyMs: Math.max(0, Math.round(finishedAt - attempt.startedAt)),
     errorCode: attempt.errorCode,
-    budgetReasonCode: 'within_budget',
+    budgetReasonCode: attempt.budgetReasonCode,
     createdAt: new Date(finishedAt),
   });
   await input.log(record);

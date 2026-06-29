@@ -1,21 +1,26 @@
 import {
   Activity,
+  BookOpen,
   CheckSquare,
   Gauge,
   Rocket,
   Settings,
   ShieldCheck,
+  ShieldQuestion,
+  LogOut,
 } from 'lucide-react';
-import type { Tenant, ViewName } from '../types.js';
+import type { OperatorPrincipal, Tenant, ViewName } from '../types.js';
 
 interface AppShellProps {
   view: ViewName;
   tenants: Tenant[];
   tenantId: string;
   ready: boolean | null;
+  principal: OperatorPrincipal;
   children: React.ReactNode;
   onViewChange(view: ViewName): void;
   onTenantChange(tenantId: string): void;
+  onLogout(): void;
 }
 
 const NAV_ITEMS = [
@@ -23,6 +28,8 @@ const NAV_ITEMS = [
   { id: 'traces', label: 'Traces', icon: Activity },
   { id: 'approvals', label: 'Approvals', icon: CheckSquare },
   { id: 'releases', label: 'Releases', icon: Rocket },
+  { id: 'knowledge', label: 'Knowledge', icon: BookOpen },
+  { id: 'tools', label: 'Tools', icon: ShieldQuestion },
   { id: 'settings', label: 'Settings', icon: Settings },
 ] as const;
 
@@ -31,9 +38,11 @@ export function AppShell({
   tenants,
   tenantId,
   ready,
+  principal,
   children,
   onViewChange,
   onTenantChange,
+  onLogout,
 }: AppShellProps) {
   return (
     <div className="app-shell">
@@ -66,14 +75,23 @@ export function AppShell({
             <span className="eyebrow">Agent operations</span>
             <h1>{NAV_ITEMS.find((item) => item.id === view)?.label}</h1>
           </div>
-          <label className="tenant-picker">
-            <span>Tenant</span>
-            <select value={tenantId} onChange={(event) => onTenantChange(event.target.value)}>
-              {tenants.map((tenant) => (
-                <option key={tenant.id} value={tenant.id}>{tenant.display_name}</option>
-              ))}
-            </select>
-          </label>
+          <div className="operator-tools">
+            <label className="tenant-picker">
+              <span>Tenant</span>
+              <select value={tenantId} onChange={(event) => onTenantChange(event.target.value)}>
+                {tenants.map((tenant) => (
+                  <option key={tenant.id} value={tenant.id}>{tenant.display_name}</option>
+                ))}
+              </select>
+            </label>
+            <div className="operator-identity">
+              <strong>{principal.display_name ?? principal.email ?? principal.subject}</strong>
+              <span>{principal.admin ? 'Admin' : 'Operator'}</span>
+            </div>
+            <button className="icon-button" type="button" onClick={onLogout} aria-label="Sign out" title="Sign out">
+              <LogOut size={17} />
+            </button>
+          </div>
         </header>
         <nav className="mobile-nav" aria-label="Operations">
           {NAV_ITEMS.map(({ id, label, icon: Icon }) => (

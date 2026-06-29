@@ -10,6 +10,7 @@ import { EnvironmentSecretResolver } from './secrets.js';
 import { ProductionTicketService } from './ticket-service.js';
 import { PostgresOperationsService } from './operations.js';
 import { createStructuredLog } from './structured-log.js';
+import { OidcOperatorAccess } from './operator-auth.js';
 
 export async function createRuntimeApp(config: ApiConfig): Promise<FastifyInstance> {
   const pool = createPostgresPool(config.databaseUrl);
@@ -45,6 +46,7 @@ export async function createRuntimeApp(config: ApiConfig): Promise<FastifyInstan
         requiredMigration: config.requiredMigration,
         dedupeTtlSeconds: config.dedupeTtlSeconds,
         buildVersion: config.buildVersion,
+        operatorAccess: new OidcOperatorAccess(config.operatorAuth),
         chatwootIngress: ticketService,
         operations: new PostgresOperationsService(
           pool,
@@ -61,6 +63,7 @@ export async function createRuntimeApp(config: ApiConfig): Promise<FastifyInstan
             build_version: config.buildVersion,
           },
         },
+        ...config.transport,
       },
     );
   } catch (error) {

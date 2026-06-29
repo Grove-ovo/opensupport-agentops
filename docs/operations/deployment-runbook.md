@@ -15,19 +15,25 @@ cp .env.production.example .env.production
 mkdir -p secrets
 node -e "console.log('base64url:' + require('crypto').randomBytes(32).toString('base64url'))" \
   > secrets/agentops_master_key
-openssl rand -base64 32 > secrets/grafana_admin_password
+openssl rand -out secrets/agentops_operator_session_key 32
+openssl rand -base64 -out secrets/agentops_oidc_client_secret 48
+openssl rand -base64 -out secrets/grafana_admin_password 32
 chmod 600 .env.production secrets/*
 ```
 
 Replace every placeholder password and configure provider origins, prices,
-Chatwoot secrets, and build version. Never commit `.env.production` or
-`secrets/`.
+Chatwoot secrets, OIDC issuer/client/callback values, and build version. Never
+commit `.env.production` or `secrets/`.
+
+See [Operator Authentication](../operator_authentication.md) for identity
+claims, cookie requirements, and session-key rotation.
+See [Edge And Transport Security](../edge_transport_security.md) for public
+scheme, HSTS, request limits, and trusted proxy behavior.
 
 ## Validate And Build
 
 ```sh
-docker compose --env-file .env.production \
-  -f infra/docker/compose.production.yml config
+AGENTOPS_ENV_FILE=.env.production npm run deploy:preflight
 
 docker compose --env-file .env.production \
   -f infra/docker/compose.production.yml build
@@ -39,8 +45,7 @@ docker compose --env-file .env.production \
 npm run ops:backup:dry-run
 sh scripts/ops/backup.sh
 
-docker compose --env-file .env.production \
-  -f infra/docker/compose.production.yml up -d
+AGENTOPS_ENV_FILE=.env.production npm run deploy:up
 
 docker compose --env-file .env.production \
   -f infra/docker/compose.production.yml ps
@@ -51,6 +56,10 @@ curl -fsS http://127.0.0.1:8088/worker/health/ready
 
 The one-shot `migrate` service must exit successfully before API and worker
 start. Do not bypass migration health ordering.
+
+The committed example environment is intentionally blocked. Replace every
+placeholder and review both reports before rollout. See
+[Production Preflight](./deploy-preflight.md).
 
 ## Smoke
 

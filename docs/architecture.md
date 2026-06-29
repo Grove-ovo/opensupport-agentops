@@ -1,6 +1,6 @@
 # OpenSupport AgentOps Architecture
 
-Status: Implemented through Phase 6
+Status: Ready for staging deployment through Phase 7 pre-deployment hardening
 Created: 2026-06-16  
 Owner: Grove-ovo
 
@@ -536,6 +536,23 @@ keeps the candidate in `failed`, `shadow`, or `assist` according to severity.
 
 Each milestone should become its own Trellis task before implementation.
 
+## Operator Access Boundary
+
+Dashboard and non-Chatwoot `/api/v1/tenants/*` routes use generic OIDC
+Authorization Code flow with PKCE S256. An encrypted short-lived session stores
+only verified identity and authorization scope. The OIDC `sub` is the
+authoritative audit actor; browser-provided actor IDs are rejected.
+
+Authorization remains application enforced:
+
+- `operator` identities may access only tenant UUIDs in the configured tenant
+  claim.
+- `admin` identities receive explicit wildcard tenant access.
+- cookie-authenticated mutations require a session-bound CSRF token.
+- Chatwoot ingress remains on the separate HMAC machine boundary.
+
+See `operator_authentication.md` for configuration and key rotation.
+
 ## Production Topology
 
 The production Compose topology contains:
@@ -550,6 +567,29 @@ The production Compose topology contains:
 Only Nginx exposes the application port. PostgreSQL, Redis, Prometheus, and
 Grafana bind to localhost administration ports by default. Production internet
 exposure requires an external TLS terminator or load balancer.
+
+### Public Edge
+
+The Nginx public boundary applies separate source-based rate zones for OIDC
+auth, Chatwoot ingress, operator reads, and operator writes. It rejects
+oversized bodies and slow clients before application processing, bounds
+upstream timeouts, and returns stable JSON for edge-generated `413`, `429`,
+and `504` responses.
+
+Forwarded address, scheme, and identity headers from public clients are not
+trusted. Nginx rebuilds transport headers from the socket and configured public
+scheme, while Fastify continues to enforce OIDC and tenant authorization.
+Strict CSP, Permissions-Policy, explicit caching, and configurable HSTS apply
+to the Dashboard and API. See `edge_transport_security.md`.
+
+### Deployment Preflight
+
+Production startup is gated by a host-side preflight that verifies environment
+and secret-file safety, OIDC/public origin consistency, provider configuration,
+immutable build identity, ports, monitoring, migration floor, and the exact
+host backup path mounted by Compose. It emits secret-safe JSON and Markdown
+reports with `ready`, `warning`, or `blocked` status. Only `ready` permits the
+approved `deploy:up` command to start Compose.
 
 ## References
 

@@ -13,6 +13,8 @@
 | [Phase 1E PII And Trace](./phase-1e-pii-trace.md) | Deterministic PII masking, immutable trace snapshots, and execution-state schema seed | Active |
 | [Phase 1 Foundation Integration](./phase-1-foundation-integration.md) | Repository-level acceptance gate for migrations, tests, docs, packages, and Trellis child records | Active |
 | [Phase 2C Policy Retrieval](./phase-2c-policy-retrieval.md) | Immutable tenant policy corpus, deterministic ingestion, PostgreSQL FTS, and pgvector candidate retrieval | Active |
+| [Phase 2C Policy Knowledge Base Interface](./phase-2c-policy-knowledge-base.md) | Operator API + Dashboard for uploading policy docs, viewing ingestion status, and running retrieval smoke tests (PRD 17.4) | Active |
+| [Phase 7 Tool Permission & Risk Rules Interface](./phase-7-tool-risk-interface.md) | Read-only manifest/risk-rule view and dry-run tool test (PRD 17.5) | Active |
 | [Phase 3A Ticket Execution State Machine](./phase-3a-ticket-execution-state-machine.md) | Guarded expected-state transitions, idempotency, append-only audit, and PostgreSQL enforcement | Active |
 | [Phase 3B Runtime Mode Decision](./phase-3b-runtime-mode-decision.md) | Versioned Auto policy, deterministic requested/effective mode decisions, and downgrade reasons | Active |
 | [Phase 3D Approval Snapshots](./phase-3d-approval-snapshots.md) | Atomic pending approval creation and immutable evidence/tool/risk/version snapshots | Active |
@@ -23,6 +25,12 @@
 | [Phase 6E Production Operations](./phase-6e-production-operations.md) | Production images, Compose topology, secret files, observability, smoke tests, and operational recovery | Active |
 | [Phase 6 Productization Integration](./phase-6-productization-integration.md) | Parent completion gate across archived child tasks, runnable applications, deployment assets, and aggregate validation | Active |
 | [GitHub Release Readiness](./github-release-readiness.md) | Accurate repository entry docs, MIT license, CI quality chain, branch policy, and private publication | Active |
+| [Phase 7A Operator Access](./phase-7a-operator-access.md) | OIDC PKCE, encrypted sessions, tenant claims, CSRF, and audit identity | Active |
+| [Phase 7B Edge Transport](./phase-7b-edge-transport.md) | Nginx/Fastify request bounds, rate classes, proxy trust, and browser headers | Active |
+| [Phase 7C Production Preflight](./phase-7c-production-preflight.md) | Fail-closed environment validation and secret-safe readiness reports | Active |
+| [Phase 7D CI Security Supply Chain](./phase-7d-ci-security-supply-chain.md) | CI proves a running full stack, immutable image tags, time-bounded vulnerability gating, and SPDX SBOM evidence | Active |
+| [Phase 7E Recovery Drill](./phase-7e-recovery-drill.md) | Disposable backup/restore drill, record-integrity verification, secret-safe reports, and forward-only rollback compatibility | Active |
+| [Phase 7F Pre-Deployment Aggregate Gate](./phase-7f-pre-deployment-gate.md) | One reproducible go/no-go staging gate aggregating all Phase 7 evidence with residual-risk and rollback documentation | Active |
 
 ## Pre-Development Checklist
 
@@ -63,6 +71,19 @@ Before changing infra, database, or local runtime files:
 - Read [GitHub Release Readiness](./github-release-readiness.md) when changing
   repository entry documentation, CI, release branches, license, or remote
   publication.
+- Read [Phase 7A Operator Access](./phase-7a-operator-access.md) when changing
+  operator authentication, tenant authorization, session cookies, CSRF, or
+  Dashboard identity state.
+- Read [Phase 7B Edge Transport](./phase-7b-edge-transport.md) when changing
+  Nginx, public proxy headers, rate limits, body/header bounds, or HTTP
+  timeouts.
+- Read [Phase 7C Production Preflight](./phase-7c-production-preflight.md) when
+  changing production environment keys, secret files, deployment gates, or
+  readiness evidence.
+- Read [Phase 7D CI Security Supply Chain](./phase-7d-ci-security-supply-chain.md)
+  when changing the GitHub CI workflow, the CI full-stack boot, image
+  scanning/SBOM jobs, ephemeral CI configuration generation, or the Trivy
+  vulnerability allowlist.
 - Confirm whether the change belongs to the active Trellis phase.
 - Search existing migrations and docs before adding duplicate table or env names.
 - Keep secret-bearing values as references, not plaintext persisted values.

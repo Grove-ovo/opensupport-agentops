@@ -11,11 +11,13 @@ import type {
   TenantRecord,
 } from './contracts.js';
 import { buildApp } from './app.js';
+import { TestOperatorAccess } from './test-operator-access.js';
 
 const TENANT_ID = '00000000-0000-4000-8000-000000000001';
 const TRACE_ID = '00000000-0000-4000-8000-000000000002';
 const APPROVAL_ID = '00000000-0000-4000-8000-000000000003';
 const CANDIDATE_ID = '00000000-0000-4000-8000-000000000004';
+const POLICY_VERSION_ID = '00000000-0000-4000-8000-000000000005';
 
 test('operations routes enforce confirmation and preserve action commands', async () => {
   const operations = new FakeOperations();
@@ -26,6 +28,7 @@ test('operations routes enforce confirmation and preserve action commands', asyn
     requiredMigration: 15,
     dedupeTtlSeconds: 86_400,
     buildVersion: 'test',
+    operatorAccess: new TestOperatorAccess(),
     closeDependencies: false,
   });
   test.after(() => app.close());
@@ -42,30 +45,54 @@ test('operations routes enforce confirmation and preserve action commands', asyn
     url: `/api/v1/tenants/${TENANT_ID}/approvals/${APPROVAL_ID}/actions`,
     payload: {
       action: 'approve',
-      actor_id: 'operator',
       idempotency_key: 'approval-1',
       confirm: false,
     },
+    headers: { 'x-csrf-token': 'test-csrf' },
   });
   assert.equal(unconfirmed.statusCode, 400);
+
+  const missingCsrf = await app.inject({
+    method: 'POST',
+    url: `/api/v1/tenants/${TENANT_ID}/approvals/${APPROVAL_ID}/actions`,
+    payload: {
+      action: 'approve',
+      idempotency_key: 'approval-missing-csrf',
+      confirm: true,
+    },
+  });
+  assert.equal(missingCsrf.statusCode, 403);
+
+  const forgedActor = await app.inject({
+    method: 'POST',
+    url: `/api/v1/tenants/${TENANT_ID}/approvals/${APPROVAL_ID}/actions`,
+    headers: { 'x-csrf-token': 'test-csrf' },
+    payload: {
+      action: 'approve',
+      actor_id: 'forged-browser-identity',
+      idempotency_key: 'approval-forged',
+      confirm: true,
+    },
+  });
+  assert.equal(forgedActor.statusCode, 403);
 
   const approved = await app.inject({
     method: 'POST',
     url: `/api/v1/tenants/${TENANT_ID}/approvals/${APPROVAL_ID}/actions`,
     payload: {
       action: 'edit',
-      actor_id: 'operator',
       edited_reply: 'Edited public reply',
       idempotency_key: 'approval-2',
       confirm: true,
     },
+    headers: { 'x-csrf-token': 'test-csrf' },
   });
   assert.equal(approved.statusCode, 200);
   assert.deepEqual(operations.approvalCommand, {
     tenantId: TENANT_ID,
     approvalId: APPROVAL_ID,
     action: 'edit',
-    actorId: 'operator',
+    actorId: 'oidc:test-operator',
     editedReply: 'Edited public reply',
     idempotencyKey: 'approval-2',
   });
@@ -75,13 +102,140 @@ test('operations routes enforce confirmation and preserve action commands', asyn
     url: `/api/v1/tenants/${TENANT_ID}/releases/${CANDIDATE_ID}/transitions`,
     payload: {
       action: 'start_evaluation',
-      actor_id: 'operator',
       idempotency_key: 'release-1',
       confirm: true,
     },
+    headers: { 'x-csrf-token': 'test-csrf' },
   });
   assert.equal(transitioned.statusCode, 200);
   assert.equal(operations.releaseCommand?.action, 'start_evaluation');
+});
+
+test('policy KB routes list versions, documents, create, publish, and smoke test', async () => {
+  const operations = new FakeOperations();
+  const app = buildApp({
+    store: new FakeStore(),
+    redis: new FakeRedis(),
+    operations,
+    requiredMigration: 15,
+    dedupeTtlSeconds: 86_400,
+    buildVersion: 'test',
+    operatorAccess: new TestOperatorAccess(),
+    closeDependencies: false,
+  });
+  test.after(() => app.close());
+
+  const versions = await app.inject({
+    method: 'GET',
+    url: `/api/v1/tenants/${TENANT_ID}/policy-versions`,
+  });
+  assert.equal(versions.statusCode, 200);
+  assert.equal(versions.json().length, 1);
+  assert.equal(versions.json()[0].status, 'draft');
+
+  const documents = await app.inject({
+    method: 'GET',
+    url: `/api/v1/tenants/${TENANT_ID}/policy-versions/${POLICY_VERSION_ID}/documents`,
+  });
+  assert.equal(documents.statusCode, 200);
+  assert.equal(documents.json().length, 1);
+  assert.equal(documents.json()[0].source_key, 'returns.md');
+
+  const created = await app.inject({
+    method: 'POST',
+    url: `/api/v1/tenants/${TENANT_ID}/policy-versions`,
+    payload: {
+      name: 'Refund policy',
+      documents: [
+        { source_key: 'refunds.md', title: 'Refund policy', content: 'Refunds within 14 days.' },
+      ],
+    },
+    headers: { 'x-csrf-token': 'test-csrf' },
+  });
+  assert.equal(created.statusCode, 200);
+  assert.equal(created.json().status, 'draft');
+  assert.deepEqual(operations.createPolicyVersionInput, {
+    name: 'Refund policy',
+    documents: [{ source_key: 'refunds.md', title: 'Refund policy', content: 'Refunds within 14 days.' }],
+    actorId: 'oidc:test-operator',
+  });
+
+  const published = await app.inject({
+    method: 'PUT',
+    url: `/api/v1/tenants/${TENANT_ID}/policy-versions/${POLICY_VERSION_ID}/publish`,
+    headers: { 'x-csrf-token': 'test-csrf' },
+  });
+  assert.equal(published.statusCode, 200);
+  assert.equal(published.json().status, 'published');
+  assert.deepEqual(operations.publishPolicyVersionInput, {
+    tenantId: TENANT_ID,
+    policyVersionId: POLICY_VERSION_ID,
+    actorId: 'oidc:test-operator',
+  });
+
+  const smoke = await app.inject({
+    method: 'POST',
+    url: `/api/v1/tenants/${TENANT_ID}/policy-retrieval-smoke-test`,
+    payload: { query: 'return window' },
+    headers: { 'x-csrf-token': 'test-csrf' },
+  });
+  assert.equal(smoke.statusCode, 200);
+  assert.equal(smoke.json().length, 1);
+  assert.equal(smoke.json()[0].score, 0.85);
+  assert.deepEqual(operations.smokeTestInput, {
+    tenantId: TENANT_ID,
+    query: 'return window',
+  });
+});
+
+test('tool/risk routes return manifest, rules, and dry-run result', async () => {
+  const operations = new FakeOperations();
+  const app = buildApp({
+    store: new FakeStore(),
+    redis: new FakeRedis(),
+    operations,
+    requiredMigration: 15,
+    dedupeTtlSeconds: 86_400,
+    buildVersion: 'test',
+    operatorAccess: new TestOperatorAccess(),
+    closeDependencies: false,
+  });
+  test.after(() => app.close());
+
+  const manifest = await app.inject({
+    method: 'GET',
+    url: `/api/v1/tenants/${TENANT_ID}/tool-manifest`,
+  });
+  assert.equal(manifest.statusCode, 200);
+  assert.equal(manifest.json().length, 1);
+  assert.equal(manifest.json()[0].name, 'get_order_status');
+
+  const rules = await app.inject({
+    method: 'GET',
+    url: `/api/v1/tenants/${TENANT_ID}/risk-rules`,
+  });
+  assert.equal(rules.statusCode, 200);
+  assert.equal(rules.json().length, 1);
+  assert.equal(rules.json()[0].reason_code, 'prompt_injection');
+
+  const dryRun = await app.inject({
+    method: 'POST',
+    url: `/api/v1/tenants/${TENANT_ID}/tool-dry-run`,
+    payload: {
+      tool_name: 'escalate_to_human',
+      arguments: { reason: 'Customer requested a refund' },
+    },
+    headers: { 'x-csrf-token': 'test-csrf' },
+  });
+  assert.equal(dryRun.statusCode, 200);
+  assert.equal(dryRun.json().status, 'succeeded');
+  assert.equal(dryRun.json().dry_run, true);
+  assert.deepEqual(operations.dryRunInput, {
+    tenantId: TENANT_ID,
+    toolName: 'escalate_to_human',
+    arguments: { reason: 'Customer requested a refund' },
+    actorId: 'oidc:test-operator',
+  });
 });
 
 class FakeOperations implements OperationsService {
@@ -137,6 +291,147 @@ class FakeOperations implements OperationsService {
   async updateChatwoot(): Promise<never> {
     throw new Error('not used');
   }
+
+  async getPolicyVersions() {
+    return [
+      {
+        id: POLICY_VERSION_ID,
+        tenant_id: TENANT_ID,
+        version: 1,
+        name: 'Returns policy',
+        status: 'draft' as const,
+        content_hash: 'a'.repeat(64),
+        document_count: 1,
+        chunk_count: 3,
+        published_at: null,
+        created_at: '2026-06-23T00:00:00.000Z',
+      },
+    ];
+  }
+
+  async getPolicyDocuments() {
+    return [
+      {
+        id: '00000000-0000-4000-8000-000000000006',
+        tenant_id: TENANT_ID,
+        policy_version_id: POLICY_VERSION_ID,
+        source_key: 'returns.md',
+        title: 'Returns policy',
+        media_type: 'text/plain',
+        content_hash: 'b'.repeat(64),
+        chunk_count: 3,
+        created_at: '2026-06-23T00:00:00.000Z',
+      },
+    ];
+  }
+
+  createPolicyVersionInput: { name: string; documents: unknown[]; actorId: string } | null = null;
+
+  async createPolicyVersion(
+    tenantId: string,
+    input: { name: string; documents: ReadonlyArray<unknown>; actorId: string },
+  ) {
+    this.createPolicyVersionInput = { ...input, documents: [...input.documents] };
+    return {
+      id: POLICY_VERSION_ID,
+      tenant_id: tenantId,
+      version: 1,
+      name: input.name,
+      status: 'draft' as const,
+      content_hash: 'a'.repeat(64),
+      document_count: input.documents.length,
+      chunk_count: 3,
+      published_at: null,
+      created_at: '2026-06-23T00:00:00.000Z',
+    };
+  }
+
+  publishPolicyVersionInput: { tenantId: string; policyVersionId: string; actorId: string } | null = null;
+
+  async publishPolicyVersion(
+    tenantId: string,
+    policyVersionId: string,
+    actorId: string,
+  ) {
+    this.publishPolicyVersionInput = { tenantId, policyVersionId, actorId };
+    return {
+      id: policyVersionId,
+      tenant_id: tenantId,
+      version: 1,
+      name: 'Returns policy',
+      status: 'published' as const,
+      content_hash: 'a'.repeat(64),
+      document_count: 1,
+      chunk_count: 3,
+      published_at: '2026-06-23T00:00:00.000Z',
+      created_at: '2026-06-23T00:00:00.000Z',
+    };
+  }
+
+  smokeTestInput: { tenantId: string; query: string; limit?: number } | null = null;
+
+  async runRetrievalSmokeTest(
+    tenantId: string,
+    input: { query: string; limit?: number },
+  ) {
+    this.smokeTestInput = { tenantId, ...input };
+    return [
+      {
+        chunk_id: '00000000-0000-4000-8000-000000000007',
+        document_id: '00000000-0000-4000-8000-000000000006',
+        chunk_index: 0,
+        content: 'Returns are accepted within 30 days.',
+        content_hash: 'c'.repeat(64),
+        score: 0.85,
+      },
+    ];
+  }
+
+  async getToolManifest() {
+    return [
+      {
+        name: 'get_order_status',
+        version_id: 'tools-v1',
+        description: 'Read a customer-owned order status.',
+        risk_level: 'low' as const,
+        timeout_ms: 1500,
+        max_retries: 1,
+        required_permissions: ['order:read'],
+        idempotent: true,
+        dry_run: false,
+      },
+    ];
+  }
+
+  async getRiskRules() {
+    return [
+      {
+        gate: 'input',
+        reason_code: 'prompt_injection',
+        severity: 'P0',
+        recommendation: 'block',
+        blocking: true,
+        description: 'Customer text matched a prompt-injection pattern.',
+      },
+    ];
+  }
+
+  dryRunInput: { tenantId: string; toolName: string; arguments: Record<string, unknown>; actorId: string } | null = null;
+
+  async runToolDryRun(
+    tenantId: string,
+    input: { toolName: string; arguments: Record<string, unknown>; actorId: string },
+  ) {
+    this.dryRunInput = { tenantId, ...input };
+    return {
+      tool_name: input.toolName,
+      status: 'succeeded' as const,
+      code: 'ok',
+      retryable: false,
+      dry_run: true,
+      data: { handoff_required: true, reason: String(input.arguments.reason ?? '') },
+    };
+  }
 }
 
 class FakeStore implements AgentOpsStore {
@@ -147,6 +442,14 @@ class FakeStore implements AgentOpsStore {
   }
   async listTenants(query: PageQuery): Promise<Page<TenantRecord>> {
     return { items: [tenantRecord()], total: 1, ...query };
+  }
+  async listTenantsByIds(
+    tenantIds: readonly string[],
+    query: PageQuery,
+  ): Promise<Page<TenantRecord>> {
+    const tenant = tenantRecord();
+    const items = tenantIds.includes(tenant.id) ? [tenant] : [];
+    return { items, total: items.length, ...query };
   }
   async getTenant() {
     return tenantRecord();

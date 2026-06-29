@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { isIP } from 'node:net';
 import type {
   ChatwootDeliveryCode,
   ChatwootDeliveryCommand,
@@ -330,10 +331,33 @@ function readProviderMessageId(body: unknown): string | null {
 function isSafeBaseUrl(value: string): boolean {
   try {
     const url = new URL(value);
-    return url.protocol === 'https:' || url.protocol === 'http:';
+    if (url.protocol !== 'https:' && url.protocol !== 'http:') return false;
+    return !isPrivateHost(url.hostname);
   } catch {
     return false;
   }
+}
+
+function isPrivateHost(hostname: string): boolean {
+  if (hostname === 'localhost' || hostname === '0.0.0.0') return true;
+  const ip = isIP(hostname);
+  if (ip === 0) return false;
+  if (ip === 4) {
+    return (
+      hostname.startsWith('127.') ||
+      hostname.startsWith('10.') ||
+      hostname.startsWith('169.254.') ||
+      hostname.startsWith('192.168.') ||
+      /^172\.(1[6-9]|2\d|3[01])\./.test(hostname) ||
+      hostname === '0.0.0.0'
+    );
+  }
+  return (
+    hostname === '::1' ||
+    hostname.startsWith('fc') ||
+    hostname.startsWith('fd') ||
+    hostname.startsWith('fe80:')
+  );
 }
 
 function normalizeTimestamp(value: Date | string): string {

@@ -12,6 +12,7 @@
     }
   },
   "dependencies": {
+    "@opensupport/pii": "0.1.0",
     "@opensupport/shared": "0.1.0"
   }
 }

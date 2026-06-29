@@ -1,0 +1,4 @@
+{"file": ".trellis/spec/infra/github-release-readiness.md", "reason": "CI quality chain, immutable release evidence, and secret-safe artifacts"}
+{"file": ".trellis/spec/infra/phase-6e-production-operations.md", "reason": "Full production Compose, smoke, observability, and image contracts"}
+{"file": ".trellis/spec/infra/phase-7c-production-preflight.md", "reason": "Ephemeral CI environment must satisfy the same deployment gate"}
+{"file": ".trellis/spec/infra/phase-7a-operator-access.md", "reason": "Production smoke must authenticate through deterministic OIDC"}
