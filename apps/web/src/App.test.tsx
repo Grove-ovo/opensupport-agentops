@@ -66,6 +66,29 @@ describe('operations dashboard', () => {
     expect(await screen.findByText('AgentOps unavailable')).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Retry' })).toBeInTheDocument();
   });
+
+  it('explains local mock identity provider on the signed-out screen', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(async () =>
+        json({ error: { code: 'authentication_required', message: 'Sign in' } }, 401),
+      ),
+    );
+    render(<App />);
+    expect(await screen.findByText(/Local demo uses the bundled mock identity provider/)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Sign in with identity provider' })).toHaveAttribute('href', '/api/v1/auth/login');
+  });
+
+  it('prefills dry-run tool samples and runs the selected tool', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    await screen.findByText('18');
+    await user.click(screen.getAllByRole('button', { name: 'Tools' })[0]!);
+    await user.selectOptions(await screen.findByRole('combobox', { name: 'Tool' }), 'check_refund_eligibility');
+    expect(screen.getByDisplayValue(/DRYRUN-100/)).toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Run' }));
+    expect(await screen.findByText('Dry-run succeeded (ok)')).toBeInTheDocument();
+  });
 });
 
 async function mockFetch(input: RequestInfo | URL, init?: RequestInit) {
@@ -184,6 +207,17 @@ async function mockFetch(input: RequestInfo | URL, init?: RequestInit) {
         required_permissions: ['order:read'],
         idempotent: true,
         dry_run: false,
+      },
+      {
+        name: 'check_refund_eligibility',
+        version_id: 'tools-v1',
+        description: 'Evaluate refund eligibility without creating a refund.',
+        risk_level: 'medium',
+        timeout_ms: 2000,
+        max_retries: 1,
+        required_permissions: ['refund:read'],
+        idempotent: true,
+        dry_run: true,
       },
     ]);
   }

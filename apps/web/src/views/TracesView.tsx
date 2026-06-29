@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight, Search, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Eye, Search, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { api } from '../api.js';
 import { StatePanel } from '../components/StatePanel.js';
@@ -49,7 +49,7 @@ export function TracesView({ tenantId }: TracesViewProps) {
         {filtered.length > 0 ? (
           <div className="data-table-wrap">
             <table className="data-table">
-              <thead><tr><th>Conversation</th><th>Mode</th><th>State</th><th>Intent</th><th>Latency</th><th>Cost</th><th>Created</th></tr></thead>
+              <thead><tr><th>Conversation</th><th>Mode</th><th>State</th><th>Intent</th><th>Latency</th><th>Cost</th><th>Created</th><th>Action</th></tr></thead>
               <tbody>{filtered.map((trace) => (
                 <tr key={trace.trace_id} onClick={() => setSelectedId(trace.trace_id)} tabIndex={0} onKeyDown={(event) => event.key === 'Enter' && setSelectedId(trace.trace_id)}>
                   <td><strong>{trace.conversation_id}</strong><small>{trace.trace_id.slice(0, 8)}</small></td>
@@ -59,6 +59,18 @@ export function TracesView({ tenantId }: TracesViewProps) {
                   <td>{trace.latency_ms === null ? '—' : `${trace.latency_ms} ms`}</td>
                   <td>${trace.estimated_cost.toFixed(4)}</td>
                   <td>{formatTime(trace.created_at)}</td>
+                  <td>
+                    <button
+                      className="button button-secondary button-sm"
+                      type="button"
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        setSelectedId(trace.trace_id);
+                      }}
+                    >
+                      <Eye size={14} /> View
+                    </button>
+                  </td>
                 </tr>
               ))}</tbody>
             </table>

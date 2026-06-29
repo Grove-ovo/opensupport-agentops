@@ -50,7 +50,13 @@ export function App() {
     return <AuthSurface title="Checking operator session" />;
   }
   if (authState === 'signed_out') {
-    return <AuthSurface title="Operator sign-in required" action />;
+    return (
+      <AuthSurface
+        title="Operator sign-in required"
+        detail="Local demo uses the bundled mock identity provider. Production uses the configured OIDC provider."
+        action
+      />
+    );
   }
   if (authState === 'forbidden') {
     return <AuthSurface title="Access not authorized" detail="Your identity does not include an AgentOps operator role or tenant scope." />;

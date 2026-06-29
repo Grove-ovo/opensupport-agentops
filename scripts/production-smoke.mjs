@@ -4,10 +4,13 @@ import pg from 'pg';
 import { createTenantModelConfig, parseMasterKey } from '@opensupport/model-config';
 import { createProductionMockServer } from './production-mock.mjs';
 
+await loadSmokeEnv();
+
 const { Client } = pg;
 const publicUrl = process.env.AGENTOPS_PUBLIC_URL ?? 'http://127.0.0.1:8088';
 const databaseUrl =
   process.env.SMOKE_DATABASE_URL ??
+  smokeDatabaseUrlFromComposeEnv() ??
   'postgresql://agentops:replace-with-long-random-password@127.0.0.1:55432/agentops';
 const masterKeyFile =
   process.env.SMOKE_MASTER_KEY_FILE ?? 'secrets/agentops_master_key';
@@ -118,11 +121,18 @@ try {
        tenant_id, contact_id, order_id, order_status, logistics_status,
        tracking_number, refund_eligible
      )
-     VALUES (
-       $1, '42', 'SMOKE-100', 'shipped', 'in_transit', 'TRACK-SMOKE', true
-     )`,
+     VALUES
+       ($1, '42', 'SMOKE-100', 'shipped', 'in_transit', 'TRACK-SMOKE', true),
+       ($1, 'dry-run', 'DRYRUN-100', 'delivered', 'delivered', 'TRACK-DRYRUN', true)`,
     [tenantId],
   );
+
+  const session = await authenticateOperator(publicUrl);
+  const authHeaders = {
+    cookie: session.cookie,
+    'x-csrf-token': session.csrfToken,
+  };
+  const policy = await createDemoPolicy(publicUrl, tenantId, authHeaders);
 
   const body = JSON.stringify({
     event: 'message_created',
@@ -158,8 +168,6 @@ try {
     throw new Error(`unexpected_outcome:${String(result.outcome)}`);
   }
 
-  const session = await authenticateOperator(publicUrl);
-  const authHeaders = { cookie: session.cookie };
   const traces = await poll(async () => {
     const response = await expectOk(
       `${publicUrl}/api/v1/tenants/${tenantId}/traces?limit=10&offset=0`,
@@ -196,6 +204,7 @@ try {
     active_conversations: overview.active_conversations,
     chatwoot_messages: mockState.messages.length,
     operator_subject: session.subject,
+    policy_version: policy.version,
     demo_data_retained: keepDemoData,
   })}\n`);
 } finally {
@@ -226,6 +235,43 @@ try {
   }
 }
 
+async function createDemoPolicy(baseUrl, tenantId, authHeaders) {
+  const created = await expectOk(
+    `${baseUrl}/api/v1/tenants/${tenantId}/policy-versions`,
+    {
+      method: 'POST',
+      headers: {
+        ...authHeaders,
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: 'Demo support policy',
+        documents: [
+          {
+            source_key: 'demo-support-policy.md',
+            title: 'Demo support policy',
+            content: [
+              'Orders marked shipped are already in carrier handoff.',
+              'Customers may request refund eligibility checks after delivery delay.',
+              'Refund dry-runs must not create external side effects.',
+              'Escalate to a human when a customer asks for supervisor review.',
+            ].join('\n'),
+          },
+        ],
+      }),
+    },
+  );
+  const draft = await created.json();
+  const published = await expectOk(
+    `${baseUrl}/api/v1/tenants/${tenantId}/policy-versions/${draft.id}/publish`,
+    {
+      method: 'PUT',
+      headers: authHeaders,
+    },
+  );
+  return published.json();
+}
+
 async function expectOk(url, init) {
   const response = await fetch(url, init);
   if (!response.ok) throw new Error(`http_${response.status}:${url}`);
@@ -243,6 +289,38 @@ async function poll(operation, attempts = 40) {
 
 function hash(value) {
   return createHash('sha256').update(value).digest('hex');
+}
+
+function smokeDatabaseUrlFromComposeEnv() {
+  const user = process.env.AGENTOPS_POSTGRES_USER;
+  const password = process.env.AGENTOPS_POSTGRES_PASSWORD;
+  const database = process.env.AGENTOPS_POSTGRES_DB;
+  if (!user || !password || !database) return null;
+  const port = process.env.AGENTOPS_POSTGRES_PORT ?? '55432';
+  return `postgresql://${encodeURIComponent(user)}:${encodeURIComponent(password)}@127.0.0.1:${port}/${encodeURIComponent(database)}`;
+}
+
+async function loadSmokeEnv() {
+  const envFile = process.env.SMOKE_ENV_FILE ?? '.env.ci.smoke';
+  if (envFile.length === 0) return;
+  let content;
+  try {
+    content = await readFile(envFile, 'utf8');
+  } catch (error) {
+    if (error?.code === 'ENOENT') return;
+    throw error;
+  }
+  for (const line of content.split(/\r?\n/)) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith('#')) continue;
+    const separator = trimmed.indexOf('=');
+    if (separator <= 0) continue;
+    const key = trimmed.slice(0, separator).trim();
+    const value = trimmed.slice(separator + 1).trim();
+    if (!Object.hasOwn(process.env, key)) {
+      process.env[key] = value;
+    }
+  }
 }
 
 async function ensureMock(baseUrl, port) {
@@ -285,6 +363,7 @@ async function authenticateOperator(baseUrl) {
   const body = await identity.json();
   return {
     cookie: cookieHeader(cookies),
+    csrfToken: body.csrf_token,
     subject: body.principal.subject,
   };
 }

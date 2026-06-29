@@ -202,6 +202,12 @@ main { padding: 24px 28px 42px; }
 .kb-smoke-form input { flex: 1; min-width: 0; min-height: 37px; padding: 8px 9px; }
 .kb-smoke-content { white-space: normal; max-width: 460px; }
 .kb-result-data { white-space: pre-wrap; word-break: break-word; margin: 0; font-size: 11px; line-height: 1.5; }
+.tool-test-form { padding: 17px; display: grid; gap: 10px; }
+.tool-test-controls { display: grid; grid-template-columns: minmax(220px, 320px) max-content; gap: 8px; align-items: center; }
+.tool-test-form select { min-width: 0; height: 37px; padding: 0 31px 0 9px; }
+.tool-test-form textarea { width: 100%; min-height: 120px; padding: 10px; font-family: "SFMono-Regular", Consolas, monospace; font-size: 12px; line-height: 1.55; resize: vertical; }
+.tool-test-form > .button { justify-self: end; }
+.tool-test-hint { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
 
 .dialog-backdrop { position: fixed; z-index: 50; inset: 0; padding: 20px; display: grid; place-items: center; background: rgba(15,27,29,.52); }
 .confirm-dialog { width: min(520px, 100%); padding: 18px; background: #fff; border-radius: 6px; box-shadow: 0 24px 70px rgba(6,20,22,.28); }
@@ -241,6 +247,8 @@ main { padding: 24px 28px 42px; }
   .filter-bar { align-items: stretch; flex-direction: column; }
   .search-field { width: 100%; min-width: 0; }
   .filter-bar select { width: 100%; }
+  .tool-test-controls { grid-template-columns: 1fr; }
+  .tool-test-form > .button { width: 100%; }
   .approval-item > header, .approval-item > footer { align-items: flex-start; flex-wrap: wrap; }
   .approval-meta, .key-values, .settings-grid, .form-grid, .form-grid-three { grid-template-columns: 1fr; }
   .settings-wide { grid-column: auto; }
