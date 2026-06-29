@@ -97,25 +97,26 @@ jobs:
 
       - name: Start deterministic OIDC/provider/Chatwoot mock
         run: |
-          set -a
-          . ./.env.ci.smoke
-          set +a
           mkdir -p tmp/ci-evidence
-          nohup npm run smoke:mock > tmp/ci-evidence/mock.log 2>&1 &
-          echo "$!" > tmp/ci-evidence/mock.pid
-          for attempt in $(seq 1 40); do
-            curl -fsS http://127.0.0.1:18090/__smoke/health && exit 0
-            sleep 1
-          done
-          exit 1
+          docker compose --env-file .env.ci.smoke \
+            -f infra/docker/compose.production.yml \
+            -f infra/docker/compose.ci-smoke.yml \
+            up -d --wait --wait-timeout 120 smoke-mock
 
       - name: Validate production Compose
-        run: docker compose --env-file .env.ci.smoke -f infra/docker/compose.production.yml config
+        run: >-
+          docker compose --env-file .env.ci.smoke
+          -f infra/docker/compose.production.yml
+          -f infra/docker/compose.ci-smoke.yml
+          config
 
       - name: Boot production core stack
         run: |
           compose() {
-            docker compose --env-file .env.ci.smoke -f infra/docker/compose.production.yml "$@"
+            docker compose --env-file .env.ci.smoke \
+              -f infra/docker/compose.production.yml \
+              -f infra/docker/compose.ci-smoke.yml \
+              "$@"
           }
           compose up -d --build --wait --wait-timeout 480 postgres redis migrate api worker web || {
             compose ps --all
@@ -135,7 +136,10 @@ jobs:
       - name: Boot production observability stack
         run: |
           compose() {
-            docker compose --env-file .env.ci.smoke -f infra/docker/compose.production.yml "$@"
+            docker compose --env-file .env.ci.smoke \
+              -f infra/docker/compose.production.yml \
+              -f infra/docker/compose.ci-smoke.yml \
+              "$@"
           }
           compose up -d --no-deps --wait --wait-timeout 240 prometheus grafana || {
             compose ps --all
@@ -155,11 +159,16 @@ jobs:
         if: always()
         run: |
           mkdir -p tmp/ci-evidence
-          docker compose --env-file .env.ci.smoke -f infra/docker/compose.production.yml ps --all --format json > tmp/ci-evidence/compose-ps.json || true
-          docker compose --env-file .env.ci.smoke -f infra/docker/compose.production.yml logs --no-color --tail=400 postgres redis migrate api worker web prometheus grafana > tmp/ci-evidence/compose-services.log || true
-          cp tmp/ci-evidence/mock.log tmp/ci-evidence/mock-server.log || true
-          for service in postgres redis migrate api worker web prometheus grafana; do
-            container_id="$(docker compose --env-file .env.ci.smoke -f infra/docker/compose.production.yml ps -q "$service" || true)"
+          compose() {
+            docker compose --env-file .env.ci.smoke \
+              -f infra/docker/compose.production.yml \
+              -f infra/docker/compose.ci-smoke.yml \
+              "$@"
+          }
+          compose ps --all --format json > tmp/ci-evidence/compose-ps.json || true
+          compose logs --no-color --tail=400 postgres redis migrate api worker web prometheus grafana smoke-mock > tmp/ci-evidence/compose-services.log || true
+          for service in postgres redis migrate api worker web prometheus grafana smoke-mock; do
+            container_id="$(compose ps -q "$service" || true)"
             if [ -n "$container_id" ]; then
               docker inspect --format '{{json .State}}' "$container_id" > "tmp/ci-evidence/state-${service}.json" || true
             fi
@@ -183,10 +192,10 @@ jobs:
       - name: Stop production stack
         if: always()
         run: |
-          docker compose --env-file .env.ci.smoke -f infra/docker/compose.production.yml down -v --remove-orphans || true
-          if [ -f tmp/ci-evidence/mock.pid ]; then
-            kill "$(cat tmp/ci-evidence/mock.pid)" || true
-          fi
+          docker compose --env-file .env.ci.smoke \
+            -f infra/docker/compose.production.yml \
+            -f infra/docker/compose.ci-smoke.yml \
+            down -v --remove-orphans || true
 
   supply-chain:
     runs-on: ubuntu-latest

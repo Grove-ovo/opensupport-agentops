@@ -34,8 +34,10 @@ test('CI production preparation writes private ephemeral configuration', () => {
       assert.equal(statSync(join(directory, path)).mode & 0o077, 0);
     }
     const smoke = readFileSync(join(directory, '.env.ci.smoke'), 'utf8');
-    assert.match(smoke, /AGENTOPS_OIDC_ISSUER=http:\/\/host\.docker\.internal:18090/);
+    assert.match(smoke, /AGENTOPS_OIDC_ISSUER=http:\/\/smoke-mock:18090/);
+    assert.match(smoke, /SMOKE_OIDC_ISSUER=http:\/\/smoke-mock:18090/);
     assert.match(smoke, /SMOKE_OIDC_PUBLIC_ISSUER=http:\/\/127\.0\.0\.1:18090/);
+    assert.match(smoke, /SMOKE_CHATWOOT_BASE_URL=http:\/\/smoke-mock:18090/);
     assert.match(smoke, /SMOKE_KEEP_DEMO_DATA=0/);
     assert.ok(!result.stdout.includes('AGENTOPS_POSTGRES_PASSWORD'));
   } finally {
@@ -45,7 +47,7 @@ test('CI production preparation writes private ephemeral configuration', () => {
 
 test('production mock uses browser-safe authorize endpoint', async () => {
   const server = createProductionMockServer({
-    issuer: 'http://host.docker.internal:18090',
+    issuer: 'http://smoke-mock:18090',
     publicIssuer: 'http://127.0.0.1:18090',
   });
   await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
@@ -55,9 +57,9 @@ test('production mock uses browser-safe authorize endpoint', async () => {
       `http://127.0.0.1:${port}/.well-known/openid-configuration`,
     );
     const discovery = await response.json();
-    assert.equal(discovery.issuer, 'http://host.docker.internal:18090');
+    assert.equal(discovery.issuer, 'http://smoke-mock:18090');
     assert.equal(discovery.authorization_endpoint, 'http://127.0.0.1:18090/authorize');
-    assert.equal(discovery.token_endpoint, 'http://host.docker.internal:18090/token');
+    assert.equal(discovery.token_endpoint, 'http://smoke-mock:18090/token');
   } finally {
     server.closeAllConnections();
     await new Promise((resolve, reject) =>

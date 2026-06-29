@@ -6,6 +6,7 @@ const requiredFiles = [
   'infra/docker/Dockerfile.worker',
   'infra/docker/Dockerfile.web',
   'infra/docker/compose.production.yml',
+  'infra/docker/compose.ci-smoke.yml',
   'infra/docker/nginx.conf',
   'infra/observability/prometheus.yml',
   'infra/observability/alerts.yml',
@@ -24,6 +25,10 @@ const requiredFiles = [
 await Promise.all(requiredFiles.map((file) => readFile(file, 'utf8')));
 
 const compose = await readFile('infra/docker/compose.production.yml', 'utf8');
+const ciSmokeCompose = await readFile(
+  'infra/docker/compose.ci-smoke.yml',
+  'utf8',
+);
 const nginx = await readFile('infra/docker/nginx.conf', 'utf8');
 const apiDockerfile = await readFile('infra/docker/Dockerfile.api', 'utf8');
 const workerDockerfile = await readFile(
@@ -57,6 +62,9 @@ assert.match(compose, /no-new-privileges:true/);
 assert.match(compose, /GF_PLUGINS_PREINSTALL: ""/);
 assert.match(compose, /outbound:/);
 assert.match(compose, /management:/);
+assert.match(ciSmokeCompose, /smoke-mock:/);
+assert.match(ciSmokeCompose, /http:\/\/smoke-mock:18090/);
+assert.match(ciSmokeCompose, /SMOKE_OIDC_PUBLIC_ISSUER/);
 assert.match(nginx, /location \/api\//);
 assert.match(nginx, /location \/worker\/health\//);
 for (const dockerfile of [apiDockerfile, workerDockerfile, webDockerfile]) {
@@ -70,6 +78,8 @@ assert.match(deployment, /## Rollback/);
 assert.match(deployment, /npm run smoke:production/);
 assert.doesNotMatch(ciWorkflow, /Boot complete production stack/);
 assert.match(ciWorkflow, /Boot production core stack/);
+assert.match(ciWorkflow, /compose\.ci-smoke\.yml/);
+assert.match(ciWorkflow, /up -d --wait --wait-timeout 120 smoke-mock/);
 assert.match(
   ciWorkflow,
   /up -d --build --wait --wait-timeout 480 postgres redis migrate api worker web/,

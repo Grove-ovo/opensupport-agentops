@@ -1,0 +1,27 @@
+services:
+  smoke-mock:
+    image: node:22-slim
+    working_dir: /workspace
+    command: ["node", "scripts/production-mock-server.mjs"]
+    environment:
+      SMOKE_MOCK_PORT: ${SMOKE_MOCK_PORT:-18090}
+      SMOKE_OIDC_ISSUER: ${SMOKE_OIDC_ISSUER:-http://smoke-mock:18090}
+      SMOKE_OIDC_PUBLIC_ISSUER: ${SMOKE_OIDC_PUBLIC_ISSUER:-http://127.0.0.1:18090}
+    ports:
+      - "127.0.0.1:${SMOKE_MOCK_PORT:-18090}:${SMOKE_MOCK_PORT:-18090}"
+    volumes:
+      - ../../scripts:/workspace/scripts:ro
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "const port=process.env.SMOKE_MOCK_PORT??'18090'; fetch('http://127.0.0.1:'+port+'/__smoke/health').then((r)=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 5s
+    networks:
+      - outbound

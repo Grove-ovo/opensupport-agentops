@@ -17,6 +17,9 @@ const masterKeyFile =
 const webhookSecret =
   process.env.SMOKE_CHATWOOT_WEBHOOK_SECRET ?? 'smoke-webhook-secret';
 const mockPort = Number(process.env.SMOKE_MOCK_PORT ?? 18090);
+const chatwootBaseUrl =
+  process.env.SMOKE_CHATWOOT_BASE_URL ??
+  `http://host.docker.internal:${mockPort}`;
 const keepDemoData = process.env.SMOKE_KEEP_DEMO_DATA === '1';
 const tenantId = randomUUID();
 const modelConfigId = randomUUID();
@@ -65,7 +68,7 @@ try {
        'env:SMOKE_CHATWOOT_API_TOKEN', 'verified',
        '{"runtime_mode":"auto"}'
      )`,
-    [tenantId, `http://host.docker.internal:${mockPort}`],
+    [tenantId, chatwootBaseUrl],
   );
   await client.query(
     `INSERT INTO tenant_model_configs (

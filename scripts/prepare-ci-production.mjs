@@ -75,19 +75,22 @@ writeEnv('.env.ci.smoke', {
   AGENTOPS_PUBLIC_URL: 'http://127.0.0.1:8088',
   AGENTOPS_PUBLIC_SCHEME: 'http',
   AGENTOPS_HSTS_VALUE: '',
-  AGENTOPS_OIDC_ISSUER: 'http://host.docker.internal:18090',
+  AGENTOPS_OIDC_ISSUER: 'http://smoke-mock:18090',
   AGENTOPS_OIDC_CALLBACK_URI:
     'http://127.0.0.1:8088/api/v1/auth/callback',
+  SMOKE_MOCK_PORT: '18090',
+  SMOKE_OIDC_ISSUER: 'http://smoke-mock:18090',
   SMOKE_OIDC_PUBLIC_ISSUER: 'http://127.0.0.1:18090',
   AGENTOPS_COOKIE_SECURE: 'false',
   AGENTOPS_PROVIDER_BASE_URLS_JSON:
-    '{"openai":"http://host.docker.internal:18090"}',
+    '{"openai":"http://smoke-mock:18090"}',
   AGENTOPS_MODEL_PRICING_JSON:
     '{"smoke-model":{"inputCostPerMillion":0.5,"outputCostPerMillion":1.5}}',
   CHATWOOT_WEBHOOK_SECRET: '',
   CHATWOOT_API_TOKEN: '',
   SMOKE_CHATWOOT_WEBHOOK_SECRET: values.chatwootWebhook,
   SMOKE_CHATWOOT_API_TOKEN: values.chatwootToken,
+  SMOKE_CHATWOOT_BASE_URL: 'http://smoke-mock:18090',
   SMOKE_KEEP_DEMO_DATA: '0',
 });
 
