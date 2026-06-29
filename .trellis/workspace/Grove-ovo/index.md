@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-1.md`
-- **Total Sessions**: 50
-- **Last Active**: 2026-06-27
+- **Total Sessions**: 51
+- **Last Active**: 2026-06-29
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-1.md` | ~1725 | Active |
+| `journal-1.md` | ~1759 | Active |
 <!-- @@@/auto:active-documents -->
 
 ---
@@ -29,6 +29,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 51 | 2026-06-29 | Production demo usability finish | `55f55cb`, `10ee19b` | `dev` |
 | 50 | 2026-06-27 | PRD completeness audit + missing artifacts | `d9eb649` | `dev` |
 | 49 | 2026-06-27 | E2E testing with real LLM + provider fixes + Docker fix | `90349ef`, `3afd86d` | `dev` |
 | 48 | 2026-06-24 | CI fix + multi-turn eval cases | `b715f01`, `e751537` | `dev` |

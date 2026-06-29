@@ -1723,3 +1723,37 @@ Audited all 25 PRD chapters against implementation. Found and fixed 3 gaps: (1) 
 ### Next Steps
 
 - None - task complete
+
+
+## Session 51: Production demo usability finish
+
+**Date**: 2026-06-29
+**Task**: Production demo usability finish
+**Branch**: `dev`
+
+### Summary
+
+Improved the local production demo browser flow, made Vite proxy configurable for compose validation, added explicit trace details actions, prefilled dry-run tool samples, seeded smoke policy and dry-run data, and made production demo smoke load local smoke env automatically.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `55f55cb` | (see git log) |
+| `10ee19b` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
