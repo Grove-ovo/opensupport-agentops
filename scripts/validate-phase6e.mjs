@@ -37,6 +37,7 @@ const deployment = await readFile(
   'docs/operations/deployment-runbook.md',
   'utf8',
 );
+const ciWorkflow = await readFile('.github/workflows/ci.yml', 'utf8');
 
 for (const service of [
   'postgres:',
@@ -67,5 +68,28 @@ assert.match(apiLog, /build_version/);
 assert.match(workerLog, /build_version/);
 assert.match(deployment, /## Rollback/);
 assert.match(deployment, /npm run smoke:production/);
+assert.doesNotMatch(ciWorkflow, /Boot complete production stack/);
+assert.match(ciWorkflow, /Boot production core stack/);
+assert.match(
+  ciWorkflow,
+  /up -d --build --wait --wait-timeout 480 postgres redis migrate api worker web/,
+);
+assert.match(ciWorkflow, /Boot production observability stack/);
+assert.match(
+  ciWorkflow,
+  /up -d --no-deps --wait --wait-timeout 240 prometheus grafana/,
+);
+
+const coreBootIndex = ciWorkflow.indexOf('Boot production core stack');
+const smokeIndex = ciWorkflow.indexOf('Run authenticated production smoke');
+const observabilityBootIndex = ciWorkflow.indexOf(
+  'Boot production observability stack',
+);
+const observabilityVerifyIndex = ciWorkflow.indexOf(
+  'Verify Prometheus and Grafana provisioning',
+);
+assert.ok(coreBootIndex > -1 && coreBootIndex < smokeIndex);
+assert.ok(observabilityBootIndex > smokeIndex);
+assert.ok(observabilityBootIndex < observabilityVerifyIndex);
 
 console.log('Phase 6E production operations structure validated.');

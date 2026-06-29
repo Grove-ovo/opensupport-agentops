@@ -112,11 +112,16 @@ jobs:
       - name: Validate production Compose
         run: docker compose --env-file .env.ci.smoke -f infra/docker/compose.production.yml config
 
-      - name: Boot complete production stack
-        run: >-
-          docker compose --env-file .env.ci.smoke
-          -f infra/docker/compose.production.yml
-          up -d --build --wait --wait-timeout 480
+      - name: Boot production core stack
+        run: |
+          compose() {
+            docker compose --env-file .env.ci.smoke -f infra/docker/compose.production.yml "$@"
+          }
+          compose up -d --build --wait --wait-timeout 480 postgres redis migrate api worker web || {
+            compose ps --all
+            compose logs --no-color --tail=200 postgres redis migrate api worker web
+            exit 1
+          }
 
       - name: Run authenticated production smoke
         run: |
@@ -126,6 +131,17 @@ jobs:
           export SMOKE_DATABASE_URL="postgresql://${AGENTOPS_POSTGRES_USER}:${AGENTOPS_POSTGRES_PASSWORD}@127.0.0.1:${AGENTOPS_POSTGRES_PORT}/${AGENTOPS_POSTGRES_DB}"
           export SMOKE_MASTER_KEY_FILE=secrets/agentops_master_key
           npm run smoke:production | tee tmp/ci-evidence/production-smoke.json
+
+      - name: Boot production observability stack
+        run: |
+          compose() {
+            docker compose --env-file .env.ci.smoke -f infra/docker/compose.production.yml "$@"
+          }
+          compose up -d --no-deps --wait --wait-timeout 240 prometheus grafana || {
+            compose ps --all
+            compose logs --no-color --tail=200 api worker prometheus grafana
+            exit 1
+          }
 
       - name: Verify Prometheus and Grafana provisioning
         run: |
