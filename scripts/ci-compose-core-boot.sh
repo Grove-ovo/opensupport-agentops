@@ -14,12 +14,33 @@ dump_core() {
     postgres redis migrate api worker web smoke-mock || true
 }
 
+container_id_for() {
+  local service="$1"
+  local container_id
+  container_id="$(compose ps --all -q "$service" 2>/dev/null || true)"
+  if [ -z "$container_id" ]; then
+    local project_name="${COMPOSE_PROJECT_NAME:-opensupport-agentops}"
+    container_id="$(
+      docker ps -a \
+        --filter "name=^/${project_name}-${service}-1$" \
+        --format '{{.ID}}' \
+        | head -n 1
+    )"
+  fi
+  printf '%s' "$container_id"
+}
+
+annotate_failure() {
+  local message="$1"
+  echo "::error title=Core boot failure::$message"
+}
+
 wait_healthy() {
   local service="$1"
   local attempts="$2"
   for attempt in $(seq 1 "$attempts"); do
     local container_id
-    container_id="$(compose ps --all -q "$service" || true)"
+    container_id="$(container_id_for "$service")"
     if [ -n "$container_id" ]; then
       local state
       local health
@@ -30,14 +51,14 @@ wait_healthy() {
         return 0
       fi
       if [ "$state" = "exited" ] || [ "$state" = "dead" ]; then
-        echo "$service exited while waiting for health"
+        annotate_failure "$service exited while waiting for health"
         dump_core
         return 1
       fi
     fi
     sleep 2
   done
-  echo "$service did not become healthy"
+  annotate_failure "$service did not become healthy"
   dump_core
   return 1
 }
@@ -47,7 +68,7 @@ wait_completed() {
   local attempts="$2"
   for attempt in $(seq 1 "$attempts"); do
     local container_id
-    container_id="$(compose ps --all -q "$service" || true)"
+    container_id="$(container_id_for "$service")"
     if [ -n "$container_id" ]; then
       local state
       local exit_code
@@ -58,14 +79,14 @@ wait_completed() {
         return 0
       fi
       if [ "$state" = "exited" ] && [ "$exit_code" != "0" ]; then
-        echo "$service exited with code $exit_code"
+        annotate_failure "$service exited with code $exit_code"
         dump_core
         return 1
       fi
     fi
     sleep 2
   done
-  echo "$service did not complete"
+  annotate_failure "$service did not complete"
   dump_core
   return 1
 }
