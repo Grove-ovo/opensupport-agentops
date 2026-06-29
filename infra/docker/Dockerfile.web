@@ -5,7 +5,7 @@ COPY apps ./apps
 COPY packages ./packages
 RUN npm ci && npm run build:web
 
-FROM nginxinc/nginx-unprivileged:1.27-alpine AS runtime
+FROM nginxinc/nginx-unprivileged:1.29-alpine AS runtime
 ENV NGINX_ENVSUBST_FILTER=^AGENTOPS_
 COPY infra/docker/nginx.conf /etc/nginx/templates/default.conf.template
 COPY infra/docker/agentops-proxy.conf /etc/nginx/templates/_agentops-proxy.inc.template
