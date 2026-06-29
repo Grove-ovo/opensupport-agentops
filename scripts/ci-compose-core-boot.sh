@@ -74,12 +74,12 @@ compose up -d --build postgres redis
 wait_healthy postgres 90
 wait_healthy redis 90
 
-compose up -d --build migrate
+compose up -d --build --no-deps migrate
 wait_completed migrate 90
 
-compose up -d --build api worker
+compose up -d --build --no-deps api worker
 wait_healthy api 150
 wait_healthy worker 150
 
-compose up -d --build web
+compose up -d --build --no-deps web
 wait_healthy web 90

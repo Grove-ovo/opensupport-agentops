@@ -88,6 +88,9 @@ assert.match(ciCoreBoot, /wait_completed migrate/);
 assert.match(ciCoreBoot, /wait_healthy api/);
 assert.match(ciCoreBoot, /wait_healthy worker/);
 assert.match(ciCoreBoot, /wait_healthy web/);
+assert.match(ciCoreBoot, /up -d --build --no-deps migrate/);
+assert.match(ciCoreBoot, /up -d --build --no-deps api worker/);
+assert.match(ciCoreBoot, /up -d --build --no-deps web/);
 assert.match(ciWorkflow, /Boot production observability stack/);
 assert.match(
   ciWorkflow,
