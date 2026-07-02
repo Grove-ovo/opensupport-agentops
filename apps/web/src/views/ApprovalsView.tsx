@@ -5,6 +5,7 @@ import { ConfirmDialog } from '../components/ConfirmDialog.js';
 import { StatePanel } from '../components/StatePanel.js';
 import { StatusBadge } from '../components/StatusBadge.js';
 import { useResource } from '../hooks/useResource.js';
+import { useLocale } from '../locales/index.js';
 import type { Approval } from '../types.js';
 
 interface ApprovalsViewProps {
@@ -14,6 +15,7 @@ interface ApprovalsViewProps {
 type ApprovalAction = 'approve' | 'edit' | 'reject' | 'escalate';
 
 export function ApprovalsView({ tenantId }: ApprovalsViewProps) {
+  const { t, locale } = useLocale();
   const [state, setState] = useState<Approval['state'] | ''>('pending');
   const [selection, setSelection] = useState<{ approval: Approval; action: ApprovalAction } | null>(null);
   const [editedReply, setEditedReply] = useState('');
@@ -63,7 +65,7 @@ export function ApprovalsView({ tenantId }: ApprovalsViewProps) {
       setSelection(null);
       approvals.reload();
     } catch (error) {
-      setMutationError(error instanceof Error ? error.message : 'approval_action_failed');
+      setMutationError(error instanceof Error ? error.message : t('approval.action.failed'));
     } finally {
       setBusy(false);
     }
@@ -91,28 +93,28 @@ export function ApprovalsView({ tenantId }: ApprovalsViewProps) {
     approvals.reload();
     setBusy(false);
     if (failCount > 0) {
-      setMutationError(`Approved ${successCount}, failed ${failCount}`);
+      setMutationError(t('approval.batch.success', { success: successCount, fail: failCount }));
     }
   };
 
   return (
     <div className="view-stack">
       <section className="filter-bar">
-        <select aria-label="Approval state" value={state} onChange={(event) => setState(event.target.value as Approval['state'] | '')}>
-          <option value="">All states</option><option value="pending">Pending</option><option value="approved">Approved</option><option value="edited">Edited</option><option value="rejected">Rejected</option><option value="escalated">Escalated</option><option value="expired">Expired</option>
+        <select aria-label={t('approval.filter.state')} value={state} onChange={(event) => setState(event.target.value as Approval['state'] | '')}>
+          <option value="">{t('approval.filter.all')}</option><option value="pending">{t('approval.filter.pending')}</option><option value="approved">{t('approval.filter.approved')}</option><option value="edited">{t('approval.filter.edited')}</option><option value="rejected">{t('approval.filter.rejected')}</option><option value="escalated">{t('approval.filter.escalated')}</option><option value="expired">{t('approval.filter.expired')}</option>
         </select>
         {selectedIds.size > 0 ? (
           <div className="batch-actions">
-            <span className="muted">{selectedIds.size} selected</span>
+            <span className="muted">{t('approval.selected', { count: selectedIds.size })}</span>
             <button className="button button-primary button-sm" type="button" disabled={busy} onClick={batchApprove}>
-              <SquareCheck size={14} />Batch Approve
+              <SquareCheck size={14} />{t('approval.batch.approve')}
             </button>
           </div>
         ) : null}
       </section>
-      {approvals.loading && !approvals.data ? <StatePanel kind="loading" title="Loading approval queue" /> : null}
-      {approvals.error && !approvals.data ? <StatePanel kind="error" title="Approval queue unavailable" detail={approvals.error} onRetry={approvals.reload} /> : null}
-      {approvals.data?.items.length === 0 ? <StatePanel kind="empty" title="Approval queue is clear" /> : null}
+      {approvals.loading && !approvals.data ? <StatePanel kind="loading" title={t('approval.loading')} /> : null}
+      {approvals.error && !approvals.data ? <StatePanel kind="error" title={t('approval.unavailable')} detail={approvals.error} onRetry={approvals.reload} /> : null}
+      {approvals.data?.items.length === 0 ? <StatePanel kind="empty" title={t('approval.empty')} /> : null}
       {mutationError ? <p className="form-error" role="alert" style={{ padding: '8px 12px', background: 'var(--red-soft)', borderRadius: 4 }}>{mutationError}</p> : null}
       <section className="approval-list">
         {approvals.data?.items.map((approval) => (
@@ -128,22 +130,22 @@ export function ApprovalsView({ tenantId }: ApprovalsViewProps) {
                     />
                   </label>
                 ) : null}
-                <StatusBadge value={approval.state} /><span className="muted">Trace {approval.trace_id.slice(0, 8)}</span>
+                <StatusBadge value={approval.state} /><span className="muted">{t('approval.trace')} {approval.trace_id.slice(0, 8)}</span>
               </div>
-              <time>{new Date(approval.created_at).toLocaleString()}</time>
+              <time>{new Date(approval.created_at).toLocaleString(locale === 'zh' ? 'zh-CN' : undefined)}</time>
             </header>
             <blockquote>{approval.suggested_reply}</blockquote>
             <dl className="approval-meta">
-              <div><dt>Risk</dt><dd>{approval.risk_reason}</dd></div>
-              <div><dt>Evidence</dt><dd>{approval.evidence_refs.length} references</dd></div>
-              <div><dt>Expires</dt><dd>{new Date(approval.expires_at).toLocaleString()}</dd></div>
+              <div><dt>{t('approval.risk')}</dt><dd>{approval.risk_reason}</dd></div>
+              <div><dt>{t('approval.evidence')}</dt><dd>{t('approval.references', { count: approval.evidence_refs.length })}</dd></div>
+              <div><dt>{t('approval.expires')}</dt><dd>{new Date(approval.expires_at).toLocaleString(locale === 'zh' ? 'zh-CN' : undefined)}</dd></div>
             </dl>
             {approval.state === 'pending' ? (
               <footer>
-                <button className="button button-primary" type="button" onClick={() => openAction(approval, 'approve')}><Check size={16} />Approve</button>
-                <button className="button button-secondary" type="button" onClick={() => openAction(approval, 'edit')}><Pencil size={16} />Edit</button>
-                <button className="button button-secondary" type="button" onClick={() => openAction(approval, 'escalate')}><ShieldAlert size={16} />Escalate</button>
-                <button className="icon-button danger" type="button" title="Reject" onClick={() => openAction(approval, 'reject')}><X size={17} /></button>
+                <button className="button button-primary" type="button" onClick={() => openAction(approval, 'approve')}><Check size={16} />{t('approval.approve')}</button>
+                <button className="button button-secondary" type="button" onClick={() => openAction(approval, 'edit')}><Pencil size={16} />{t('approval.edit')}</button>
+                <button className="button button-secondary" type="button" onClick={() => openAction(approval, 'escalate')}><ShieldAlert size={16} />{t('approval.escalate')}</button>
+                <button className="icon-button danger" type="button" title={t('approval.reject')} onClick={() => openAction(approval, 'reject')}><X size={17} /></button>
               </footer>
             ) : null}
           </article>
@@ -157,14 +159,14 @@ export function ApprovalsView({ tenantId }: ApprovalsViewProps) {
               checked={selectedIds.size === pendingApprovals.length && pendingApprovals.length > 0}
               onChange={toggleAll}
             />
-            <span>Select all pending ({pendingApprovals.length})</span>
+            <span>{t('approval.selectall', { count: pendingApprovals.length })}</span>
           </label>
         </footer>
       ) : null}
       <ConfirmDialog
         open={selection !== null}
-        title={`${capitalize(selection?.action ?? '')} approval`}
-        detail={selection?.action === 'approve' || selection?.action === 'edit' ? 'This sends a public reply to the customer using the immutable approval snapshot.' : 'This changes the approval state and records the operator action in the audit log.'}
+        title={t('approval.confirm.title', { action: capitalize(selection?.action ?? '') })}
+        detail={selection?.action === 'approve' || selection?.action === 'edit' ? t('approval.confirm.approve.detail') : t('approval.confirm.escalate.detail')}
         confirmLabel={capitalize(selection?.action ?? '')}
         danger={selection?.action === 'reject'}
         busy={busy}
@@ -173,9 +175,9 @@ export function ApprovalsView({ tenantId }: ApprovalsViewProps) {
       >
         {selection?.action === 'edit' ? (
           <label className="field">
-            <span>Reply</span>
+            <span>{t('approval.reply')}</span>
             <textarea rows={7} value={editedReply} onChange={(event) => setEditedReply(event.target.value)} />
-            <span className="muted" style={{ fontSize: 10 }}>{editedReply.length} characters</span>
+            <span className="muted" style={{ fontSize: 10 }}>{t('approval.chars', { count: editedReply.length })}</span>
           </label>
         ) : null}
         {selection?.action === 'approve' ? <div className="reply-preview"><MessageSquareText size={17} /><p>{selection.approval.suggested_reply}</p></div> : null}
