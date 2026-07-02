@@ -1,4 +1,5 @@
 import { AlertTriangle, Inbox, LoaderCircle, RefreshCw } from 'lucide-react';
+import { useLocale } from '../locales/index.js';
 
 interface StatePanelProps {
   kind: 'loading' | 'empty' | 'error';
@@ -8,6 +9,7 @@ interface StatePanelProps {
 }
 
 export function StatePanel({ kind, title, detail, onRetry }: StatePanelProps) {
+  const { t } = useLocale();
   const Icon =
     kind === 'loading' ? LoaderCircle : kind === 'empty' ? Inbox : AlertTriangle;
   return (
@@ -18,7 +20,7 @@ export function StatePanel({ kind, title, detail, onRetry }: StatePanelProps) {
         {detail ? <p>{detail}</p> : null}
       </div>
       {onRetry ? (
-        <button className="icon-button" type="button" onClick={onRetry} title="Retry">
+        <button className="icon-button" type="button" onClick={onRetry} title={t('common.retry')}>
           <RefreshCw size={17} />
         </button>
       ) : null}

@@ -8,6 +8,7 @@ const APPROVAL_ID = '00000000-0000-4000-8000-000000000002';
 
 describe('operations dashboard', () => {
   beforeEach(() => {
+    localStorage.clear();
     vi.stubGlobal('fetch', vi.fn(mockFetch));
     vi.stubGlobal('crypto', { randomUUID: () => '00000000-0000-4000-8000-000000000099' });
   });
@@ -88,6 +89,22 @@ describe('operations dashboard', () => {
     expect(screen.getByDisplayValue(/DRYRUN-100/)).toBeInTheDocument();
     await user.click(screen.getByRole('button', { name: 'Run' }));
     expect(await screen.findByText('Dry-run succeeded (ok)')).toBeInTheDocument();
+  });
+
+  it('switches the interface language between English and Simplified Chinese', async () => {
+    const user = userEvent.setup();
+    render(<App />);
+    await screen.findByText('18');
+    expect(screen.getAllByRole('button', { name: 'Overview' }).length).toBeGreaterThan(0);
+    await user.click(screen.getByRole('button', { name: 'Language' }));
+    await waitFor(() => {
+      expect(screen.getAllByRole('button', { name: '概览' }).length).toBeGreaterThan(0);
+    });
+    expect(document.documentElement.lang).toBe('zh-CN');
+    await user.click(screen.getByRole('button', { name: 'Language' }));
+    await waitFor(() => {
+      expect(screen.getAllByRole('button', { name: 'Overview' }).length).toBeGreaterThan(0);
+    });
   });
 });
 
