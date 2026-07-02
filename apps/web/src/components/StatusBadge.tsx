@@ -1,3 +1,5 @@
+import { useLocale } from '../locales/index.js';
+
 interface StatusBadgeProps {
   value: string;
 }
@@ -22,6 +24,7 @@ const SUCCESS_VALUES = new Set([
 ]);
 
 export function StatusBadge({ value }: StatusBadgeProps) {
+  const { t } = useLocale();
   const normalized = value.toLowerCase();
   const tone = ALERT_VALUES.has(normalized)
     ? 'danger'
@@ -30,5 +33,6 @@ export function StatusBadge({ value }: StatusBadgeProps) {
       : SUCCESS_VALUES.has(normalized)
         ? 'success'
         : 'neutral';
-  return <span className={`status-badge status-${tone}`}>{value}</span>;
+  const label = t(`status.${normalized}`);
+  return <span className={`status-badge status-${tone}`}>{label}</span>;
 }

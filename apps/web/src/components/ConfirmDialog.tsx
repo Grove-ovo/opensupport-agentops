@@ -1,5 +1,6 @@
 import { X } from 'lucide-react';
 import { useEffect } from 'react';
+import { useLocale } from '../locales/index.js';
 
 interface ConfirmDialogProps {
   open: boolean;
@@ -24,6 +25,7 @@ export function ConfirmDialog({
   onCancel,
   onConfirm,
 }: ConfirmDialogProps) {
+  const { t } = useLocale();
   useEffect(() => {
     if (!open) return;
     const close = (event: KeyboardEvent) => {
@@ -45,10 +47,10 @@ export function ConfirmDialog({
       >
         <header>
           <div>
-            <span className="eyebrow">Confirmation required</span>
+            <span className="eyebrow">{t('common.confirm')}</span>
             <h2 id="confirm-title">{title}</h2>
           </div>
-          <button className="icon-button" type="button" onClick={onCancel} disabled={busy} title="Close">
+          <button className="icon-button" type="button" onClick={onCancel} disabled={busy} title={t('common.close')}>
             <X size={18} />
           </button>
         </header>
@@ -56,7 +58,7 @@ export function ConfirmDialog({
         {children}
         <footer>
           <button className="button button-secondary" type="button" onClick={onCancel} disabled={busy}>
-            Cancel
+            {t('common.cancel')}
           </button>
           <button
             className={`button ${danger ? 'button-danger' : 'button-primary'}`}
@@ -64,7 +66,7 @@ export function ConfirmDialog({
             onClick={onConfirm}
             disabled={busy}
           >
-            {busy ? 'Applying…' : confirmLabel}
+            {busy ? t('common.applying') : confirmLabel}
           </button>
         </footer>
       </section>

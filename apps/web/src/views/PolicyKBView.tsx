@@ -4,6 +4,7 @@ import { api } from '../api.js';
 import { StatePanel } from '../components/StatePanel.js';
 import { StatusBadge } from '../components/StatusBadge.js';
 import { useResource } from '../hooks/useResource.js';
+import { useLocale } from '../locales/index.js';
 import type { PolicyDocument, RetrievalSmokeTestResult } from '../types.js';
 
 interface PolicyKBViewProps {
@@ -11,6 +12,7 @@ interface PolicyKBViewProps {
 }
 
 export function PolicyKBView({ tenantId }: PolicyKBViewProps) {
+  const { t, locale } = useLocale();
   const versions = useResource(`policy-versions:${tenantId}`, () => api.policyVersions(tenantId));
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const documents = useResource(
@@ -30,8 +32,8 @@ export function PolicyKBView({ tenantId }: PolicyKBViewProps) {
   const [smokeMessage, setSmokeMessage] = useState<string | null>(null);
   const [smokeBusy, setSmokeBusy] = useState(false);
 
-  if (versions.loading && !versions.data) return <div className="view-stack"><StatePanel kind="loading" title="Loading policy versions" /></div>;
-  if (versions.error && !versions.data) return <div className="view-stack"><StatePanel kind="error" title="Knowledge base unavailable" detail={versions.error} onRetry={versions.reload} /></div>;
+  if (versions.loading && !versions.data) return <div className="view-stack"><StatePanel kind="loading" title={t('kb.loading')} /></div>;
+  if (versions.error && !versions.data) return <div className="view-stack"><StatePanel kind="error" title={t('kb.unavailable')} detail={versions.error} onRetry={versions.reload} /></div>;
 
   const versionList = versions.data ?? [];
   const selectedVersion = versionList.find((v) => v.id === selectedId) ?? null;
@@ -40,18 +42,18 @@ export function PolicyKBView({ tenantId }: PolicyKBViewProps) {
     setBusy(true); setUploadMessage(null);
     try {
       if (!name.trim() || !sourceKey.trim() || !title.trim() || !content.trim()) {
-        throw new Error('All fields are required');
+        throw new Error(t('kb.allfields'));
       }
       const created = await api.createPolicyVersion(tenantId, {
         name: name.trim(),
         documents: [{ source_key: sourceKey.trim(), title: title.trim(), content }],
       });
-      setUploadMessage(`Created draft version ${created.version}`);
+      setUploadMessage(t('kb.created', { version: created.version }));
       setName(''); setSourceKey(''); setTitle(''); setContent('');
       versions.reload();
       setSelectedId(created.id);
     } catch (error) {
-      setUploadMessage(error instanceof Error ? error.message : 'policy_upload_failed');
+      setUploadMessage(error instanceof Error ? error.message : t('kb.uploadfailed'));
     } finally {
       setBusy(false);
     }
@@ -61,10 +63,10 @@ export function PolicyKBView({ tenantId }: PolicyKBViewProps) {
     setBusy(true); setUploadMessage(null);
     try {
       await api.publishPolicyVersion(tenantId, versionId);
-      setUploadMessage('Policy version published');
+      setUploadMessage(t('kb.published'));
       versions.reload();
     } catch (error) {
-      setUploadMessage(error instanceof Error ? error.message : 'policy_publish_failed');
+      setUploadMessage(error instanceof Error ? error.message : t('kb.publishfailed'));
     } finally {
       setBusy(false);
     }
@@ -73,12 +75,12 @@ export function PolicyKBView({ tenantId }: PolicyKBViewProps) {
   const runSmokeTest = async () => {
     setSmokeBusy(true); setSmokeMessage(null); setSmokeResults(null);
     try {
-      if (!smokeQuery.trim()) throw new Error('Query is required');
+      if (!smokeQuery.trim()) throw new Error(t('kb.queryrequired'));
       const results = await api.runRetrievalSmokeTest(tenantId, { query: smokeQuery.trim() });
       setSmokeResults(results);
-      if (results.length === 0) setSmokeMessage('No matching chunks');
+      if (results.length === 0) setSmokeMessage(t('kb.smoke.nomatch'));
     } catch (error) {
-      setSmokeMessage(error instanceof Error ? error.message : 'retrieval_smoke_test_failed');
+      setSmokeMessage(error instanceof Error ? error.message : t('kb.smokefailed'));
     } finally {
       setSmokeBusy(false);
     }
@@ -88,12 +90,12 @@ export function PolicyKBView({ tenantId }: PolicyKBViewProps) {
     <div className="view-stack">
       <section className="panel">
         <header className="panel-header">
-          <div><span className="eyebrow">Policy versions</span><h2>Knowledge base</h2></div>
+          <div><span className="eyebrow">{t('kb.versions')}</span><h2>{t('nav.knowledge')}</h2></div>
         </header>
-        {versionList.length === 0 ? <StatePanel kind="empty" title="No policy versions" detail="Upload a document to create the first version" /> : (
+        {versionList.length === 0 ? <StatePanel kind="empty" title={t('kb.empty')} detail={t('kb.empty.detail')} /> : (
           <div className="data-table-wrap">
             <table className="data-table">
-              <thead><tr><th>Version</th><th>Name</th><th>Status</th><th>Documents</th><th>Chunks</th><th>Created</th><th></th></tr></thead>
+              <thead><tr><th>{t('kb.table.version')}</th><th>{t('kb.table.name')}</th><th>{t('kb.table.status')}</th><th>{t('kb.table.documents')}</th><th>{t('kb.table.chunks')}</th><th>{t('kb.table.created')}</th><th></th></tr></thead>
               <tbody>{versionList.map((version) => (
                 <tr key={version.id} className={version.id === selectedId ? 'selected' : ''} onClick={() => setSelectedId(version.id)} tabIndex={0}>
                   <td><strong>v{version.version}</strong></td>
@@ -101,8 +103,8 @@ export function PolicyKBView({ tenantId }: PolicyKBViewProps) {
                   <td><StatusBadge value={version.status} /></td>
                   <td>{version.document_count}</td>
                   <td>{version.chunk_count}</td>
-                  <td>{formatTime(version.created_at)}</td>
-                  <td>{version.status === 'draft' ? <button className="button button-primary button-sm" type="button" disabled={busy} onClick={(event) => { event.stopPropagation(); publish(version.id); }}><Rocket size={14} /> Publish</button> : null}</td>
+                  <td>{formatTime(version.created_at, locale)}</td>
+                  <td>{version.status === 'draft' ? <button className="button button-primary button-sm" type="button" disabled={busy} onClick={(event) => { event.stopPropagation(); publish(version.id); }}><Rocket size={14} /> {t('kb.publish')}</button> : null}</td>
                 </tr>
               ))}</tbody>
             </table>
@@ -111,27 +113,27 @@ export function PolicyKBView({ tenantId }: PolicyKBViewProps) {
       </section>
 
       <section className="panel kb-upload">
-        <header className="panel-header"><div><span className="eyebrow">Upload</span><h2>New policy document</h2></div></header>
+        <header className="panel-header"><div><span className="eyebrow">{t('kb.upload')}</span><h2>{t('kb.newdoc')}</h2></div></header>
         {uploadMessage ? <div className="save-message" role="status">{uploadMessage}</div> : null}
         <div className="kb-form">
-          <label className="field">Name<input value={name} onChange={(e) => setName(e.target.value)} placeholder="Policy version name" /></label>
-          <label className="field">Source key<input value={sourceKey} onChange={(e) => setSourceKey(e.target.value)} placeholder="returns.md" /></label>
-          <label className="field">Title<input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Returns policy" /></label>
-          <label className="field kb-content-field">Content<textarea value={content} onChange={(e) => setContent(e.target.value)} rows={6} placeholder="Policy document text" /></label>
+          <label className="field">{t('kb.field.name')}<input value={name} onChange={(e) => setName(e.target.value)} placeholder={t('kb.placeholder.name')} /></label>
+          <label className="field">{t('kb.field.sourcekey')}<input value={sourceKey} onChange={(e) => setSourceKey(e.target.value)} placeholder={t('kb.placeholder.sourcekey')} /></label>
+          <label className="field">{t('kb.field.title')}<input value={title} onChange={(e) => setTitle(e.target.value)} placeholder={t('kb.placeholder.title')} /></label>
+          <label className="field kb-content-field">{t('kb.field.content')}<textarea value={content} onChange={(e) => setContent(e.target.value)} rows={6} placeholder={t('kb.placeholder.content')} /></label>
         </div>
-        <footer><button className="button button-primary" type="button" disabled={busy} onClick={upload}><FileUp size={16} /> Create draft version</button></footer>
+        <footer><button className="button button-primary" type="button" disabled={busy} onClick={upload}><FileUp size={16} /> {t('kb.create')}</button></footer>
       </section>
 
       {selectedVersion ? (
         <section className="panel table-panel">
-          <header className="panel-header"><div><span className="eyebrow">Documents</span><h2>v{selectedVersion.version} · {selectedVersion.name}</h2></div></header>
-          {documents.loading && !documents.data ? <StatePanel kind="loading" title="Loading documents" /> : null}
-          {documents.error ? <StatePanel kind="error" title="Documents unavailable" detail={documents.error} onRetry={documents.reload} /> : null}
-          {documents.data && documents.data.length === 0 ? <StatePanel kind="empty" title="No documents in this version" /> : null}
+          <header className="panel-header"><div><span className="eyebrow">{t('kb.docs')}</span><h2>v{selectedVersion.version} · {selectedVersion.name}</h2></div></header>
+          {documents.loading && !documents.data ? <StatePanel kind="loading" title={t('kb.docs.loading')} /> : null}
+          {documents.error ? <StatePanel kind="error" title={t('kb.docs.unavailable')} detail={documents.error} onRetry={documents.reload} /> : null}
+          {documents.data && documents.data.length === 0 ? <StatePanel kind="empty" title={t('kb.docs.empty')} /> : null}
           {documents.data && documents.data.length > 0 ? (
             <div className="data-table-wrap">
               <table className="data-table">
-                <thead><tr><th>Source key</th><th>Title</th><th>Type</th><th>Chunks</th><th>Content hash</th><th>Created</th></tr></thead>
+                <thead><tr><th>{t('kb.docs.table.sourcekey')}</th><th>{t('kb.docs.table.title')}</th><th>{t('kb.docs.table.type')}</th><th>{t('kb.docs.table.chunks')}</th><th>{t('kb.docs.table.hash')}</th><th>{t('kb.docs.table.created')}</th></tr></thead>
                 <tbody>{documents.data.map((doc) => (
                   <tr key={doc.id}>
                     <td><code>{doc.source_key}</code></td>
@@ -139,7 +141,7 @@ export function PolicyKBView({ tenantId }: PolicyKBViewProps) {
                     <td>{doc.media_type}</td>
                     <td>{doc.chunk_count}</td>
                     <td><code>{doc.content_hash.slice(0, 12)}</code></td>
-                    <td>{formatTime(doc.created_at)}</td>
+                    <td>{formatTime(doc.created_at, locale)}</td>
                   </tr>
                 ))}</tbody>
               </table>
@@ -149,16 +151,16 @@ export function PolicyKBView({ tenantId }: PolicyKBViewProps) {
       ) : null}
 
       <section className="panel kb-smoke">
-        <header className="panel-header"><div><span className="eyebrow">Retrieval</span><h2>Smoke test</h2></div></header>
+        <header className="panel-header"><div><span className="eyebrow">{t('kb.retrieval')}</span><h2>{t('kb.smoke')}</h2></div></header>
         <div className="kb-smoke-form">
-          <input value={smokeQuery} onChange={(e) => setSmokeQuery(e.target.value)} placeholder="Query text to search the published policy corpus" onKeyDown={(e) => e.key === 'Enter' && runSmokeTest()} />
-          <button className="button button-primary" type="button" disabled={smokeBusy} onClick={runSmokeTest}><FlaskConical size={16} /> Run</button>
+          <input value={smokeQuery} onChange={(e) => setSmokeQuery(e.target.value)} placeholder={t('kb.smoke.placeholder')} onKeyDown={(e) => e.key === 'Enter' && runSmokeTest()} />
+          <button className="button button-primary" type="button" disabled={smokeBusy} onClick={runSmokeTest}><FlaskConical size={16} /> {t('kb.smoke.run')}</button>
         </div>
         {smokeMessage ? <div className="save-message" role="status">{smokeMessage}</div> : null}
         {smokeResults && smokeResults.length > 0 ? (
           <div className="data-table-wrap">
             <table className="data-table">
-              <thead><tr><th>Score</th><th>Chunk</th><th>Content</th></tr></thead>
+              <thead><tr><th>{t('kb.smoke.table.score')}</th><th>{t('kb.smoke.table.chunk')}</th><th>{t('kb.smoke.table.content')}</th></tr></thead>
               <tbody>{smokeResults.map((result) => (
                 <tr key={result.chunk_id}>
                   <td>{result.score.toFixed(4)}</td>
@@ -174,6 +176,6 @@ export function PolicyKBView({ tenantId }: PolicyKBViewProps) {
   );
 }
 
-function formatTime(value: string) {
-  return new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(value));
+function formatTime(value: string, locale: string) {
+  return new Intl.DateTimeFormat(locale === 'zh' ? 'zh-CN' : undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(value));
 }
