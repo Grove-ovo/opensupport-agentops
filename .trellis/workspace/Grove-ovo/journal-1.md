@@ -1757,3 +1757,37 @@ Improved the local production demo browser flow, made Vite proxy configurable fo
 ### Next Steps
 
 - None - task complete
+
+
+## Session 52: Add dashboard EN/zh-CN language switcher
+
+**Date**: 2026-07-03
+**Task**: Add dashboard EN/zh-CN language switcher
+**Branch**: `dev`
+
+### Summary
+
+Added a lightweight custom React Context i18n layer (LocaleProvider, useLocale, t() with {param} interpolation) with en/zh dictionaries (~280 keys), localStorage persistence, browser-language detection, and document.lang sync. Wired all 13 dashboard files (AppShell, App auth surfaces, ConfirmDialog, StatePanel, StatusBadge, and the 7 views) through translation keys; added a LanguageSwitcher toggle in the topbar and a .language-switcher style. Made App self-wrap LocaleProvider so tests render <App /> directly. Added a language-switch test and localStorage isolation in beforeEach. Verified typecheck, lint, test:web (6/6), and build all pass. Merged feat/i18n-language-switcher into dev and pushed via SSH.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `4e7f0d1` | (see git log) |
+| `f6650b4` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
