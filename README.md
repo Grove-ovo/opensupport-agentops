@@ -141,6 +141,7 @@ Generated evidence:
 - [Architecture benchmark](./reports/benchmark_report.md)
 - [Application load report](./reports/load_test_report.md)
 - [Cost report](./reports/cost_report.md)
+- [Industrial test report — 2026-07-06](./reports/industrial_test_report_2026-07-06.md)
 
 Reproduce the report set:
 
