@@ -1,0 +1,135 @@
+name: CX AI Agent Reliability Sprint
+description: Request a USD 18,000 fixed-fee reliability sprint for one support AI or agent eval workflow.
+title: "CX AI Reliability Sprint: <workflow>"
+labels: ["cx-ai-reliability-sprint"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This intake is for a USD 18,000 fixed-fee CX AI Agent Reliability Sprint for one selected support AI, eval, observability, guardrail, or agent-security workflow.
+
+        Before opening the issue, skim:
+        - Sprint details: https://github.com/Grove-ovo/opensupport-agentops/blob/main/docs/services/cx-ai-agent-reliability-sprint.md
+        - Buyer deal room: https://github.com/Grove-ovo/opensupport-agentops/blob/main/docs/services/buyer-deal-room.md
+        - Outcomes and acceptance: https://github.com/Grove-ovo/opensupport-agentops/blob/main/docs/services/outcomes-and-acceptance.md
+        - First 48 hours after yes: https://github.com/Grove-ovo/opensupport-agentops/blob/main/docs/services/first-48-hours.md
+
+        Email fallback: chinesegrove@gmail.com
+  - type: input
+    id: company
+    attributes:
+      label: Company / project
+      description: Who owns the workflow?
+      placeholder: Acme CX AI Platform
+    validations:
+      required: true
+  - type: textarea
+    id: workflow
+    attributes:
+      label: Selected workflow
+      description: Which support AI, eval, observability, guardrail, or agent-security workflow should be made safer?
+      placeholder: "Example: refund eligibility support agent, source-grounded answer eval, prompt-injection boundary for tool-using agents..."
+    validations:
+      required: true
+  - type: textarea
+    id: highest_risk_failure
+    attributes:
+      label: Highest-risk failure mode
+      description: What failure would be most expensive, unsafe, or trust-damaging?
+      placeholder: "Example: stale policy causes wrong refund promise; agent exposes private customer context; eval misses unsafe tool-call approval."
+    validations:
+      required: true
+  - type: dropdown
+    id: action_authority
+    attributes:
+      label: Can the agent take actions?
+      options:
+        - No, answer/eval only
+        - Human approval required
+        - Low-risk actions only
+        - Yes, can mutate customer/account/order state
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: sources
+    attributes:
+      label: Policy, context, and eval sources
+      description: What sources should the replay suite inspect?
+      placeholder: "Approved policy docs, anonymized transcripts, CRM/order context, current eval examples, guardrail prompts, trace samples..."
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance priorities
+      description: Which 2-3 replay outcomes must be true for this sprint to be valuable?
+      placeholder: "Example: stale policy never beats approved source; PII is redacted; refund action is blocked without approval."
+    validations:
+      required: true
+  - type: input
+    id: owner_reviewer
+    attributes:
+      label: Workflow owner and reviewer
+      description: Name or role for the workflow owner and the reviewer who can accept the scorecard.
+      placeholder: "Owner: Head of CX AI. Reviewer: Staff Engineer for agent platform."
+    validations:
+      required: true
+  - type: dropdown
+    id: access
+    attributes:
+      label: Access available for sprint
+      options:
+        - Public docs only
+        - Sanitized docs/screenshots
+        - Anonymized transcripts or traces
+        - Repo access
+        - Staging workflow access
+        - Not sure yet
+    validations:
+      required: true
+  - type: dropdown
+    id: budget
+    attributes:
+      label: Can USD 18,000 be approved this month?
+      options:
+        - "Yes"
+        - "Likely, after technical scope review"
+        - "No"
+    validations:
+      required: true
+  - type: dropdown
+    id: payment_route
+    attributes:
+      label: Preferred payment route
+      description: Kickoff starts after USD 9,000 upfront payment and agreed access/scope.
+      options:
+        - Wise payment request
+        - Stripe invoice or payment link
+        - PayPal invoice
+        - Bank transfer
+        - USDC
+        - Not sure yet
+    validations:
+      required: true
+  - type: input
+    id: kickoff_timing
+    attributes:
+      label: Preferred kickoff timing
+      placeholder: "Example: next week after security review"
+    validations:
+      required: true
+  - type: input
+    id: contact
+    attributes:
+      label: Best contact
+      description: Email, GitHub handle, or preferred async contact route.
+    validations:
+      required: true
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: Scope confirmation
+      options:
+        - label: I understand this is for one selected workflow, fixed at USD 18,000, with USD 9,000 upfront and USD 9,000 on accepted delivery.
+          required: true

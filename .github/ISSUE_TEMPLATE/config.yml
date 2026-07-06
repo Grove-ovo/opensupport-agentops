@@ -1,8 +1,11 @@
 blank_issues_enabled: false
 contact_links:
+  - name: CX AI Agent Reliability Sprint
+    url: https://github.com/Grove-ovo/opensupport-agentops/blob/main/docs/services/cx-ai-agent-reliability-sprint.md
+    about: Review the USD 18,000 support AI, EvalOps, guardrail, and agent-security replay-suite sprint.
   - name: Buyer deal room
     url: https://github.com/Grove-ovo/opensupport-agentops/blob/main/docs/services/buyer-deal-room.md
-    about: Compare the USD 12,000 memory sprint and USD 15,000 OpenSupport pilot before opening an intake issue.
+    about: Compare the USD 18,000 CX AI sprint, USD 12,000 memory sprint, and USD 15,000 OpenSupport pilot before opening an intake issue.
   - name: First 48 hours after yes
     url: https://github.com/Grove-ovo/opensupport-agentops/blob/main/docs/services/first-48-hours.md
     about: See the kickoff, payment, access, and acceptance sequence after scope is confirmed.

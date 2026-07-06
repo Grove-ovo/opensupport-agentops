@@ -7,6 +7,7 @@ agent memory reliability or ecommerce support AgentOps work.
 
 | Path | Fixed fee | Best fit | Start here |
 | --- | ---: | --- | --- |
+| CX AI Agent Reliability Sprint | USD 18,000 | Support AI, eval, observability, guardrail, and agent-security teams that need a replay suite for one high-risk workflow | [Sprint details](./cx-ai-agent-reliability-sprint.md) |
 | Agent Memory Reliability Sprint | USD 12,000 | Teams already shipping AI agents where memory, context, permissions, or stale decisions can create business risk | [Sprint details](./agent-memory-reliability-sprint.md) |
 | OpenSupport AgentOps Pilot | USD 15,000 | Ecommerce support teams that want guarded support automation before uncontrolled auto-replies | [Pilot details](./opensupport-agentops-pilot.md) |
 
@@ -55,6 +56,15 @@ For the memory sprint:
 - constraints around secrets, PII, retention, permissions, and deployment,
 - ability to approve USD 12,000 this month if scope is tight.
 
+For the CX AI reliability sprint:
+
+- one support AI, eval, observability, guardrail, or agent-security workflow,
+- current policies, traces, transcripts, eval examples, or sanitized evidence,
+- examples of unsafe answers, stale policy, PII risk, tool-call risk, or
+  missed escalation,
+- a reviewer who can accept replay cases and scorecard rows,
+- ability to approve USD 18,000 this month if scope is tight.
+
 For the OpenSupport pilot:
 
 - one ecommerce support workflow,
@@ -75,6 +85,7 @@ For the OpenSupport pilot:
 
 Intake links:
 
+- [Start CX AI Agent Reliability Sprint intake](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=cx-ai-agent-reliability-sprint.yml)
 - [Start Agent Memory Reliability Sprint intake](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=agent-memory-reliability-sprint.yml)
 - [Start OpenSupport AgentOps Pilot intake](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=opensupport-agentops-pilot.yml)
 
@@ -96,6 +107,15 @@ has:
 - replay/security eval plan,
 - cost/latency visibility,
 - and a rollout or rollback decision.
+
+For the CX AI reliability sprint, work is accepted when the selected workflow
+has:
+
+- a workflow map,
+- a policy, PII, source-grounding, action, and escalation risk model,
+- 10-14 replay tests or test specifications,
+- a scorecard for acceptance and regression checks,
+- and a 48h / 2w / 6w implementation path.
 
 ## Honest Limits
 

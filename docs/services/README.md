@@ -7,6 +7,7 @@ work backed by this repository.
 
 | Offer | Fixed fee | Timeline | Best fit | Intake |
 | --- | ---: | --- | --- | --- |
+| [CX AI Agent Reliability Sprint](./cx-ai-agent-reliability-sprint.md) | USD 18,000 | 12 business days | Support AI, eval, observability, guardrail, and agent-security teams that need replay tests and scorecards for one high-risk workflow | [Open CX AI intake](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=cx-ai-agent-reliability-sprint.yml) |
 | [Agent Memory Reliability Sprint](./agent-memory-reliability-sprint.md) | USD 12,000 | 10 business days | Teams shipping AI agents where memory, context, stale decisions, permissions, or secrets create business risk | [Open sprint intake](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=agent-memory-reliability-sprint.yml) |
 | [OpenSupport AgentOps Pilot](./opensupport-agentops-pilot.md) | USD 15,000 | 15 business days | Ecommerce support teams that want guarded shadow/assist automation before rollout | [Open pilot intake](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=opensupport-agentops-pilot.yml) |
 
@@ -50,6 +51,7 @@ A buyer is probably qualified when they can name:
 3. one reviewer who can accept the delivered scorecard and tests;
 4. the cost of the current failure mode;
 5. the payment path for a USD 12,000 or USD 15,000 fixed-fee engagement.
+   For CX AI reliability work, use USD 18,000 as the approval threshold.
 
 If the workflow cannot be narrowed, the right next step is not a paid sprint.
 It is a short discovery conversation that identifies one bounded path.
