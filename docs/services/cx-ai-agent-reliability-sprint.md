@@ -10,13 +10,15 @@ Payment shape: **USD 9,000 kickoff** and **USD 9,000 on accepted delivery**.
 Procurement packet: [CX AI buyer packet](./cx-ai-buyer-packet.md).
 
 Diagnostic fallback:
-[USD 3,000 CX AI diagnostic teardown](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=cx-ai-diagnostic-teardown.yml)
+[USD 3,000 CX AI diagnostic teardown](https://cx-ai-offer-site-425661492480.us-central1.run.app/intake.html)
 when the full sprint needs scope review first.
 
-Rendered offer page:
-[CX AI Agent Reliability Sprint](https://raw.githack.com/Grove-ovo/opensupport-agentops/70b17c6c39a8d2581c89d22fa45b44be6edac429/index.html).
+Public offer page:
+[CX AI Agent Reliability Sprint](https://cx-ai-offer-site-425661492480.us-central1.run.app).
+Public intake form:
+[submit workflow details](https://cx-ai-offer-site-425661492480.us-central1.run.app/intake.html).
 ROI calculator:
-[estimate risk and savings](https://raw.githack.com/Grove-ovo/opensupport-agentops/70b17c6c39a8d2581c89d22fa45b44be6edac429/roi.html).
+[estimate risk and savings](https://cx-ai-offer-site-425661492480.us-central1.run.app/roi.html).
 
 ## Best Fit
 
@@ -53,8 +55,9 @@ One selected workflow. Examples:
 
 ## Public Samples
 
-- [Rendered CX offer page](https://raw.githack.com/Grove-ovo/opensupport-agentops/70b17c6c39a8d2581c89d22fa45b44be6edac429/index.html)
-- [ROI calculator](https://raw.githack.com/Grove-ovo/opensupport-agentops/70b17c6c39a8d2581c89d22fa45b44be6edac429/roi.html)
+- [Public CX offer page](https://cx-ai-offer-site-425661492480.us-central1.run.app)
+- [Public intake form](https://cx-ai-offer-site-425661492480.us-central1.run.app/intake.html)
+- [ROI calculator](https://cx-ai-offer-site-425661492480.us-central1.run.app/roi.html)
 - [Sample CX AI reliability report](./sample-cx-ai-reliability-report.md)
 - [Sample CX AI diagnostic teardown](./sample-cx-ai-diagnostic-teardown.md)
 - [CX AI replay case catalog](./cx-ai-replay-case-catalog.md)
@@ -83,7 +86,8 @@ The work is accepted when the selected workflow has:
 
 ## Start
 
-Open the intake issue or email `chinesegrove@gmail.com` with:
+Open the [public intake form](https://cx-ai-offer-site-425661492480.us-central1.run.app/intake.html),
+open the intake issue, or email `chinesegrove@gmail.com` with:
 
 - selected workflow,
 - highest-risk failure mode,
@@ -93,9 +97,14 @@ Open the intake issue or email `chinesegrove@gmail.com` with:
 - preferred payment route,
 - kickoff timing.
 
-[Start CX AI Agent Reliability Sprint intake](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=cx-ai-agent-reliability-sprint.yml)
+[Start CX AI Agent Reliability Sprint intake](https://cx-ai-offer-site-425661492480.us-central1.run.app/intake.html)
 
-[Start USD 3,000 diagnostic teardown intake](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=cx-ai-diagnostic-teardown.yml)
+[Start USD 3,000 diagnostic teardown intake](https://cx-ai-offer-site-425661492480.us-central1.run.app/intake.html)
+
+GitHub issue fallback:
+[CX AI sprint issue](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=cx-ai-agent-reliability-sprint.yml)
+or
+[diagnostic issue](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=cx-ai-diagnostic-teardown.yml).
 
 For procurement, billing, data handling, and approval text, use the
 [CX AI buyer packet](./cx-ai-buyer-packet.md).

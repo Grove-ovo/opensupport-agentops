@@ -1,5 +1,8 @@
 blank_issues_enabled: false
 contact_links:
+  - name: Public CX AI intake form
+    url: https://cx-ai-offer-site-425661492480.us-central1.run.app/intake.html
+    about: Submit the USD 18,000 sprint, USD 3,000 diagnostic, or not-sure-yet path without a GitHub account.
   - name: CX AI Diagnostic Teardown
     url: https://github.com/Grove-ovo/opensupport-agentops/blob/main/docs/services/sample-cx-ai-diagnostic-teardown.md
     about: Review the USD 3,000 diagnostic fallback before opening a diagnostic intake issue.

@@ -13,15 +13,19 @@ Delivery target: **12 business days** after scope, access, and kickoff payment
 are agreed.
 
 Start route: open the
-[CX AI intake issue](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=cx-ai-agent-reliability-sprint.yml)
-or, when the full sprint needs scope review first, open the
-[CX AI diagnostic teardown intake](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=cx-ai-diagnostic-teardown.yml).
+[public CX AI intake form](https://cx-ai-offer-site-425661492480.us-central1.run.app/intake.html)
+and choose the USD 18,000 sprint, USD 3,000 diagnostic teardown, or `Not sure
+yet`.
+GitHub issue fallback:
+[CX AI sprint issue](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=cx-ai-agent-reliability-sprint.yml)
+or
+[diagnostic issue](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=cx-ai-diagnostic-teardown.yml).
 Email fallback: `chinesegrove@gmail.com`.
 
-Rendered offer page:
-[CX AI Agent Reliability Sprint](https://raw.githack.com/Grove-ovo/opensupport-agentops/70b17c6c39a8d2581c89d22fa45b44be6edac429/index.html).
+Public offer page:
+[CX AI Agent Reliability Sprint](https://cx-ai-offer-site-425661492480.us-central1.run.app).
 ROI calculator:
-[estimate risk and savings](https://raw.githack.com/Grove-ovo/opensupport-agentops/70b17c6c39a8d2581c89d22fa45b44be6edac429/roi.html).
+[estimate risk and savings](https://cx-ai-offer-site-425661492480.us-central1.run.app/roi.html).
 
 ## What Is Included
 
@@ -52,7 +56,8 @@ within 14 days.
 
 ## Buyer Approval Text
 
-A buyer can approve scope by opening the intake issue or emailing this text:
+A buyer can approve scope by opening the public intake form, opening the intake
+issue, or emailing this text:
 
 ```text
 Approved: CX AI Agent Reliability Sprint
@@ -147,8 +152,9 @@ failure modes, five replay tests, and a full-sprint recommendation.
 ## Related Proof
 
 - [CX AI Agent Reliability Sprint](./cx-ai-agent-reliability-sprint.md)
-- [Rendered CX offer page](https://raw.githack.com/Grove-ovo/opensupport-agentops/70b17c6c39a8d2581c89d22fa45b44be6edac429/index.html)
-- [ROI calculator](https://raw.githack.com/Grove-ovo/opensupport-agentops/70b17c6c39a8d2581c89d22fa45b44be6edac429/roi.html)
+- [Public CX offer page](https://cx-ai-offer-site-425661492480.us-central1.run.app)
+- [Public intake form](https://cx-ai-offer-site-425661492480.us-central1.run.app/intake.html)
+- [ROI calculator](https://cx-ai-offer-site-425661492480.us-central1.run.app/roi.html)
 - [Sample CX AI reliability report](./sample-cx-ai-reliability-report.md)
 - [Sample CX AI diagnostic teardown](./sample-cx-ai-diagnostic-teardown.md)
 - [CX AI replay case catalog](./cx-ai-replay-case-catalog.md)

@@ -5,15 +5,16 @@ work backed by this repository.
 
 ## Start Here
 
-Rendered CX offer page:
-[CX AI Agent Reliability Sprint](https://raw.githack.com/Grove-ovo/opensupport-agentops/70b17c6c39a8d2581c89d22fa45b44be6edac429/index.html)
+Public CX offer page:
+[CX AI Agent Reliability Sprint](https://cx-ai-offer-site-425661492480.us-central1.run.app),
+[public intake form](https://cx-ai-offer-site-425661492480.us-central1.run.app/intake.html),
 and
-[ROI calculator](https://raw.githack.com/Grove-ovo/opensupport-agentops/70b17c6c39a8d2581c89d22fa45b44be6edac429/roi.html).
+[ROI calculator](https://cx-ai-offer-site-425661492480.us-central1.run.app/roi.html).
 
 | Offer | Fixed fee | Timeline | Best fit | Intake |
 | --- | ---: | --- | --- | --- |
-| [CX AI Agent Reliability Sprint](./cx-ai-agent-reliability-sprint.md) | USD 18,000 | 12 business days | Support AI, eval, observability, guardrail, and agent-security teams that need replay tests and scorecards for one high-risk workflow | [Open CX AI intake](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=cx-ai-agent-reliability-sprint.yml) |
-| [CX AI Diagnostic Teardown](./sample-cx-ai-diagnostic-teardown.md) | USD 3,000 | 5 business days | Teams that need one workflow mapped and five replay tests before approving the full sprint | [Open diagnostic intake](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=cx-ai-diagnostic-teardown.yml) |
+| [CX AI Agent Reliability Sprint](./cx-ai-agent-reliability-sprint.md) | USD 18,000 | 12 business days | Support AI, eval, observability, guardrail, and agent-security teams that need replay tests and scorecards for one high-risk workflow | [Open public intake](https://cx-ai-offer-site-425661492480.us-central1.run.app/intake.html) |
+| [CX AI Diagnostic Teardown](./sample-cx-ai-diagnostic-teardown.md) | USD 3,000 | 5 business days | Teams that need one workflow mapped and five replay tests before approving the full sprint | [Open public intake](https://cx-ai-offer-site-425661492480.us-central1.run.app/intake.html) |
 | [Agent Memory Reliability Sprint](./agent-memory-reliability-sprint.md) | USD 12,000 | 10 business days | Teams shipping AI agents where memory, context, stale decisions, permissions, or secrets create business risk | [Open sprint intake](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=agent-memory-reliability-sprint.yml) |
 | [OpenSupport AgentOps Pilot](./opensupport-agentops-pilot.md) | USD 15,000 | 15 business days | Ecommerce support teams that want guarded shadow/assist automation before rollout | [Open pilot intake](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=opensupport-agentops-pilot.yml) |
 
@@ -77,12 +78,13 @@ It is a short discovery conversation that identifies one bounded path.
    [replay case catalog](./cx-ai-replay-case-catalog.md), and
    [scorecard template](./cx-ai-scorecard-template.md).
 5. If USD 18,000 needs scope review first, open the
-   [CX AI diagnostic teardown intake](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=cx-ai-diagnostic-teardown.yml)
-   and use the [sample diagnostic teardown](./sample-cx-ai-diagnostic-teardown.md).
+   [public CX AI intake form](https://cx-ai-offer-site-425661492480.us-central1.run.app/intake.html),
+   choose the USD 3,000 diagnostic path, and use the
+   [sample diagnostic teardown](./sample-cx-ai-diagnostic-teardown.md).
 6. For memory reliability, review the
    [agent memory replay test catalog](./agent-memory-replay-catalog.md) and
    [sample sprint report](./sample-memory-sprint-report.md).
-7. Open the relevant intake issue.
+7. Open the relevant intake issue or public intake form.
 8. Confirm scope, access, payment method, and start date.
 9. For the USD 18,000 CX AI sprint, use the
    [CX AI buyer packet](./cx-ai-buyer-packet.md) for approval text, billing
