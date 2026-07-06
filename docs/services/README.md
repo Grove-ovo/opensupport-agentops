@@ -5,6 +5,11 @@ work backed by this repository.
 
 ## Start Here
 
+Rendered CX offer page:
+[CX AI Agent Reliability Sprint](https://raw.githack.com/Grove-ovo/opensupport-agentops/gh-pages/index.html)
+and
+[ROI calculator](https://raw.githack.com/Grove-ovo/opensupport-agentops/gh-pages/roi.html).
+
 | Offer | Fixed fee | Timeline | Best fit | Intake |
 | --- | ---: | --- | --- | --- |
 | [CX AI Agent Reliability Sprint](./cx-ai-agent-reliability-sprint.md) | USD 18,000 | 12 business days | Support AI, eval, observability, guardrail, and agent-security teams that need replay tests and scorecards for one high-risk workflow | [Open CX AI intake](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=cx-ai-agent-reliability-sprint.yml) |

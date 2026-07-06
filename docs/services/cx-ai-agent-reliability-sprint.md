@@ -9,6 +9,11 @@ Payment shape: **USD 9,000 kickoff** and **USD 9,000 on accepted delivery**.
 
 Procurement packet: [CX AI buyer packet](./cx-ai-buyer-packet.md).
 
+Rendered offer page:
+[CX AI Agent Reliability Sprint](https://raw.githack.com/Grove-ovo/opensupport-agentops/gh-pages/index.html).
+ROI calculator:
+[estimate risk and savings](https://raw.githack.com/Grove-ovo/opensupport-agentops/gh-pages/roi.html).
+
 ## Best Fit
 
 This sprint is for teams shipping or evaluating customer-support AI agents,
@@ -44,6 +49,8 @@ One selected workflow. Examples:
 
 ## Public Samples
 
+- [Rendered CX offer page](https://raw.githack.com/Grove-ovo/opensupport-agentops/gh-pages/index.html)
+- [ROI calculator](https://raw.githack.com/Grove-ovo/opensupport-agentops/gh-pages/roi.html)
 - [Sample CX AI reliability report](./sample-cx-ai-reliability-report.md)
 - [CX AI replay case catalog](./cx-ai-replay-case-catalog.md)
 - [CX AI scorecard template](./cx-ai-scorecard-template.md)
