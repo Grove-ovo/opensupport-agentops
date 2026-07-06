@@ -22,6 +22,7 @@ implementation path in 10 business days.
 - [Sprint details](./docs/services/agent-memory-reliability-sprint.md)
 - [Outcomes and acceptance criteria](./docs/services/outcomes-and-acceptance.md)
 - [Proof pack](./docs/services/proof-pack.md)
+- [First 48 hours after yes](./docs/services/first-48-hours.md)
 - [Agent memory replay test catalog](./docs/services/agent-memory-replay-catalog.md)
 - [Sample sprint report](./docs/services/sample-memory-sprint-report.md)
 - [Public memory teardown examples](./docs/services/public-memory-teardowns.md)

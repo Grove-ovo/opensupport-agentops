@@ -18,6 +18,7 @@ USDC after scope is confirmed.
 - [Buyer deal room](./buyer-deal-room.md)
 - [Proof pack](./proof-pack.md)
 - [Outcomes and acceptance criteria](./outcomes-and-acceptance.md)
+- [First 48 hours after yes](./first-48-hours.md)
 - [Agent memory replay test catalog](./agent-memory-replay-catalog.md)
 - [Sample sprint report](./sample-memory-sprint-report.md)
 - [Public memory teardown examples](./public-memory-teardowns.md)
@@ -57,7 +58,8 @@ It is a short discovery conversation that identifies one bounded path.
 
 1. Read the [buyer deal room](./buyer-deal-room.md).
 2. Check the [outcomes and acceptance criteria](./outcomes-and-acceptance.md).
-3. Review the [agent memory replay test catalog](./agent-memory-replay-catalog.md).
-4. Review the [sample sprint report](./sample-memory-sprint-report.md).
-5. Open the relevant intake issue.
-6. Confirm scope, access, payment method, and start date.
+3. Review the [first 48 hours after yes](./first-48-hours.md).
+4. Review the [agent memory replay test catalog](./agent-memory-replay-catalog.md).
+5. Review the [sample sprint report](./sample-memory-sprint-report.md).
+6. Open the relevant intake issue.
+7. Confirm scope, access, payment method, and start date.

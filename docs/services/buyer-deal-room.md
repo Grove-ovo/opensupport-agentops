@@ -34,6 +34,7 @@ AI transformation project.
 | Commercial service index | [Commercial services](./README.md) |
 | Repository evidence map | [OpenSupport AgentOps proof pack](./proof-pack.md) |
 | Acceptance criteria | [Outcomes and acceptance criteria](./outcomes-and-acceptance.md) |
+| First 48 hours after yes | [First 48 hours after yes](./first-48-hours.md) |
 | Example replay tests | [Agent memory replay test catalog](./agent-memory-replay-catalog.md) |
 | Example memory sprint deliverable | [Sample sprint report](./sample-memory-sprint-report.md) |
 | Public teardown examples | [Public memory teardown examples](./public-memory-teardowns.md) |
@@ -67,9 +68,10 @@ For the OpenSupport pilot:
 1. Open an intake issue.
 2. Share the selected workflow and constraints.
 3. Review the [outcomes and acceptance criteria](./outcomes-and-acceptance.md).
-4. Confirm the fixed-fee scope and payment method.
-5. Start after upfront payment and access are agreed.
-6. Receive written deliverables and acceptance evidence.
+4. Review the [first 48 hours after yes](./first-48-hours.md).
+5. Confirm the fixed-fee scope and payment method.
+6. Start after upfront payment and access are agreed.
+7. Receive written deliverables and acceptance evidence.
 
 Intake links:
 
