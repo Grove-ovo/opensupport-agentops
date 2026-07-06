@@ -18,6 +18,16 @@ implementation path in 10 business days.
 - [Sprint details](./docs/services/agent-memory-reliability-sprint.md)
 - [Start an intake issue](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=agent-memory-reliability-sprint.yml)
 
+## OpenSupport AgentOps Pilot
+
+For ecommerce teams using Chatwoot or planning a self-hosted support stack, I
+offer a **USD 15,000 fixed-fee deployment pilot**: connect one support workflow,
+run guarded shadow/assist mode, install replay/security evals, and produce a
+go/no-go rollout plan.
+
+- [Pilot details](./docs/services/opensupport-agentops-pilot.md)
+- [Start a pilot intake issue](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=opensupport-agentops-pilot.yml)
+
 ## Project Status
 
 The repository implements the original PRD through production-oriented Phase 6

@@ -1,0 +1,72 @@
+name: OpenSupport AgentOps Pilot
+description: Request a USD 15,000 fixed-fee ecommerce support agent pilot.
+title: "OpenSupport Pilot: <company/workflow>"
+labels: ["opensupport-pilot"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This intake is for a USD 15,000 fixed-fee OpenSupport AgentOps deployment pilot for one ecommerce support workflow.
+  - type: input
+    id: company
+    attributes:
+      label: Company / store
+      placeholder: Acme Commerce
+    validations:
+      required: true
+  - type: dropdown
+    id: support_stack
+    attributes:
+      label: Current support stack
+      options:
+        - Chatwoot
+        - Zendesk
+        - Intercom
+        - Help Scout
+        - Custom
+        - Not sure yet
+    validations:
+      required: true
+  - type: textarea
+    id: workflow
+    attributes:
+      label: Workflow to pilot
+      description: Which support workflow should be tested first?
+      placeholder: "Example: order status, return policy, shipping delay triage, refund eligibility..."
+    validations:
+      required: true
+  - type: textarea
+    id: policies
+    attributes:
+      label: Policies and guardrails
+      description: What must the agent never promise, reveal, or do automatically?
+    validations:
+      required: true
+  - type: dropdown
+    id: mode
+    attributes:
+      label: Preferred pilot mode
+      options:
+        - Shadow only
+        - Assist with human approval
+        - Auto for low-risk cases only
+        - Not sure
+    validations:
+      required: true
+  - type: dropdown
+    id: budget
+    attributes:
+      label: Can USD 15,000 be approved this month?
+      options:
+        - "Yes"
+        - "Likely, after technical scope review"
+        - "No"
+    validations:
+      required: true
+  - type: input
+    id: contact
+    attributes:
+      label: Best contact
+      description: Email, GitHub handle, or preferred async contact route.
+    validations:
+      required: true
