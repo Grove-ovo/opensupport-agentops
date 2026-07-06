@@ -9,6 +9,8 @@ body:
         This intake is for a USD 18,000 fixed-fee CX AI Agent Reliability Sprint for one selected support AI, eval, observability, guardrail, or agent-security workflow.
 
         Before opening the issue, skim:
+        - Rendered offer page: https://raw.githack.com/Grove-ovo/opensupport-agentops/3c6ab09f3d8d91b20cb1966da483ccf0a7773890/index.html
+        - ROI calculator: https://raw.githack.com/Grove-ovo/opensupport-agentops/3c6ab09f3d8d91b20cb1966da483ccf0a7773890/roi.html
         - Sprint details: https://github.com/Grove-ovo/opensupport-agentops/blob/main/docs/services/cx-ai-agent-reliability-sprint.md
         - CX AI buyer packet: https://github.com/Grove-ovo/opensupport-agentops/blob/main/docs/services/cx-ai-buyer-packet.md
         - Sample report: https://github.com/Grove-ovo/opensupport-agentops/blob/main/docs/services/sample-cx-ai-reliability-report.md
@@ -94,11 +96,12 @@ body:
   - type: dropdown
     id: budget
     attributes:
-      label: Can USD 18,000 be approved this month?
+      label: Budget path
       options:
-        - "Yes"
-        - "Likely, after technical scope review"
-        - "No"
+        - "USD 18,000 sprint can be approved this month"
+        - "Likely USD 18,000 after technical scope review"
+        - "Start with USD 3,000 diagnostic teardown, then decide on the full sprint"
+        - "Not sure yet"
     validations:
       required: true
   - type: dropdown
@@ -136,3 +139,5 @@ body:
       options:
         - label: I understand this is for one selected workflow, fixed at USD 18,000, with USD 9,000 upfront and USD 9,000 on accepted delivery.
           required: true
+        - label: If USD 18,000 is not approved yet, I want to discuss the USD 3,000 diagnostic fallback instead of treating this as a won sprint.
+          required: false

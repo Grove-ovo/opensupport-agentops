@@ -6,9 +6,9 @@ work backed by this repository.
 ## Start Here
 
 Rendered CX offer page:
-[CX AI Agent Reliability Sprint](https://raw.githack.com/Grove-ovo/opensupport-agentops/gh-pages/index.html)
+[CX AI Agent Reliability Sprint](https://raw.githack.com/Grove-ovo/opensupport-agentops/3c6ab09f3d8d91b20cb1966da483ccf0a7773890/index.html)
 and
-[ROI calculator](https://raw.githack.com/Grove-ovo/opensupport-agentops/gh-pages/roi.html).
+[ROI calculator](https://raw.githack.com/Grove-ovo/opensupport-agentops/3c6ab09f3d8d91b20cb1966da483ccf0a7773890/roi.html).
 
 | Offer | Fixed fee | Timeline | Best fit | Intake |
 | --- | ---: | --- | --- | --- |
