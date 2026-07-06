@@ -1757,3 +1757,40 @@ Improved the local production demo browser flow, made Vite proxy configurable fo
 ### Next Steps
 
 - None - task complete
+
+
+## Session 52: Bilingual operator UI and industrial regression
+
+**Date**: 2026-07-06
+**Task**: Bilingual operator UI and industrial regression
+**Branch**: `feat/bilingual-operator-ui-complete`
+
+### Summary
+
+Implemented and hardened English/Simplified Chinese dashboard switching, added Vitest and Playwright persistence coverage, ran full repository regression and e2e checks, documented industrial test evidence and frontend localization rules.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a73a185` | (see git log) |
+| `09261b0` | (see git log) |
+| `3d0c50f` | (see git log) |
+| `4a5efb3` | (see git log) |
+| `df1834e` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
