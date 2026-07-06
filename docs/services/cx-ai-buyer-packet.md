@@ -148,6 +148,7 @@ failure modes, five replay tests, and a full-sprint recommendation.
 - [Rendered CX offer page](https://raw.githack.com/Grove-ovo/opensupport-agentops/70b17c6c39a8d2581c89d22fa45b44be6edac429/index.html)
 - [ROI calculator](https://raw.githack.com/Grove-ovo/opensupport-agentops/70b17c6c39a8d2581c89d22fa45b44be6edac429/roi.html)
 - [Sample CX AI reliability report](./sample-cx-ai-reliability-report.md)
+- [Sample CX AI diagnostic teardown](./sample-cx-ai-diagnostic-teardown.md)
 - [CX AI replay case catalog](./cx-ai-replay-case-catalog.md)
 - [CX AI scorecard template](./cx-ai-scorecard-template.md)
 - [Buyer deal room](./buyer-deal-room.md)

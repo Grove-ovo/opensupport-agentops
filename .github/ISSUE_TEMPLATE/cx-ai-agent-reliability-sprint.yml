@@ -14,6 +14,7 @@ body:
         - Sprint details: https://github.com/Grove-ovo/opensupport-agentops/blob/main/docs/services/cx-ai-agent-reliability-sprint.md
         - CX AI buyer packet: https://github.com/Grove-ovo/opensupport-agentops/blob/main/docs/services/cx-ai-buyer-packet.md
         - Sample report: https://github.com/Grove-ovo/opensupport-agentops/blob/main/docs/services/sample-cx-ai-reliability-report.md
+        - Sample diagnostic teardown: https://github.com/Grove-ovo/opensupport-agentops/blob/main/docs/services/sample-cx-ai-diagnostic-teardown.md
         - Replay cases: https://github.com/Grove-ovo/opensupport-agentops/blob/main/docs/services/cx-ai-replay-case-catalog.md
         - Buyer deal room: https://github.com/Grove-ovo/opensupport-agentops/blob/main/docs/services/buyer-deal-room.md
         - Outcomes and acceptance: https://github.com/Grove-ovo/opensupport-agentops/blob/main/docs/services/outcomes-and-acceptance.md

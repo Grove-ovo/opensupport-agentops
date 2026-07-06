@@ -24,6 +24,7 @@ USDC after scope is confirmed.
 - [Buyer deal room](./buyer-deal-room.md)
 - [CX AI buyer packet](./cx-ai-buyer-packet.md)
 - [Sample CX AI reliability report](./sample-cx-ai-reliability-report.md)
+- [Sample CX AI diagnostic teardown](./sample-cx-ai-diagnostic-teardown.md)
 - [CX AI replay case catalog](./cx-ai-replay-case-catalog.md)
 - [CX AI scorecard template](./cx-ai-scorecard-template.md)
 - [Proof pack](./proof-pack.md)
