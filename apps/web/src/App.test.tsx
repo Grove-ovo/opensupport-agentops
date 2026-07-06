@@ -15,6 +15,7 @@ describe('operations dashboard', () => {
 
   afterEach(() => {
     cleanup();
+    document.documentElement.lang = 'en';
     vi.unstubAllGlobals();
   });
 
@@ -101,10 +102,21 @@ describe('operations dashboard', () => {
       expect(screen.getAllByRole('button', { name: '概览' }).length).toBeGreaterThan(0);
     });
     expect(document.documentElement.lang).toBe('zh-CN');
-    await user.click(screen.getByRole('button', { name: 'Language' }));
+    expect(localStorage.getItem('agentops-locale')).toBe('zh');
+    expect(screen.getByRole('button', { name: '语言' })).toHaveAttribute('title', '切换到英文');
+    await user.click(screen.getByRole('button', { name: '语言' }));
     await waitFor(() => {
       expect(screen.getAllByRole('button', { name: 'Overview' }).length).toBeGreaterThan(0);
     });
+    expect(localStorage.getItem('agentops-locale')).toBe('en');
+  });
+
+  it('restores the persisted locale before the first operator interaction', async () => {
+    localStorage.setItem('agentops-locale', 'zh');
+    render(<App />);
+    await screen.findByText('18');
+    expect(screen.getAllByRole('button', { name: '概览' }).length).toBeGreaterThan(0);
+    expect(document.documentElement.lang).toBe('zh-CN');
   });
 });
 

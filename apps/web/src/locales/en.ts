@@ -343,6 +343,9 @@ export const en: Record<string, string> = {
   'tool.result.summary': 'Dry-run {status} ({code})',
 
   // Language switcher
+  'lang.switch.aria': 'Language',
+  'lang.switch.en': 'Switch to English',
+  'lang.switch.zh': 'Switch to Chinese',
   'lang.en': 'EN',
   'lang.zh': '中文',
 };
