@@ -33,6 +33,7 @@ AI transformation project.
 | --- | --- |
 | Repository evidence map | [OpenSupport AgentOps proof pack](./proof-pack.md) |
 | Example memory sprint deliverable | [Sample sprint report](./sample-memory-sprint-report.md) |
+| Public teardown examples | [Public memory teardown examples](./public-memory-teardowns.md) |
 | Qualification and due diligence | [Buyer due diligence](./buyer-due-diligence.md) |
 | Runtime modes | [Runtime modes](../runtime_modes.md) |
 | Approval flow | [Approval flow](../approval_flow.md) |
