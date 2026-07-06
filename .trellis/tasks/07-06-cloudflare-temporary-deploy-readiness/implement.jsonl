@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/infra/index.md", "reason": "Infra checklist for deployment, edge, docs, and validation changes."}
+{"file": ".trellis/spec/infra/phase-7b-edge-transport.md", "reason": "Edge proxy header rebuilding, security headers, cache-control, and routing constraints."}
+{"file": ".trellis/spec/infra/phase-7f-pre-deployment-gate.md", "reason": "Keep temporary deployment evidence distinct from production deployment claims."}
+{"file": ".trellis/spec/infra/github-release-readiness.md", "reason": "Repository entry docs and remote publication language must remain accurate."}
+{"file": ".trellis/tasks/07-06-cloudflare-temporary-deploy-readiness/research/cloudflare-temporary-deploy.md", "reason": "Cloudflare temporary account behavior, limitations, and evidence handling."}

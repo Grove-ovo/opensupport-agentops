@@ -57,6 +57,7 @@ remain out of scope.
 - [Operator authentication](./docs/operator_authentication.md)
 - [Edge and transport security](./docs/edge_transport_security.md)
 - [Production preflight](./docs/operations/deploy-preflight.md)
+- [Cloudflare temporary deploy](./docs/operations/cloudflare-temporary-deploy.md)
 
 ## Repository Layout
 
@@ -64,6 +65,7 @@ remain out of scope.
 apps/api                 Fastify production API and Chatwoot/LLM runtime
 apps/web                 React/Vite operator Dashboard
 apps/worker              Redis Streams monitor/eval/aggregation worker
+apps/edge                Cloudflare Worker temporary edge shell/proxy
 packages/agent-core      Deterministic routing and pipeline contracts
 packages/agent-runtime   RAG/tool/risk/response orchestration
 packages/chatwoot        Chatwoot inbound and outbound connectors
@@ -125,6 +127,16 @@ docker compose --env-file .env.production \
 Dashboard/API: `http://localhost:8088`
 Prometheus: `http://127.0.0.1:9090`
 Grafana: `http://127.0.0.1:3001`
+
+Run the Cloudflare temporary edge shell:
+
+```bash
+npm run test:edge
+npm run deploy:cloudflare:temporary
+```
+
+The Worker target validates edge deployment and optional proxy wiring only. It
+does not replace the Node API, PostgreSQL/pgvector, Redis, or async worker.
 
 ## Evaluation And Reports
 

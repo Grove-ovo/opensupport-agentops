@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/infra/index.md", "reason": "Final validation checklist for infra and deployment documentation."}
+{"file": ".trellis/spec/infra/phase-7b-edge-transport.md", "reason": "Verify public edge proxy trust, response headers, and route scope."}
+{"file": ".trellis/spec/infra/phase-7f-pre-deployment-gate.md", "reason": "Verify deployment evidence does not overclaim production readiness."}
+{"file": ".trellis/spec/infra/github-release-readiness.md", "reason": "Verify README and publication language remain accurate."}
+{"file": ".trellis/tasks/07-06-cloudflare-temporary-deploy-readiness/research/cloudflare-temporary-deploy.md", "reason": "Verify temporary-account evidence, redaction, and scope constraints."}

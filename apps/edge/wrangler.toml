@@ -1,0 +1,7 @@
+name = "opensupport-agentops-edge"
+main = "src/index.mjs"
+compatibility_date = "2026-07-06"
+workers_dev = true
+
+[vars]
+AGENTOPS_EDGE_MODE = "temporary"
