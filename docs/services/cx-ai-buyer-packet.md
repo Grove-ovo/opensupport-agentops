@@ -14,7 +14,9 @@ are agreed.
 
 Start route: open the
 [CX AI intake issue](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=cx-ai-agent-reliability-sprint.yml)
-or email `chinesegrove@gmail.com`.
+or, when the full sprint needs scope review first, open the
+[CX AI diagnostic teardown intake](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=cx-ai-diagnostic-teardown.yml).
+Email fallback: `chinesegrove@gmail.com`.
 
 Rendered offer page:
 [CX AI Agent Reliability Sprint](https://raw.githack.com/Grove-ovo/opensupport-agentops/70b17c6c39a8d2581c89d22fa45b44be6edac429/index.html).

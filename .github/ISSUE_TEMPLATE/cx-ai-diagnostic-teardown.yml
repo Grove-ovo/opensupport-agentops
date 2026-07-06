@@ -1,0 +1,119 @@
+name: CX AI Diagnostic Teardown
+description: Request a USD 3,000 diagnostic teardown for one support AI or agent eval workflow before deciding on the full sprint.
+title: "CX AI Diagnostic Teardown: <workflow>"
+labels: ["cx-ai-diagnostic-teardown"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This intake is for a USD 3,000 diagnostic teardown for one selected support AI, eval, observability, guardrail, or agent-security workflow.
+
+        Use this path when the full USD 18,000 CX AI Agent Reliability Sprint needs technical scope review first.
+
+        Before opening the issue, skim:
+        - Diagnostic sample: https://github.com/Grove-ovo/opensupport-agentops/blob/main/docs/services/sample-cx-ai-diagnostic-teardown.md
+        - Rendered offer page: https://raw.githack.com/Grove-ovo/opensupport-agentops/70b17c6c39a8d2581c89d22fa45b44be6edac429/index.html
+        - ROI calculator: https://raw.githack.com/Grove-ovo/opensupport-agentops/70b17c6c39a8d2581c89d22fa45b44be6edac429/roi.html
+        - CX AI buyer packet: https://github.com/Grove-ovo/opensupport-agentops/blob/main/docs/services/cx-ai-buyer-packet.md
+
+        Email fallback: chinesegrove@gmail.com
+  - type: input
+    id: company
+    attributes:
+      label: Company / project
+      description: Who owns the workflow?
+      placeholder: Acme CX AI Platform
+    validations:
+      required: true
+  - type: textarea
+    id: workflow
+    attributes:
+      label: Selected workflow
+      description: Which support AI, eval, observability, guardrail, or agent-security workflow should be diagnosed?
+      placeholder: "Example: refund eligibility support agent, source-grounded answer eval, prompt-injection boundary for tool-using agents..."
+    validations:
+      required: true
+  - type: textarea
+    id: highest_risk_failure
+    attributes:
+      label: Highest-risk failure mode
+      description: What failure would be most expensive, unsafe, or trust-damaging?
+      placeholder: "Example: stale policy causes wrong refund promise; agent exposes private customer context; eval misses unsafe tool-call approval."
+    validations:
+      required: true
+  - type: textarea
+    id: available_evidence
+    attributes:
+      label: Available evidence
+      description: What sanitized evidence can be reviewed?
+      placeholder: "Approved policy docs, anonymized transcript excerpts, screenshots, eval examples, public docs, reviewer notes..."
+    validations:
+      required: true
+  - type: dropdown
+    id: action_authority
+    attributes:
+      label: Can the agent take actions?
+      options:
+        - No, answer/eval only
+        - Human approval required
+        - Low-risk actions only
+        - Yes, can mutate customer/account/order state
+        - Not sure
+    validations:
+      required: true
+  - type: input
+    id: reviewer
+    attributes:
+      label: Reviewer / owner
+      description: Name or role for the person who can judge whether the diagnostic is useful.
+      placeholder: "Owner: Head of CX AI. Reviewer: Staff Engineer for agent platform."
+    validations:
+      required: true
+  - type: dropdown
+    id: conversion_path
+    attributes:
+      label: If the diagnostic confirms risk, can the full sprint be considered?
+      options:
+        - "Yes, USD 18,000 sprint can be considered after diagnostic"
+        - "Likely, after technical scope review"
+        - "No, diagnostic only"
+        - "Not sure yet"
+    validations:
+      required: true
+  - type: dropdown
+    id: payment_route
+    attributes:
+      label: Preferred payment route
+      description: Diagnostic starts after scope and USD 3,000 payment route are confirmed.
+      options:
+        - Wise payment request
+        - Stripe invoice or payment link
+        - PayPal invoice
+        - Bank transfer
+        - USDC
+        - Not sure yet
+    validations:
+      required: true
+  - type: input
+    id: kickoff_timing
+    attributes:
+      label: Preferred kickoff timing
+      placeholder: "Example: this week after scope confirmation"
+    validations:
+      required: true
+  - type: input
+    id: contact
+    attributes:
+      label: Best contact
+      description: Email, GitHub handle, or preferred async contact route.
+    validations:
+      required: true
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: Scope confirmation
+      options:
+        - label: I understand this is a USD 3,000 diagnostic teardown for one selected workflow, not a full sprint.
+          required: true
+        - label: I understand: No deal is treated as won or paid until written approval, received payment, and payout status are verified.
+          required: true

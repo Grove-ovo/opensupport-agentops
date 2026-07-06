@@ -13,6 +13,7 @@ and
 | Offer | Fixed fee | Timeline | Best fit | Intake |
 | --- | ---: | --- | --- | --- |
 | [CX AI Agent Reliability Sprint](./cx-ai-agent-reliability-sprint.md) | USD 18,000 | 12 business days | Support AI, eval, observability, guardrail, and agent-security teams that need replay tests and scorecards for one high-risk workflow | [Open CX AI intake](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=cx-ai-agent-reliability-sprint.yml) |
+| [CX AI Diagnostic Teardown](./sample-cx-ai-diagnostic-teardown.md) | USD 3,000 | 5 business days | Teams that need one workflow mapped and five replay tests before approving the full sprint | [Open diagnostic intake](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=cx-ai-diagnostic-teardown.yml) |
 | [Agent Memory Reliability Sprint](./agent-memory-reliability-sprint.md) | USD 12,000 | 10 business days | Teams shipping AI agents where memory, context, stale decisions, permissions, or secrets create business risk | [Open sprint intake](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=agent-memory-reliability-sprint.yml) |
 | [OpenSupport AgentOps Pilot](./opensupport-agentops-pilot.md) | USD 15,000 | 15 business days | Ecommerce support teams that want guarded shadow/assist automation before rollout | [Open pilot intake](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=opensupport-agentops-pilot.yml) |
 
@@ -75,11 +76,14 @@ It is a short discovery conversation that identifies one bounded path.
    [sample CX AI reliability report](./sample-cx-ai-reliability-report.md),
    [replay case catalog](./cx-ai-replay-case-catalog.md), and
    [scorecard template](./cx-ai-scorecard-template.md).
-5. For memory reliability, review the
+5. If USD 18,000 needs scope review first, open the
+   [CX AI diagnostic teardown intake](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=cx-ai-diagnostic-teardown.yml)
+   and use the [sample diagnostic teardown](./sample-cx-ai-diagnostic-teardown.md).
+6. For memory reliability, review the
    [agent memory replay test catalog](./agent-memory-replay-catalog.md) and
    [sample sprint report](./sample-memory-sprint-report.md).
-6. Open the relevant intake issue.
-7. Confirm scope, access, payment method, and start date.
-8. For the USD 18,000 CX AI sprint, use the
+7. Open the relevant intake issue.
+8. Confirm scope, access, payment method, and start date.
+9. For the USD 18,000 CX AI sprint, use the
    [CX AI buyer packet](./cx-ai-buyer-packet.md) for approval text, billing
    details, and data handling boundaries.

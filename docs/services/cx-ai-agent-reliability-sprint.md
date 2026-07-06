@@ -9,6 +9,10 @@ Payment shape: **USD 9,000 kickoff** and **USD 9,000 on accepted delivery**.
 
 Procurement packet: [CX AI buyer packet](./cx-ai-buyer-packet.md).
 
+Diagnostic fallback:
+[USD 3,000 CX AI diagnostic teardown](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=cx-ai-diagnostic-teardown.yml)
+when the full sprint needs scope review first.
+
 Rendered offer page:
 [CX AI Agent Reliability Sprint](https://raw.githack.com/Grove-ovo/opensupport-agentops/70b17c6c39a8d2581c89d22fa45b44be6edac429/index.html).
 ROI calculator:
@@ -90,6 +94,8 @@ Open the intake issue or email `chinesegrove@gmail.com` with:
 - kickoff timing.
 
 [Start CX AI Agent Reliability Sprint intake](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=cx-ai-agent-reliability-sprint.yml)
+
+[Start USD 3,000 diagnostic teardown intake](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=cx-ai-diagnostic-teardown.yml)
 
 For procurement, billing, data handling, and approval text, use the
 [CX AI buyer packet](./cx-ai-buyer-packet.md).
