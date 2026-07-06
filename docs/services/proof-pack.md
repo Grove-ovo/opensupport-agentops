@@ -1,7 +1,8 @@
 # OpenSupport AgentOps Proof Pack
 
-This page is for technical buyers evaluating the USD 12,000 Agent Memory
-Reliability Sprint or the USD 15,000 OpenSupport AgentOps Pilot.
+This page is for technical buyers evaluating the USD 18,000 CX AI Agent
+Reliability Sprint, the USD 12,000 Agent Memory Reliability Sprint, or the USD
+15,000 OpenSupport AgentOps Pilot.
 
 It links the commercial offer to concrete repository evidence. The repository is
 not a hosted SaaS and does not claim live production traffic. It is a
@@ -36,6 +37,15 @@ operator approval, trace snapshots, release gates, and deployment runbooks.
 | Industrial test report | `reports/industrial_test_report_2026-07-06.md` |
 | Deployment runbook | `docs/operations/deployment-runbook.md` |
 | Production preflight | `docs/operations/deploy-preflight.md` |
+
+## CX AI Sprint Samples
+
+| Need | Public sample |
+| --- | --- |
+| Deliverable shape | [Sample CX AI reliability report](./sample-cx-ai-reliability-report.md) |
+| Replay cases | [CX AI replay case catalog](./cx-ai-replay-case-catalog.md) |
+| Acceptance scorecard | [CX AI scorecard template](./cx-ai-scorecard-template.md) |
+| Commercial packet | [CX AI buyer packet](./cx-ai-buyer-packet.md) |
 
 ## Reproduction Commands
 

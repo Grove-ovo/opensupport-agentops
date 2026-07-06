@@ -140,6 +140,9 @@ failure modes, five replay tests, and a full-sprint recommendation.
 ## Related Proof
 
 - [CX AI Agent Reliability Sprint](./cx-ai-agent-reliability-sprint.md)
+- [Sample CX AI reliability report](./sample-cx-ai-reliability-report.md)
+- [CX AI replay case catalog](./cx-ai-replay-case-catalog.md)
+- [CX AI scorecard template](./cx-ai-scorecard-template.md)
 - [Buyer deal room](./buyer-deal-room.md)
 - [Outcomes and acceptance criteria](./outcomes-and-acceptance.md)
 - [First 48 hours after yes](./first-48-hours.md)

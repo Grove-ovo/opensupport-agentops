@@ -34,6 +34,9 @@ AI transformation project.
 | --- | --- |
 | Commercial service index | [Commercial services](./README.md) |
 | CX AI commercial packet | [CX AI buyer packet](./cx-ai-buyer-packet.md) |
+| CX AI sample report | [Sample CX AI reliability report](./sample-cx-ai-reliability-report.md) |
+| CX AI replay cases | [CX AI replay case catalog](./cx-ai-replay-case-catalog.md) |
+| CX AI scorecard | [CX AI scorecard template](./cx-ai-scorecard-template.md) |
 | Repository evidence map | [OpenSupport AgentOps proof pack](./proof-pack.md) |
 | Acceptance criteria | [Outcomes and acceptance criteria](./outcomes-and-acceptance.md) |
 | First 48 hours after yes | [First 48 hours after yes](./first-48-hours.md) |

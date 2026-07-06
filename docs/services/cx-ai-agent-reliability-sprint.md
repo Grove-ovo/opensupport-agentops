@@ -42,6 +42,12 @@ One selected workflow. Examples:
 - optional bounded prototype or fixture when access is available and the change
   is narrow.
 
+## Public Samples
+
+- [Sample CX AI reliability report](./sample-cx-ai-reliability-report.md)
+- [CX AI replay case catalog](./cx-ai-replay-case-catalog.md)
+- [CX AI scorecard template](./cx-ai-scorecard-template.md)
+
 ## Default Data Handling
 
 The default sprint does not require production credentials or raw private

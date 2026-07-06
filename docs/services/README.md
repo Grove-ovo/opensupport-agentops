@@ -18,6 +18,9 @@ USDC after scope is confirmed.
 
 - [Buyer deal room](./buyer-deal-room.md)
 - [CX AI buyer packet](./cx-ai-buyer-packet.md)
+- [Sample CX AI reliability report](./sample-cx-ai-reliability-report.md)
+- [CX AI replay case catalog](./cx-ai-replay-case-catalog.md)
+- [CX AI scorecard template](./cx-ai-scorecard-template.md)
 - [Proof pack](./proof-pack.md)
 - [Outcomes and acceptance criteria](./outcomes-and-acceptance.md)
 - [First 48 hours after yes](./first-48-hours.md)
@@ -62,8 +65,13 @@ It is a short discovery conversation that identifies one bounded path.
 1. Read the [buyer deal room](./buyer-deal-room.md).
 2. Check the [outcomes and acceptance criteria](./outcomes-and-acceptance.md).
 3. Review the [first 48 hours after yes](./first-48-hours.md).
-4. Review the [agent memory replay test catalog](./agent-memory-replay-catalog.md).
-5. Review the [sample sprint report](./sample-memory-sprint-report.md).
+4. For CX AI reliability, review the
+   [sample CX AI reliability report](./sample-cx-ai-reliability-report.md),
+   [replay case catalog](./cx-ai-replay-case-catalog.md), and
+   [scorecard template](./cx-ai-scorecard-template.md).
+5. For memory reliability, review the
+   [agent memory replay test catalog](./agent-memory-replay-catalog.md) and
+   [sample sprint report](./sample-memory-sprint-report.md).
 6. Open the relevant intake issue.
 7. Confirm scope, access, payment method, and start date.
 8. For the USD 18,000 CX AI sprint, use the
