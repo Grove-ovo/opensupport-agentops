@@ -341,4 +341,11 @@ export const zh: Record<string, string> = {
   'tool.error.missing': '缺少必填字段: {field}',
   'tool.error.failed': '工具试运行失败',
   'tool.result.summary': '试运行 {status} ({code})',
+
+  // 语言切换
+  'lang.switch.aria': '语言',
+  'lang.switch.en': '切换到英文',
+  'lang.switch.zh': '切换到中文',
+  'lang.en': 'EN',
+  'lang.zh': '中文',
 };

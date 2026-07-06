@@ -19,6 +19,17 @@ Overview metrics are read from the latest `dashboard_overview_24h`
 - Trace views expose normalized summaries, immutable version IDs, evidence
   references, transitions, and delivery status without raw provider payloads.
 
+## Language Support
+
+The dashboard supports English and Simplified Chinese through the locale
+provider in `apps/web/src/locales`. Operators can switch language from the
+topbar. The selected locale is persisted in browser local storage under
+`agentops-locale`, and the root HTML `lang` attribute is synchronized for
+accessibility and browser tooling.
+
+Localization is display-only. API payloads, enum values, audit records, and
+state-machine identifiers remain unchanged.
+
 ## Local Commands
 
 ```sh

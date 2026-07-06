@@ -91,3 +91,107 @@ proxy_set_header X-Forwarded-Proto ${AGENTOPS_PUBLIC_SCHEME};
 proxy_set_header X-Forwarded-User "";
 limit_req_zone $operator_write_key zone=agentops_operator_write:10m rate=5r/s;
 ```
+
+## Scenario: Temporary Cloudflare Worker Edge Shell/Proxy
+
+### 1. Scope / Trigger
+
+- Trigger: adding or changing a Cloudflare Worker temporary deployment target,
+  edge shell, or optional proxy in front of AgentOps.
+- Applies to `apps/edge/**`, `docs/operations/cloudflare-temporary-deploy.md`,
+  temporary deployment reports, and root package deploy/test scripts.
+
+### 2. Signatures
+
+```text
+npm run test:edge
+npm run deploy:cloudflare:temporary
+```
+
+```text
+GET /                         -> temporary edge shell
+GET /__agentops/edge-ready    -> secret-free readiness JSON
+/api/*                        -> optional origin proxy
+/health/*                     -> optional origin proxy
+/worker/health/*              -> optional origin proxy
+/worker/metrics               -> optional origin proxy, exact route only
+```
+
+```text
+AGENTOPS_EDGE_MODE
+AGENTOPS_ORIGIN_URL
+```
+
+### 3. Contracts
+
+- Temporary Worker targets are shell/proxy targets only. They must not claim to
+  run Fastify, PostgreSQL/pgvector, Redis, Redis Streams workers, Chatwoot, or
+  LLM providers natively unless those capabilities are actually implemented and
+  tested in Workers.
+- `AGENTOPS_ORIGIN_URL` is optional. When absent, proxy routes fail closed with
+  `503 backend_origin_missing`.
+- Client-supplied source and forwarding headers are untrusted. Strip
+  `Forwarded`, `CF-Connecting-IP`, `True-Client-IP`, `X-Client-IP`,
+  `X-Forwarded-For`, `X-Forwarded-Host`, `X-Forwarded-Proto`,
+  `X-Forwarded-User`, and `X-Real-IP` before proxying.
+- Rebuild only the forwarding fields the Worker can prove, such as
+  `X-Forwarded-Proto` from the request URL protocol.
+- Shell, readiness, and proxied responses must set explicit `cache-control:
+  no-store` plus browser security headers.
+- `wrangler` must be pinned in deploy scripts, for example
+  `npx wrangler@<version> deploy --temporary`, so temporary deploy behavior
+  does not drift silently.
+- Cloudflare temporary claim URLs are secret-equivalent because they grant
+  ownership of the preview account. Do not commit claim tokens.
+
+### 4. Validation & Error Matrix
+
+| Condition | Behavior |
+|---|---|
+| `AGENTOPS_ORIGIN_URL` missing on proxy route | `503 backend_origin_missing` |
+| Client spoofs forwarded/source headers | Spoofed values are discarded before origin fetch |
+| `/worker/metrics-extra` requested | Not proxied through the exact metrics route |
+| Proxied origin returns cacheable headers | Worker response still emits `cache-control: no-store` |
+| Temporary deploy succeeds | Record URL and Worker version ID, redact claim URL |
+| Temporary deploy fails | Record exact command and non-secret failure reason |
+
+### 5. Good / Base / Bad Cases
+
+- Good: Worker URL serves a degraded shell, readiness reports
+  `temporary_deployment=true`, and `/api/*` fails closed until an origin is
+  configured.
+- Base: Worker proxies `/api/*` to a full AgentOps origin while stripping
+  untrusted forwarding headers and tagging the request with an edge marker.
+- Bad: commit `claimToken=...` or claim a Worker-only URL proves full AgentOps
+  product deployment.
+- Bad: use an unpinned `npx wrangler deploy --temporary` command in committed
+  scripts.
+
+### 6. Tests Required
+
+- Unit tests for readiness, static shell, fail-closed proxy behavior, successful
+  proxy URL mapping, forwarded/source header stripping, response no-store, and
+  exact `/worker/metrics` routing.
+- `npm run test:edge`.
+- `npm run lint`, `npm run typecheck`, and full repository tests before
+  merging temporary deploy work.
+- Real deployed smoke, when network access is available: `GET /`, `GET
+  /__agentops/edge-ready`, and one proxy route without origin configured.
+- Secret scan committed evidence for `claimToken=` and real Cloudflare claim
+  URLs before commit.
+
+### 7. Wrong vs Correct
+
+#### Wrong
+
+```js
+headers.set('x-forwarded-for', request.headers.get('x-forwarded-for'));
+```
+
+#### Correct
+
+```js
+headers.delete('x-forwarded-for');
+headers.delete('x-real-ip');
+headers.set('x-forwarded-proto', new URL(request.url).protocol.replace(':', ''));
+```

@@ -42,8 +42,23 @@ focusable cancel/confirm actions. Tables use semantic table elements.
 
 ---
 
+## Localization
+
+User-facing dashboard copy must render through `useLocale().t()` and the
+dictionary files in `apps/web/src/locales`. Keep backend enum values, audit
+identifiers, and API payload values unchanged; translate them only at the UI
+display boundary, such as `StatusBadge`.
+
+Language controls must expose localized `aria-label` and `title` values. When
+adding a new translation key, add it to both English and Simplified Chinese
+dictionaries in the same change.
+
+---
+
 ## Common Mistakes
 
 - Do not perform approval or release mutations from an unconfirmed click.
 - Do not expose raw provider payloads or stored secret values.
 - Do not depend on CSS-hidden desktop controls as the only mobile control.
+- Do not hard-code visible English copy in dashboard components when a locale
+  dictionary key should be used.

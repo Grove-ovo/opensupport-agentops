@@ -1,0 +1,106 @@
+# Cloudflare Temporary Deploy Report - 2026-07-06
+
+## Scope
+
+This report covers the temporary Cloudflare Worker deployment path for
+OpenSupport AgentOps. The deployed Worker is an edge shell and optional proxy.
+It is not the full AgentOps runtime.
+
+The full product still requires the Node/Fastify API, PostgreSQL/pgvector,
+Redis, Redis Streams worker, Chatwoot, and an LLM provider.
+
+## Deployment
+
+- Command: `npm run deploy:cloudflare:temporary`
+- Wrangler version: `4.107.0`
+- Worker: `opensupport-agentops-edge`
+- Temporary account: `Glass Carrot`
+- Public URL: `https://opensupport-agentops-edge.glass-carrot.workers.dev`
+- Current Version ID: `16e4230d-c3dc-44c2-9fd1-6cbf4df61763`
+- Claim URL: redacted. The claim URL grants ownership of the temporary preview
+  account and must not be committed to repository artifacts.
+
+## Automated Checks
+
+- `npm run test`: passed.
+- `npm run test:edge`: passed, 6/6 tests.
+- `npm run lint`: passed.
+- `npm ls --workspace @opensupport/edge --package-lock-only`: passed.
+- `npm run typecheck`: passed.
+- `npm run test:release`: passed.
+
+Notes from the full repository run:
+
+- API tests: 18 passed, 3 skipped by existing integration-test conditions.
+- Worker tests: 5 passed, 1 skipped by existing integration-test conditions.
+- Edge tests: 6 passed, 0 skipped.
+- Web unit tests: 7 passed, 0 skipped.
+
+## Real User Scenario Smoke
+
+Tested against the deployed temporary Worker URL.
+
+### Home Page
+
+- Request: `GET /`
+- Result: `200 OK`
+- Observed behavior:
+  - Static temporary deployment shell rendered.
+  - Page stated the API origin is not configured.
+  - Page stated this is not the full AgentOps backend.
+- Security/cache headers:
+  - `cache-control: no-store`
+  - `content-security-policy`
+  - `referrer-policy: no-referrer`
+  - `x-content-type-options: nosniff`
+  - `x-frame-options: DENY`
+
+### Readiness JSON
+
+- Request: `GET /__agentops/edge-ready`
+- Result: `200 OK`
+- Observed body:
+  - `status: degraded`
+  - `temporary_deployment: true`
+  - `backend_origin_configured: false`
+  - `native_fastify_api: false`
+  - `native_postgres_redis: false`
+  - `native_worker_runtime: false`
+
+### API Proxy Fail-Closed
+
+- Request: `GET /api/v1/auth/session`
+- Result: `503 Service Unavailable`
+- Observed body:
+  - `error.code: backend_origin_missing`
+- Interpretation: without `AGENTOPS_ORIGIN_URL`, API and health proxy paths
+  fail closed instead of pretending the full AgentOps runtime is online.
+
+## Security Notes
+
+- The Worker strips untrusted source and forwarding headers before proxying:
+  `Forwarded`, `CF-Connecting-IP`, `True-Client-IP`, `X-Client-IP`,
+  `X-Forwarded-For`, `X-Forwarded-Host`, `X-Forwarded-Proto`,
+  `X-Forwarded-User`, and `X-Real-IP`.
+- The Worker rebuilds `X-Forwarded-Proto` from the request URL protocol and
+  tags proxied requests with `X-AgentOps-Edge-Proxy: cloudflare-temporary`.
+- Proxied responses are forced to `cache-control: no-store` and receive the
+  same security headers as the local shell/readiness responses.
+- `/worker/metrics` is an exact proxy route. `/worker/metrics-*` paths do not
+  expand the proxy surface.
+
+## Limitations
+
+- This deployment does not run the Dashboard build from `apps/web/dist`.
+- This deployment does not run the Fastify API in Cloudflare Workers.
+- This deployment does not provide PostgreSQL/pgvector, Redis, Redis Streams,
+  Chatwoot, or LLM provider integration.
+- Live end-to-end AgentOps behavior requires a full origin deployment and
+  `AGENTOPS_ORIGIN_URL` configured on the Worker.
+
+## Result
+
+Temporary Cloudflare deployment path is proven for the isolated edge
+shell/proxy target. Full-product deployment remains the existing production
+Compose path until a separate Cloudflare-native architecture is designed and
+implemented.

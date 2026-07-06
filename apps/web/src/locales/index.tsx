@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { en } from './en.js';
 import { zh } from './zh.js';
 
@@ -7,6 +7,10 @@ export type Locale = 'en' | 'zh';
 const dictionaries: Record<Locale, Record<string, string>> = { en, zh };
 
 const STORAGE_KEY = 'agentops-locale';
+
+function localeToHtmlLang(locale: Locale): string {
+  return locale === 'zh' ? 'zh-CN' : 'en';
+}
 
 function detectInitialLocale(): Locale {
   if (typeof window === 'undefined') return 'en';
@@ -26,10 +30,13 @@ const LocaleContext = createContext<LocaleContextValue | null>(null);
 export function LocaleProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(detectInitialLocale);
 
+  useEffect(() => {
+    document.documentElement.lang = localeToHtmlLang(locale);
+  }, [locale]);
+
   const setLocale = (next: Locale) => {
     setLocaleState(next);
     localStorage.setItem(STORAGE_KEY, next);
-    document.documentElement.lang = next === 'zh' ? 'zh-CN' : 'en';
   };
 
   const value = useMemo<LocaleContextValue>(() => {

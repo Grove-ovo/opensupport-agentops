@@ -1,0 +1,11 @@
+{
+  "name": "@opensupport/edge",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test src/*.test.mjs",
+    "deploy:temporary": "npx wrangler@4.107.0 deploy --temporary",
+    "dev": "npx wrangler@4.107.0 dev"
+  }
+}

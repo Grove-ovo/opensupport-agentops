@@ -142,6 +142,28 @@ test('mobile navigation does not overflow viewport', async (
   });
 });
 
+test('language switch persists across reloads', async ({ page }, testInfo) => {
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'Overview' })).toBeVisible();
+
+  await page.getByRole('button', { name: 'Language' }).click();
+  await expect(page.getByRole('heading', { name: '概览' })).toBeVisible();
+  await expect(page.getByRole('button', { name: '语言' })).toHaveAttribute(
+    'title',
+    '切换到英文',
+  );
+  await expect(page.locator('html')).toHaveAttribute('lang', 'zh-CN');
+  await expect(page.getByRole('navigation', { name: '运营' }).first()).toBeVisible();
+  await page.screenshot({
+    path: testInfo.outputPath('zh-overview.png'),
+    fullPage: true,
+  });
+
+  await page.reload();
+  await expect(page.getByRole('heading', { name: '概览' })).toBeVisible();
+  await expect(page.locator('html')).toHaveAttribute('lang', 'zh-CN');
+});
+
 test('signed-out operators are sent to the identity provider', async ({ page }) => {
   await page.unroute('**/api/**');
   await page.route('**/api/v1/auth/session', (route) =>

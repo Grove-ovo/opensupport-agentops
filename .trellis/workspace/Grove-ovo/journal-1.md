@@ -1767,7 +1767,10 @@ Improved the local production demo browser flow, made Vite proxy configurable fo
 
 ### Summary
 
-Added a lightweight custom React Context i18n layer (LocaleProvider, useLocale, t() with {param} interpolation) with en/zh dictionaries (~280 keys), localStorage persistence, browser-language detection, and document.lang sync. Wired all 13 dashboard files (AppShell, App auth surfaces, ConfirmDialog, StatePanel, StatusBadge, and the 7 views) through translation keys; added a LanguageSwitcher toggle in the topbar and a .language-switcher style. Made App self-wrap LocaleProvider so tests render <App /> directly. Added a language-switch test and localStorage isolation in beforeEach. Verified typecheck, lint, test:web (6/6), and build all pass. Merged feat/i18n-language-switcher into dev and pushed via SSH.
+Added a lightweight custom React Context i18n layer with English and Simplified
+Chinese dictionaries, locale persistence, browser-language detection, and
+`document.lang` sync. Wired the operator Dashboard through translation keys,
+added the LanguageSwitcher toggle, and merged the implementation into `dev`.
 
 ### Main Changes
 
@@ -1779,6 +1782,76 @@ Added a lightweight custom React Context i18n layer (LocaleProvider, useLocale, 
 |------|---------|
 | `4e7f0d1` | (see git log) |
 | `f6650b4` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 53: Bilingual operator UI and industrial regression
+
+**Date**: 2026-07-06
+**Task**: Bilingual operator UI and industrial regression
+**Branch**: `feat/bilingual-operator-ui-complete`
+
+### Summary
+
+Implemented and hardened English/Simplified Chinese dashboard switching, added Vitest and Playwright persistence coverage, ran full repository regression and e2e checks, documented industrial test evidence and frontend localization rules.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `a73a185` | (see git log) |
+| `09261b0` | (see git log) |
+| `3d0c50f` | (see git log) |
+| `4a5efb3` | (see git log) |
+| `df1834e` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
+
+
+## Session 54: Cloudflare temporary edge deploy readiness
+
+**Date**: 2026-07-06
+**Task**: Cloudflare temporary edge deploy readiness
+**Branch**: `feat/cloudflare-temporary-deploy-readiness`
+
+### Summary
+
+Added an isolated Cloudflare Worker temporary edge shell/proxy, hardened proxy header handling, deployed with pinned Wrangler temporary account flow, smoke-tested the public workers.dev URL, and recorded evidence without claim-token leakage.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `325a168` | (see git log) |
 
 ### Testing
 
