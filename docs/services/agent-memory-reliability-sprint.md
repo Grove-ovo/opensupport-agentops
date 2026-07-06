@@ -64,6 +64,7 @@ See the buyer-facing evidence map:
 - [Commercial services](./README.md)
 - [Outcomes and acceptance criteria](./outcomes-and-acceptance.md)
 - [OpenSupport AgentOps proof pack](./proof-pack.md)
+- [Agent memory replay test catalog](./agent-memory-replay-catalog.md)
 - [Sample sprint report](./sample-memory-sprint-report.md)
 - [Public memory teardown examples](./public-memory-teardowns.md)
 - [Buyer due diligence](./buyer-due-diligence.md)

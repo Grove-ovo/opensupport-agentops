@@ -34,6 +34,7 @@ AI transformation project.
 | Commercial service index | [Commercial services](./README.md) |
 | Repository evidence map | [OpenSupport AgentOps proof pack](./proof-pack.md) |
 | Acceptance criteria | [Outcomes and acceptance criteria](./outcomes-and-acceptance.md) |
+| Example replay tests | [Agent memory replay test catalog](./agent-memory-replay-catalog.md) |
 | Example memory sprint deliverable | [Sample sprint report](./sample-memory-sprint-report.md) |
 | Public teardown examples | [Public memory teardown examples](./public-memory-teardowns.md) |
 | Qualification and due diligence | [Buyer due diligence](./buyer-due-diligence.md) |

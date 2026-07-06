@@ -96,6 +96,9 @@ Default delivery includes:
 - links to any branch, patch, or prototype artifact,
 - final acceptance checklist.
 
+See [Agent Memory Replay Test Catalog](./agent-memory-replay-catalog.md) for a
+public sample of the replay case format.
+
 ## Final Acceptance Checklist
 
 ```text
