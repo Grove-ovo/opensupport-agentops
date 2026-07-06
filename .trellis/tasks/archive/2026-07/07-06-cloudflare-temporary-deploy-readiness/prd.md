@@ -12,8 +12,8 @@ the production runtime.
 ## Requirements
 
 - Use official Cloudflare/Wrangler behavior for `npx wrangler deploy --temporary`.
-- Add a minimal, isolated Cloudflare Worker entry point if the current monorepo
-  has no directly deployable Worker target.
+- Add a minimal, isolated Cloudflare Worker preview harness if the current
+  monorepo has no directly deployable Worker target.
 - Do not modify API, worker, database, or Chatwoot runtime semantics just to fit
   Cloudflare Workers.
 - The temporary deployment must make its limitations explicit in project docs
@@ -42,17 +42,18 @@ the production runtime.
 
 ## Evidence
 
-- Worker target: `apps/edge/wrangler.toml` and `apps/edge/src/index.mjs`.
+- Worker preview harness: `tools/cloudflare-temporary-worker/wrangler.toml`
+  and `tools/cloudflare-temporary-worker/src/index.mjs`.
 - Deployment docs: `docs/operations/cloudflare-temporary-deploy.md`.
 - Deployment report:
   `reports/cloudflare_temporary_deploy_2026-07-06.md`.
 - Deployment command: `npm run deploy:cloudflare:temporary`.
 - Deployed URL:
-  `https://opensupport-agentops-edge.glass-carrot.workers.dev`.
-- Current Worker Version ID: `16e4230d-c3dc-44c2-9fd1-6cbf4df61763`.
+  `https://opensupport-agentops-edge.boundless-path.workers.dev`.
+- Current Worker Version ID: `71f7bbc4-95ca-49ce-931d-e2cab018f788`.
 - Verification commands:
   - `npm run test`
-  - `npm run test:edge`
+  - `npm run test:cloudflare:temporary`
   - `npm run lint`
   - `npm run typecheck`
   - `npm run test:release`
@@ -80,5 +81,5 @@ because it grants ownership of the temporary preview account.
 - Current runtime is Node/Fastify + PostgreSQL/pgvector + Redis + Redis Streams
   worker, deployed through production Compose.
 - The dashboard is a Vite static build under `apps/web/dist`.
-- A Worker adapter should be isolated under an edge-specific directory and
+- A Worker preview harness should be isolated under `tools/`, not `apps/`, and
   should avoid touching core runtime packages unless necessary.

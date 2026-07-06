@@ -207,8 +207,9 @@ Official Cloudflare sources only:
 
 ## Implementation Follow-Up
 
-After the research pass, this task added an isolated Worker target under
-`apps/edge/`, rooted at `apps/edge/wrangler.toml`, with the deploy command
+After the research pass, this task added an isolated Worker preview harness
+under `tools/cloudflare-temporary-worker/`, rooted at
+`tools/cloudflare-temporary-worker/wrangler.toml`, with the deploy command
 `npm run deploy:cloudflare:temporary`.
 
 The implementation intentionally deploys a small Worker shell/proxy instead of
@@ -216,6 +217,10 @@ The implementation intentionally deploys a small Worker shell/proxy instead of
 proxy-wiring proof only. It does not claim the Dashboard, Fastify API,
 PostgreSQL/pgvector, Redis, async worker, Chatwoot, or live LLM provider run
 natively in Cloudflare Workers.
+
+The harness lives under `tools/` rather than `apps/` so it is not mistaken for
+an AgentOps production module. Real deployment remains the cloud server /
+self-hosted Compose path.
 
 The deploy command pins `wrangler@4.107.0` via `npx wrangler@4.107.0` to avoid
 silent CLI behavior drift during temporary deploy trials.

@@ -65,7 +65,6 @@ remain out of scope.
 apps/api                 Fastify production API and Chatwoot/LLM runtime
 apps/web                 React/Vite operator Dashboard
 apps/worker              Redis Streams monitor/eval/aggregation worker
-apps/edge                Cloudflare Worker temporary edge shell/proxy
 packages/agent-core      Deterministic routing and pipeline contracts
 packages/agent-runtime   RAG/tool/risk/response orchestration
 packages/chatwoot        Chatwoot inbound and outbound connectors
@@ -79,6 +78,8 @@ packages/approvals       Approval snapshots and human action tracking
 packages/eval            Replay, security, release, benchmark, and load helpers
 packages/shared          Shared immutable contracts
 infra/                   Docker, migrations, and database verification
+tools/cloudflare-temporary-worker
+                         Cloudflare temporary preview harness, not runtime
 eval/                    Versioned replay and security datasets
 reports/                 Reproducible evaluation and benchmark reports
 docs/                    Architecture and implementation documentation
@@ -128,15 +129,17 @@ Dashboard/API: `http://localhost:8088`
 Prometheus: `http://127.0.0.1:9090`
 Grafana: `http://127.0.0.1:3001`
 
-Run the Cloudflare temporary edge shell:
+Run the Cloudflare temporary preview harness:
 
 ```bash
-npm run test:edge
+npm run test:cloudflare:temporary
 npm run deploy:cloudflare:temporary
 ```
 
-The Worker target validates edge deployment and optional proxy wiring only. It
-does not replace the Node API, PostgreSQL/pgvector, Redis, or async worker.
+The Cloudflare Worker target is a temporary public preview harness only. It is
+not a product module and does not replace the production-style cloud server
+deployment path: Node API, PostgreSQL/pgvector, Redis, Chatwoot, the async
+worker, and observability still run through the self-hosted Compose topology.
 
 ## Evaluation And Reports
 

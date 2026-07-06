@@ -1,9 +1,11 @@
 # Cloudflare Temporary Deploy
 
 OpenSupport AgentOps is a Node/Fastify, PostgreSQL/pgvector, Redis, Redis
-Streams worker, Chatwoot, and LLM-provider system. Cloudflare Workers can host
-an edge shell and proxy requests to a running AgentOps origin, but a temporary
-Worker deployment does not replace the production Compose runtime.
+Streams worker, Chatwoot, and LLM-provider system intended to run on a cloud
+server or equivalent self-hosted runtime. Cloudflare Workers can host a
+temporary preview shell and proxy requests to a running AgentOps origin, but a
+temporary Worker deployment does not replace the production Compose runtime and
+is not a product module.
 
 ## What This Target Proves
 
@@ -25,13 +27,23 @@ Worker deployment does not replace the production Compose runtime.
 ## Commands
 
 ```sh
-npm run test:edge
+npm run test:cloudflare:temporary
 npm run deploy:cloudflare:temporary
 ```
 
-The temporary deployment uses `apps/edge/wrangler.toml` and
-`apps/edge/src/index.mjs`. The deploy command pins `wrangler@4.107.0` through
-`npx wrangler@4.107.0 deploy --temporary`.
+The temporary deployment uses `tools/cloudflare-temporary-worker/wrangler.toml`
+and `tools/cloudflare-temporary-worker/src/index.mjs`. The deploy command pins
+`wrangler@4.107.0` through:
+
+```sh
+cd tools/cloudflare-temporary-worker
+npx wrangler@4.107.0 deploy --temporary
+```
+
+Keep this under `tools/`, not `apps/`, so future readers understand Cloudflare
+is a temporary preview harness. Real deployment should continue through the
+cloud server / production Compose path documented in
+`docs/operations/deployment-runbook.md`.
 
 ## Optional API Origin
 

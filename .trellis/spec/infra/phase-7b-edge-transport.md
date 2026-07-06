@@ -92,19 +92,20 @@ proxy_set_header X-Forwarded-User "";
 limit_req_zone $operator_write_key zone=agentops_operator_write:10m rate=5r/s;
 ```
 
-## Scenario: Temporary Cloudflare Worker Edge Shell/Proxy
+## Scenario: Temporary Cloudflare Worker Preview Harness
 
 ### 1. Scope / Trigger
 
-- Trigger: adding or changing a Cloudflare Worker temporary deployment target,
+- Trigger: adding or changing a Cloudflare Worker temporary preview harness,
   edge shell, or optional proxy in front of AgentOps.
-- Applies to `apps/edge/**`, `docs/operations/cloudflare-temporary-deploy.md`,
-  temporary deployment reports, and root package deploy/test scripts.
+- Applies to `tools/cloudflare-temporary-worker/**`,
+  `docs/operations/cloudflare-temporary-deploy.md`, temporary deployment
+  reports, and root package deploy/test scripts.
 
 ### 2. Signatures
 
 ```text
-npm run test:edge
+npm run test:cloudflare:temporary
 npm run deploy:cloudflare:temporary
 ```
 
@@ -124,10 +125,14 @@ AGENTOPS_ORIGIN_URL
 
 ### 3. Contracts
 
-- Temporary Worker targets are shell/proxy targets only. They must not claim to
-  run Fastify, PostgreSQL/pgvector, Redis, Redis Streams workers, Chatwoot, or
-  LLM providers natively unless those capabilities are actually implemented and
-  tested in Workers.
+- Temporary Worker targets are preview harnesses only. Keep them under `tools/`,
+  not `apps/`, so they do not look like production AgentOps modules. They must
+  not claim to run Fastify, PostgreSQL/pgvector, Redis, Redis Streams workers,
+  Chatwoot, or LLM providers natively unless those capabilities are actually
+  implemented and tested in Workers.
+- The production deployment path remains a cloud server or equivalent
+  self-hosted Compose topology unless a separate Cloudflare-native architecture
+  is explicitly designed and accepted.
 - `AGENTOPS_ORIGIN_URL` is optional. When absent, proxy routes fail closed with
   `503 backend_origin_missing`.
 - Client-supplied source and forwarding headers are untrusted. Strip
@@ -138,9 +143,10 @@ AGENTOPS_ORIGIN_URL
   `X-Forwarded-Proto` from the request URL protocol.
 - Shell, readiness, and proxied responses must set explicit `cache-control:
   no-store` plus browser security headers.
-- `wrangler` must be pinned in deploy scripts, for example
-  `npx wrangler@<version> deploy --temporary`, so temporary deploy behavior
-  does not drift silently.
+- `wrangler` must be pinned in deploy scripts. Run it from
+  `tools/cloudflare-temporary-worker` so `main = "src/index.mjs"` resolves
+  against the harness directory. Avoid root-level `--config` deployment for
+  this harness unless the generated Worker has been smoke-tested.
 - Cloudflare temporary claim URLs are secret-equivalent because they grant
   ownership of the preview account. Do not commit claim tokens.
 
@@ -162,17 +168,21 @@ AGENTOPS_ORIGIN_URL
   configured.
 - Base: Worker proxies `/api/*` to a full AgentOps origin while stripping
   untrusted forwarding headers and tagging the request with an edge marker.
-- Bad: commit `claimToken=...` or claim a Worker-only URL proves full AgentOps
-  product deployment.
+- Bad: put the temporary Worker under `apps/` or claim a Worker-only URL proves
+  full AgentOps product deployment.
+- Bad: commit `claimToken=...`.
 - Bad: use an unpinned `npx wrangler deploy --temporary` command in committed
   scripts.
+- Bad: deploy this harness from the repository root with `--config` and skip
+  the public URL smoke; that can produce a deployed URL that returns Cloudflare
+  1042/1104 errors.
 
 ### 6. Tests Required
 
 - Unit tests for readiness, static shell, fail-closed proxy behavior, successful
   proxy URL mapping, forwarded/source header stripping, response no-store, and
   exact `/worker/metrics` routing.
-- `npm run test:edge`.
+- `npm run test:cloudflare:temporary`.
 - `npm run lint`, `npm run typecheck`, and full repository tests before
   merging temporary deploy work.
 - Real deployed smoke, when network access is available: `GET /`, `GET

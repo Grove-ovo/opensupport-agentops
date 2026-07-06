@@ -117,7 +117,7 @@ deployment rather than a complete production SaaS control plane.
 | Priority | Area | Recommendation |
 |---|---|---|
 | P0 | Real deployment evidence | Run production compose boot plus `npm run smoke:production` before claiming deploy-ready runtime behavior. |
-| P0 | Cloudflare temporary deployment | Validate whether this Node/Fastify + PostgreSQL/Redis architecture can be adapted to Cloudflare Workers. `wrangler deploy --temporary` cannot deploy the current monorepo directly without an edge-specific entry point and external database bindings. |
+| P0 | Cloudflare temporary deployment | Validate whether this Node/Fastify + PostgreSQL/Redis architecture can be previewed through Cloudflare Workers. `wrangler deploy --temporary` cannot deploy the current monorepo directly; it needs a temporary preview harness and an external full AgentOps origin for real behavior. |
 | P1 | Live Chatwoot + live LLM scenario | Re-run a real customer conversation against a real Chatwoot instance and a real provider key, then capture trace, approval/reply, cost, and dashboard evidence. |
 | P1 | Integration skips | Provide a documented command profile for enabling API and worker integration skips with real PostgreSQL/Redis in CI or staging. |
 | P1 | i18n maintenance | Add a small script for locale key parity and include it in CI so future UI changes cannot leave one language incomplete. |

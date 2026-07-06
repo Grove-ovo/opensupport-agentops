@@ -1841,7 +1841,7 @@ Implemented and hardened English/Simplified Chinese dashboard switching, added V
 
 ### Summary
 
-Added an isolated Cloudflare Worker temporary edge shell/proxy, hardened proxy header handling, deployed with pinned Wrangler temporary account flow, smoke-tested the public workers.dev URL, and recorded evidence without claim-token leakage.
+Added an isolated Cloudflare Worker temporary preview harness under `tools/`, hardened proxy header handling, deployed with pinned Wrangler temporary account flow, smoke-tested the public workers.dev URL, and recorded evidence without claim-token leakage. Real deployment remains the cloud server / self-hosted Compose path.
 
 ### Main Changes
 

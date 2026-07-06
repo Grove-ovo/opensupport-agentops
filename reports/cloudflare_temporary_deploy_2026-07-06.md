@@ -2,30 +2,30 @@
 
 ## Scope
 
-This report covers the temporary Cloudflare Worker deployment path for
-OpenSupport AgentOps. The deployed Worker is an edge shell and optional proxy.
-It is not the full AgentOps runtime.
+This report covers the temporary Cloudflare Worker preview path for OpenSupport
+AgentOps. The deployed Worker is an edge shell and optional proxy harness under
+`tools/`, not a product module. It is not the full AgentOps runtime.
 
 The full product still requires the Node/Fastify API, PostgreSQL/pgvector,
-Redis, Redis Streams worker, Chatwoot, and an LLM provider.
+Redis, Redis Streams worker, Chatwoot, and an LLM provider on a cloud server or
+equivalent self-hosted runtime.
 
 ## Deployment
 
 - Command: `npm run deploy:cloudflare:temporary`
 - Wrangler version: `4.107.0`
 - Worker: `opensupport-agentops-edge`
-- Temporary account: `Glass Carrot`
-- Public URL: `https://opensupport-agentops-edge.glass-carrot.workers.dev`
-- Current Version ID: `16e4230d-c3dc-44c2-9fd1-6cbf4df61763`
+- Temporary account: `Boundless Path`
+- Public URL: `https://opensupport-agentops-edge.boundless-path.workers.dev`
+- Current Version ID: `71f7bbc4-95ca-49ce-931d-e2cab018f788`
 - Claim URL: redacted. The claim URL grants ownership of the temporary preview
   account and must not be committed to repository artifacts.
 
 ## Automated Checks
 
 - `npm run test`: passed.
-- `npm run test:edge`: passed, 6/6 tests.
+- `npm run test:cloudflare:temporary`: passed, 6/6 tests.
 - `npm run lint`: passed.
-- `npm ls --workspace @opensupport/edge --package-lock-only`: passed.
 - `npm run typecheck`: passed.
 - `npm run test:release`: passed.
 
@@ -39,6 +39,12 @@ Notes from the full repository run:
 ## Real User Scenario Smoke
 
 Tested against the deployed temporary Worker URL.
+
+The final working deploy command runs Wrangler from
+`tools/cloudflare-temporary-worker`. A root-level deploy attempt using
+`--config tools/cloudflare-temporary-worker/wrangler.toml` produced a public URL
+that returned Cloudflare `1042/1104` errors during smoke testing, so the
+committed command avoids that path-resolution pitfall.
 
 ### Home Page
 
@@ -92,6 +98,7 @@ Tested against the deployed temporary Worker URL.
 ## Limitations
 
 - This deployment does not run the Dashboard build from `apps/web/dist`.
+- This deployment is not an `apps/*` workspace package or production module.
 - This deployment does not run the Fastify API in Cloudflare Workers.
 - This deployment does not provide PostgreSQL/pgvector, Redis, Redis Streams,
   Chatwoot, or LLM provider integration.
@@ -100,7 +107,7 @@ Tested against the deployed temporary Worker URL.
 
 ## Result
 
-Temporary Cloudflare deployment path is proven for the isolated edge
-shell/proxy target. Full-product deployment remains the existing production
-Compose path until a separate Cloudflare-native architecture is designed and
+Temporary Cloudflare preview is proven for the isolated shell/proxy harness.
+Full-product deployment remains the existing production Compose path on a cloud
+server until a separate Cloudflare-native architecture is designed and
 implemented.
