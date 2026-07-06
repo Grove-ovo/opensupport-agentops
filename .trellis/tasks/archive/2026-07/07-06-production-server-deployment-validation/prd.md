@@ -46,7 +46,7 @@ documented residual gaps.
 - [x] Backup/restore dry-runs pass or failures are recorded with exact reason.
 - [x] A deployment validation report is committed under `reports/`.
 - [x] Repository checks still pass locally after report/script changes.
-- [ ] Trellis archive and journal commits record the work.
+- [x] Trellis archive and journal commits record the work.
 
 ## Out of Scope
 
