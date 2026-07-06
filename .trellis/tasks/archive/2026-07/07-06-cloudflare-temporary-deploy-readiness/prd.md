@@ -49,8 +49,10 @@ the production runtime.
   `reports/cloudflare_temporary_deploy_2026-07-06.md`.
 - Deployment command: `npm run deploy:cloudflare:temporary`.
 - Deployed URL:
-  `https://opensupport-agentops-edge.boundless-path.workers.dev`.
-- Current Worker Version ID: `71f7bbc4-95ca-49ce-931d-e2cab018f788`.
+  `https://opensupport-agentops-edge.motley-agate.workers.dev`.
+- Current Worker Version ID: `ed3d2496-39ed-49f5-a067-24646079e1a7`.
+- Latest smoke result: shell `200`, readiness degraded/temporary `200`, API
+  fail-closed without origin `503`.
 - Verification commands:
   - `npm run test`
   - `npm run test:cloudflare:temporary`

@@ -15,15 +15,15 @@ equivalent self-hosted runtime.
 - Command: `npm run deploy:cloudflare:temporary`
 - Wrangler version: `4.107.0`
 - Worker: `opensupport-agentops-edge`
-- Temporary account: `Boundless Path`
-- Public URL: `https://opensupport-agentops-edge.boundless-path.workers.dev`
-- Current Version ID: `71f7bbc4-95ca-49ce-931d-e2cab018f788`
+- Temporary account: `Motley Agate`
+- Public URL: `https://opensupport-agentops-edge.motley-agate.workers.dev`
+- Current Version ID: `ed3d2496-39ed-49f5-a067-24646079e1a7`
 - Claim URL: redacted. The claim URL grants ownership of the temporary preview
   account and must not be committed to repository artifacts.
 
 ## Automated Checks
 
-- `npm run test`: passed.
+- `npm run test`: passed on final `main`.
 - `npm run test:cloudflare:temporary`: passed, 6/6 tests.
 - `npm run lint`: passed.
 - `npm run typecheck`: passed.
@@ -38,7 +38,10 @@ Notes from the full repository run:
 
 ## Real User Scenario Smoke
 
-Tested against the deployed temporary Worker URL.
+Tested against the deployed temporary Worker URL. A later re-check of the
+previous temporary URL failed at TLS connection setup, which is consistent with
+the non-durable nature of temporary-account previews. The latest smoke used the
+current URL listed in this report.
 
 The final working deploy command runs Wrangler from
 `tools/cloudflare-temporary-worker`. A root-level deploy attempt using

@@ -4,7 +4,8 @@
 
 This report covers the bilingual operator dashboard task and the current
 repository-wide pre-deployment regression state. The run was performed on
-branch `feat/bilingual-operator-ui-complete`.
+branch `main` after the bilingual dashboard, Cloudflare temporary preview, and
+Trellis bootstrap wrap-up commits were merged.
 
 The test goal was intentionally broader than the UI change:
 
@@ -12,8 +13,8 @@ The test goal was intentionally broader than the UI change:
   workflows.
 - Re-run the deterministic full project quality gate.
 - Confirm release-readiness status and record residual risks.
-- Identify gaps before attempting production-style deployment or Cloudflare
-  temporary deployment.
+- Validate the Cloudflare temporary preview harness while preserving the
+  production cloud-server / Compose deployment path as the real target.
 
 ## Change Under Test
 
@@ -33,10 +34,10 @@ The test goal was intentionally broader than the UI change:
 | Item | Value |
 |---|---|
 | Date | 2026-07-06 |
-| Branch | `feat/bilingual-operator-ui-complete` |
+| Branch | `main` |
 | Node build target | TypeScript project references |
 | Browser e2e | Playwright desktop Chrome and Pixel 7 profiles |
-| Deployment | Not deployed in this run |
+| Deployment | Cloudflare temporary Worker harness redeployed and smoke-tested |
 | Production smoke | Not run; requires a running production compose stack |
 
 ## Command Evidence
@@ -49,8 +50,9 @@ The test goal was intentionally broader than the UI change:
 | Web unit tests | `npm run test:web` | Passed: 1 file, 7 tests |
 | Web production build | `npm run build:web` | Passed |
 | Web browser e2e | `npm run test:web:e2e` | Passed with elevated local-listen permission: 10 tests |
-| Full repository regression | `npm run test` | Passed with elevated local-listen permission |
+| Full repository regression | `npm run test` | Passed on final `main` |
 | Release readiness | Included in `npm run test`; `npm run test:release` output | Passed, aggregate gate `status=ready` |
+| Cloudflare temporary harness | `npm run deploy:cloudflare:temporary`; smoke `GET /`, `/__agentops/edge-ready`, `/api/v1/auth/session` | Passed: shell 200, readiness degraded/temporary, API fail-closed 503 |
 
 ### Sandbox Note
 
@@ -117,7 +119,7 @@ deployment rather than a complete production SaaS control plane.
 | Priority | Area | Recommendation |
 |---|---|---|
 | P0 | Real deployment evidence | Run production compose boot plus `npm run smoke:production` before claiming deploy-ready runtime behavior. |
-| P0 | Cloudflare temporary deployment | Validate whether this Node/Fastify + PostgreSQL/Redis architecture can be previewed through Cloudflare Workers. `wrangler deploy --temporary` cannot deploy the current monorepo directly; it needs a temporary preview harness and an external full AgentOps origin for real behavior. |
+| P0 | Cloudflare temporary deployment | Completed for the isolated Worker shell/proxy harness. It does not prove the full Node/Fastify + PostgreSQL/Redis runtime; full behavior still needs an external AgentOps origin or cloud-server Compose deployment. |
 | P1 | Live Chatwoot + live LLM scenario | Re-run a real customer conversation against a real Chatwoot instance and a real provider key, then capture trace, approval/reply, cost, and dashboard evidence. |
 | P1 | Integration skips | Provide a documented command profile for enabling API and worker integration skips with real PostgreSQL/Redis in CI or staging. |
 | P1 | i18n maintenance | Add a small script for locale key parity and include it in CI so future UI changes cannot leave one language incomplete. |
@@ -127,7 +129,8 @@ deployment rather than a complete production SaaS control plane.
 
 The bilingual dashboard feature is implemented and covered by unit and browser
 tests. The deterministic repository test gate and release-readiness gate are
-green. The project is suitable for the next stage: production-style local
-deployment validation, then a realistic deployment strategy decision for
-Cloudflare or another host that can run the API, worker, PostgreSQL, Redis, and
-static dashboard together.
+green. The Cloudflare temporary preview harness is redeployed and smoke-tested,
+but it is intentionally not a production module. The project is suitable for
+the next stage: production-style cloud-server deployment validation with the
+API, worker, PostgreSQL, Redis, Chatwoot, LLM provider, and static dashboard
+running together.
