@@ -33,6 +33,9 @@ production Vite build, and Playwright at desktop and mobile widths.
 Vitest covers render, mutation confirmation, and failure states. Playwright
 covers primary operator workflows and asserts no horizontal viewport overflow.
 API route tests verify confirmation schemas and command translation.
+Locale changes must include a parity check that English and Simplified Chinese
+dictionaries expose the same keys, plus a browser or component test proving
+the selected language persists across reloads.
 
 ---
 
