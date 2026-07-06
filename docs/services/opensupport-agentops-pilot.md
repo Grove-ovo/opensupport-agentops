@@ -51,6 +51,12 @@ This repository already includes:
 - reports for cost, load, failures, and deployment readiness,
 - production-style Compose, Prometheus/Grafana, runbooks, and recovery drills.
 
+See the buyer-facing evidence map:
+
+- [OpenSupport AgentOps proof pack](./proof-pack.md)
+- [Buyer due diligence](./buyer-due-diligence.md)
+- [Sample sprint report](./sample-memory-sprint-report.md)
+
 ## Guarantee
 
 If the pilot does not produce a concrete workflow map, eval suite, and rollout

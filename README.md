@@ -16,6 +16,8 @@ permission/staleness threat model, 8-12 replay tests, scorecard, and a concrete
 implementation path in 10 business days.
 
 - [Sprint details](./docs/services/agent-memory-reliability-sprint.md)
+- [Proof pack](./docs/services/proof-pack.md)
+- [Sample sprint report](./docs/services/sample-memory-sprint-report.md)
 - [Start an intake issue](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=agent-memory-reliability-sprint.yml)
 
 ## OpenSupport AgentOps Pilot
@@ -26,6 +28,7 @@ run guarded shadow/assist mode, install replay/security evals, and produce a
 go/no-go rollout plan.
 
 - [Pilot details](./docs/services/opensupport-agentops-pilot.md)
+- [Buyer due diligence](./docs/services/buyer-due-diligence.md)
 - [Start a pilot intake issue](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=opensupport-agentops-pilot.yml)
 
 ## Project Status

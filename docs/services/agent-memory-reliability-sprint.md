@@ -58,6 +58,12 @@ agent memory systems:
 - release gates and recovery drills,
 - production-style deployment documentation.
 
+See the buyer-facing evidence map:
+
+- [OpenSupport AgentOps proof pack](./proof-pack.md)
+- [Sample sprint report](./sample-memory-sprint-report.md)
+- [Buyer due diligence](./buyer-due-diligence.md)
+
 ## Guarantee
 
 If the sprint does not produce a concrete replay suite plus implementation path
