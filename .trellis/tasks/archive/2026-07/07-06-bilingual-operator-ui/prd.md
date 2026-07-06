@@ -15,11 +15,11 @@ Complete the existing frontend localization scaffold so the operator dashboard c
 
 ## Acceptance Criteria
 
-- [ ] The dashboard can switch between English and Chinese without a page refresh.
-- [ ] Reloading the dashboard keeps the previously selected locale.
-- [ ] Main navigation, dashboard headings, auth/boot states, settings, approvals, releases, trace, policy KB, and tool risk views render translated labels instead of fixed English text.
-- [ ] Raw backend enum values remain stable and are mapped only at the UI boundary.
-- [ ] Frontend type-check, lint/build, and relevant tests pass.
+- [x] The dashboard can switch between English and Chinese without a page refresh.
+- [x] Reloading the dashboard keeps the previously selected locale.
+- [x] Main navigation, dashboard headings, auth/boot states, settings, approvals, releases, trace, policy KB, and tool risk views render translated labels instead of fixed English text.
+- [x] Raw backend enum values remain stable and are mapped only at the UI boundary.
+- [x] Frontend type-check, lint/build, and relevant tests pass.
 
 ## Definition of Done
 
@@ -40,3 +40,14 @@ Complete the existing frontend localization scaffold so the operator dashboard c
 - Frontend workspace: `apps/web`.
 - Existing files to inspect: `apps/web/src/locales/*`, `apps/web/src/components/LanguageSwitcher.tsx`, `apps/web/src/components/AppShell.tsx`, and dashboard view files under `apps/web/src/views`.
 - Relevant specs: `.trellis/spec/frontend/*` and `.trellis/spec/guides/index.md`.
+
+## Completion Evidence
+
+- Implemented in `a73a185`, `09261b0`, and `3d0c50f`.
+- `npm run lint` passed.
+- `npm run typecheck` passed.
+- `npm run test:web` passed with 7 Vitest tests.
+- `npm run build:web` passed.
+- `npm run test:web:e2e` passed with 10 Playwright tests across desktop and mobile.
+- Full repository `npm run test` passed with elevated local-listen permission.
+- Industrial test report added at `reports/industrial_test_report_2026-07-06.md`.
