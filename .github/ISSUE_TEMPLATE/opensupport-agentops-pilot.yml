@@ -7,6 +7,13 @@ body:
     attributes:
       value: |
         This intake is for a USD 15,000 fixed-fee OpenSupport AgentOps deployment pilot for one ecommerce support workflow.
+
+        Before opening the issue, skim:
+        - Buyer deal room: https://github.com/Grove-ovo/opensupport-agentops/blob/main/docs/services/buyer-deal-room.md
+        - Outcomes and acceptance: https://github.com/Grove-ovo/opensupport-agentops/blob/main/docs/services/outcomes-and-acceptance.md
+        - First 48 hours after yes: https://github.com/Grove-ovo/opensupport-agentops/blob/main/docs/services/first-48-hours.md
+
+        Email fallback: chinesegrove@gmail.com
   - type: input
     id: company
     attributes:
@@ -35,11 +42,27 @@ body:
       placeholder: "Example: order status, return policy, shipping delay triage, refund eligibility..."
     validations:
       required: true
+  - type: input
+    id: owner_reviewer
+    attributes:
+      label: Workflow owner and technical reviewer
+      description: Name or role for the support owner and the technical reviewer who can accept the pilot evidence.
+      placeholder: "Owner: Head of CX. Reviewer: Platform engineer."
+    validations:
+      required: true
   - type: textarea
     id: policies
     attributes:
       label: Policies and guardrails
       description: What must the agent never promise, reveal, or do automatically?
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance priorities
+      description: Which 2-3 outcomes must be true for the pilot to be valuable?
+      placeholder: "Example: no uncontrolled refunds; PII not exposed; shadow-mode replay catches policy conflicts."
     validations:
       required: true
   - type: dropdown
@@ -63,6 +86,27 @@ body:
         - "No"
     validations:
       required: true
+  - type: dropdown
+    id: payment_route
+    attributes:
+      label: Preferred payment route
+      description: Kickoff starts after USD 7,500 upfront payment and agreed access/scope.
+      options:
+        - Wise payment request
+        - Stripe invoice or payment link
+        - PayPal invoice
+        - Bank transfer
+        - USDC
+        - Not sure yet
+    validations:
+      required: true
+  - type: input
+    id: kickoff_timing
+    attributes:
+      label: Preferred kickoff timing
+      placeholder: "Example: after support policy review next week"
+    validations:
+      required: true
   - type: input
     id: contact
     attributes:
@@ -70,3 +114,10 @@ body:
       description: Email, GitHub handle, or preferred async contact route.
     validations:
       required: true
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: Scope confirmation
+      options:
+        - label: I understand this is for one selected support workflow, fixed at USD 15,000, with USD 7,500 upfront and USD 7,500 on accepted delivery.
+          required: true

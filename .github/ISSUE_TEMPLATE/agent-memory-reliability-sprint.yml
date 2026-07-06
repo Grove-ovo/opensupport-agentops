@@ -7,6 +7,14 @@ body:
     attributes:
       value: |
         Thanks for the context. This intake is for a USD 12,000 fixed-fee Agent Memory Reliability Sprint for one production-relevant AI agent workflow.
+
+        Before opening the issue, skim:
+        - Buyer deal room: https://github.com/Grove-ovo/opensupport-agentops/blob/main/docs/services/buyer-deal-room.md
+        - Outcomes and acceptance: https://github.com/Grove-ovo/opensupport-agentops/blob/main/docs/services/outcomes-and-acceptance.md
+        - First 48 hours after yes: https://github.com/Grove-ovo/opensupport-agentops/blob/main/docs/services/first-48-hours.md
+        - Replay catalog: https://github.com/Grove-ovo/opensupport-agentops/blob/main/docs/services/agent-memory-replay-catalog.md
+
+        Email fallback: chinesegrove@gmail.com
   - type: input
     id: company
     attributes:
@@ -44,6 +52,22 @@ body:
       description: What happens if the memory is stale, wrong, over-permissive, or missing?
     validations:
       required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance priorities
+      description: Which 2-3 failures must the replay suite prove or prevent for this sprint to be valuable?
+      placeholder: "Example: revoked access must block recall; corrected facts must supersede stale memory; secrets must never become durable memory."
+    validations:
+      required: true
+  - type: input
+    id: owner_reviewer
+    attributes:
+      label: Workflow owner and technical reviewer
+      description: Name or role for the person who owns the workflow and the person who can accept the replay suite / scorecard.
+      placeholder: "Owner: Head of Support AI. Reviewer: Staff Engineer for agent platform."
+    validations:
+      required: true
   - type: dropdown
     id: access
     attributes:
@@ -65,6 +89,27 @@ body:
         - "No"
     validations:
       required: true
+  - type: dropdown
+    id: payment_route
+    attributes:
+      label: Preferred payment route
+      description: Kickoff starts after USD 6,000 upfront payment and agreed access/scope.
+      options:
+        - Wise payment request
+        - Stripe invoice or payment link
+        - PayPal invoice
+        - Bank transfer
+        - USDC
+        - Not sure yet
+    validations:
+      required: true
+  - type: input
+    id: kickoff_timing
+    attributes:
+      label: Preferred kickoff timing
+      placeholder: "Example: next week after security review"
+    validations:
+      required: true
   - type: input
     id: contact
     attributes:
@@ -72,3 +117,10 @@ body:
       description: Email, GitHub handle, or preferred async contact route.
     validations:
       required: true
+  - type: checkboxes
+    id: confirmation
+    attributes:
+      label: Scope confirmation
+      options:
+        - label: I understand this is for one selected workflow, fixed at USD 12,000, with USD 6,000 upfront and USD 6,000 on accepted delivery.
+          required: true
