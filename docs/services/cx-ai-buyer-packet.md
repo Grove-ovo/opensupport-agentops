@@ -17,9 +17,9 @@ Start route: open the
 or email `chinesegrove@gmail.com`.
 
 Rendered offer page:
-[CX AI Agent Reliability Sprint](https://raw.githack.com/Grove-ovo/opensupport-agentops/3c6ab09f3d8d91b20cb1966da483ccf0a7773890/index.html).
+[CX AI Agent Reliability Sprint](https://raw.githack.com/Grove-ovo/opensupport-agentops/70b17c6c39a8d2581c89d22fa45b44be6edac429/index.html).
 ROI calculator:
-[estimate risk and savings](https://raw.githack.com/Grove-ovo/opensupport-agentops/3c6ab09f3d8d91b20cb1966da483ccf0a7773890/roi.html).
+[estimate risk and savings](https://raw.githack.com/Grove-ovo/opensupport-agentops/70b17c6c39a8d2581c89d22fa45b44be6edac429/roi.html).
 
 ## What Is Included
 
@@ -145,8 +145,8 @@ failure modes, five replay tests, and a full-sprint recommendation.
 ## Related Proof
 
 - [CX AI Agent Reliability Sprint](./cx-ai-agent-reliability-sprint.md)
-- [Rendered CX offer page](https://raw.githack.com/Grove-ovo/opensupport-agentops/3c6ab09f3d8d91b20cb1966da483ccf0a7773890/index.html)
-- [ROI calculator](https://raw.githack.com/Grove-ovo/opensupport-agentops/3c6ab09f3d8d91b20cb1966da483ccf0a7773890/roi.html)
+- [Rendered CX offer page](https://raw.githack.com/Grove-ovo/opensupport-agentops/70b17c6c39a8d2581c89d22fa45b44be6edac429/index.html)
+- [ROI calculator](https://raw.githack.com/Grove-ovo/opensupport-agentops/70b17c6c39a8d2581c89d22fa45b44be6edac429/roi.html)
 - [Sample CX AI reliability report](./sample-cx-ai-reliability-report.md)
 - [CX AI replay case catalog](./cx-ai-replay-case-catalog.md)
 - [CX AI scorecard template](./cx-ai-scorecard-template.md)

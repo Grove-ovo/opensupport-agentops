@@ -10,9 +10,9 @@ Payment shape: **USD 9,000 kickoff** and **USD 9,000 on accepted delivery**.
 Procurement packet: [CX AI buyer packet](./cx-ai-buyer-packet.md).
 
 Rendered offer page:
-[CX AI Agent Reliability Sprint](https://raw.githack.com/Grove-ovo/opensupport-agentops/3c6ab09f3d8d91b20cb1966da483ccf0a7773890/index.html).
+[CX AI Agent Reliability Sprint](https://raw.githack.com/Grove-ovo/opensupport-agentops/70b17c6c39a8d2581c89d22fa45b44be6edac429/index.html).
 ROI calculator:
-[estimate risk and savings](https://raw.githack.com/Grove-ovo/opensupport-agentops/3c6ab09f3d8d91b20cb1966da483ccf0a7773890/roi.html).
+[estimate risk and savings](https://raw.githack.com/Grove-ovo/opensupport-agentops/70b17c6c39a8d2581c89d22fa45b44be6edac429/roi.html).
 
 ## Best Fit
 
@@ -49,8 +49,8 @@ One selected workflow. Examples:
 
 ## Public Samples
 
-- [Rendered CX offer page](https://raw.githack.com/Grove-ovo/opensupport-agentops/3c6ab09f3d8d91b20cb1966da483ccf0a7773890/index.html)
-- [ROI calculator](https://raw.githack.com/Grove-ovo/opensupport-agentops/3c6ab09f3d8d91b20cb1966da483ccf0a7773890/roi.html)
+- [Rendered CX offer page](https://raw.githack.com/Grove-ovo/opensupport-agentops/70b17c6c39a8d2581c89d22fa45b44be6edac429/index.html)
+- [ROI calculator](https://raw.githack.com/Grove-ovo/opensupport-agentops/70b17c6c39a8d2581c89d22fa45b44be6edac429/roi.html)
 - [Sample CX AI reliability report](./sample-cx-ai-reliability-report.md)
 - [CX AI replay case catalog](./cx-ai-replay-case-catalog.md)
 - [CX AI scorecard template](./cx-ai-scorecard-template.md)
