@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/frontend/component-guidelines.md", "reason": "Verify localization changes preserve UI copy rules."}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Verify locale parity is enforced by tests."}

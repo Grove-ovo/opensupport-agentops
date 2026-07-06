@@ -44,7 +44,7 @@ The test goal was intentionally broader than the UI change:
 
 | Gate | Command | Result |
 |---|---|---|
-| Locale key parity | `node -e "...locale key parity..."` | Passed: `en 322 zh 322` |
+| Locale key parity | `npm run test:web:locales` | Passed: `en 322 zh 322` |
 | Whitespace/lint | `npm run lint` | Passed |
 | TypeScript | `npm run typecheck` | Passed |
 | Web unit tests | `npm run test:web` | Passed: 1 file, 7 tests |
@@ -122,7 +122,6 @@ deployment rather than a complete production SaaS control plane.
 | P0 | Cloudflare temporary deployment | Completed for the isolated Worker shell/proxy harness. It does not prove the full Node/Fastify + PostgreSQL/Redis runtime; full behavior still needs an external AgentOps origin or cloud-server Compose deployment. |
 | P1 | Live Chatwoot + live LLM scenario | Re-run a real customer conversation against a real Chatwoot instance and a real provider key, then capture trace, approval/reply, cost, and dashboard evidence. |
 | P1 | Integration skips | Provide a documented command profile for enabling API and worker integration skips with real PostgreSQL/Redis in CI or staging. |
-| P1 | i18n maintenance | Add a small script for locale key parity and include it in CI so future UI changes cannot leave one language incomplete. |
 | P2 | Product copy | Review Chinese translations with a native operator/customer-support reviewer before public demo usage. |
 
 ## Conclusion
