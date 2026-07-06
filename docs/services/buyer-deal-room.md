@@ -33,6 +33,7 @@ AI transformation project.
 | Need | Link |
 | --- | --- |
 | Commercial service index | [Commercial services](./README.md) |
+| CX AI commercial packet | [CX AI buyer packet](./cx-ai-buyer-packet.md) |
 | Repository evidence map | [OpenSupport AgentOps proof pack](./proof-pack.md) |
 | Acceptance criteria | [Outcomes and acceptance criteria](./outcomes-and-acceptance.md) |
 | First 48 hours after yes | [First 48 hours after yes](./first-48-hours.md) |

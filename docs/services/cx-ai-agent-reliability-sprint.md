@@ -7,6 +7,8 @@ confirmation.
 
 Payment shape: **USD 9,000 kickoff** and **USD 9,000 on accepted delivery**.
 
+Procurement packet: [CX AI buyer packet](./cx-ai-buyer-packet.md).
+
 ## Best Fit
 
 This sprint is for teams shipping or evaluating customer-support AI agents,
@@ -74,3 +76,6 @@ Open the intake issue or email `chinesegrove@gmail.com` with:
 - kickoff timing.
 
 [Start CX AI Agent Reliability Sprint intake](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=cx-ai-agent-reliability-sprint.yml)
+
+For procurement, billing, data handling, and approval text, use the
+[CX AI buyer packet](./cx-ai-buyer-packet.md).

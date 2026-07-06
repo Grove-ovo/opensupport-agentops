@@ -17,6 +17,7 @@ USDC after scope is confirmed.
 ## Proof Before Buying
 
 - [Buyer deal room](./buyer-deal-room.md)
+- [CX AI buyer packet](./cx-ai-buyer-packet.md)
 - [Proof pack](./proof-pack.md)
 - [Outcomes and acceptance criteria](./outcomes-and-acceptance.md)
 - [First 48 hours after yes](./first-48-hours.md)
@@ -65,3 +66,6 @@ It is a short discovery conversation that identifies one bounded path.
 5. Review the [sample sprint report](./sample-memory-sprint-report.md).
 6. Open the relevant intake issue.
 7. Confirm scope, access, payment method, and start date.
+8. For the USD 18,000 CX AI sprint, use the
+   [CX AI buyer packet](./cx-ai-buyer-packet.md) for approval text, billing
+   details, and data handling boundaries.

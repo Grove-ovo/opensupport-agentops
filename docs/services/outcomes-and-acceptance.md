@@ -1,18 +1,44 @@
 # Outcomes And Acceptance Criteria
 
-This page turns the USD 12,000 and USD 15,000 offers into concrete buyer
-acceptance tests. It is intentionally practical: the engagement is accepted
-only when the selected workflow has inspectable evidence.
+This page turns the fixed-fee offers into concrete buyer acceptance tests. It
+is intentionally practical: the engagement is accepted only when the selected
+workflow has inspectable evidence.
 
 ## Commercial Terms
 
 | Offer | Fixed fee | Payment milestone | Delivery milestone |
 | --- | ---: | --- | --- |
+| CX AI Agent Reliability Sprint | USD 18,000 | USD 9,000 upfront | USD 9,000 on accepted delivery |
 | Agent Memory Reliability Sprint | USD 12,000 | USD 6,000 upfront | USD 6,000 on accepted delivery |
 | OpenSupport AgentOps Pilot | USD 15,000 | USD 7,500 upfront | USD 7,500 on accepted delivery |
 
 The second payment is waived if the agreed replay suite plus implementation
 path is not delivered for the selected workflow.
+
+## CX AI Agent Reliability Sprint
+
+The sprint is accepted when one support AI, eval, observability, guardrail, or
+agent-security workflow has all of the following:
+
+| Acceptance item | Evidence delivered |
+| --- | --- |
+| Workflow map | Written map of user, AI agent, tools, policies, context, reviewer, and action boundaries |
+| Risk model | Policy freshness, PII/context, source grounding, tool/action, escalation, eval, observability, or security risks |
+| Replay tests | 10-14 test cases or runnable/spec-level tests for the highest-risk failures |
+| Reliability scorecard | Reviewer-facing pass/fail or severity rows for acceptance and regression checks |
+| Implementation path | 48h, 2w, and 6w plan with owners, sequence, dependencies, and known gaps |
+| Optional bounded fixture | Prototype, patch, fixture, or sample test harness when access is available and scope is narrow |
+
+### Minimum Quality Bar
+
+- Tests include at least two negative cases where the agent must refuse,
+  escalate, redact, or avoid an action.
+- Source and policy freshness assumptions are explicit.
+- Sensitive data handling is written even when the buyer only provides
+  sanitized examples.
+- The implementation path names what should not be built yet.
+- The final report is written so a technical reviewer can assign the next
+  change without another strategy session.
 
 ## Agent Memory Reliability Sprint
 

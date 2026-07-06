@@ -1,8 +1,8 @@
 # First 48 Hours After Yes
 
-This page explains how a fixed-fee Agent Memory Reliability Sprint or
-OpenSupport AgentOps Pilot starts after a buyer decides the scope is worth
-pursuing.
+This page explains how a fixed-fee CX AI Agent Reliability Sprint, Agent Memory
+Reliability Sprint, or OpenSupport AgentOps Pilot starts after a buyer decides
+the scope is worth pursuing.
 
 ## Goal
 
@@ -30,6 +30,13 @@ Not ready yet:
 
 ## Step 2: Confirm Commercial Terms
 
+For the CX AI Agent Reliability Sprint:
+
+- fixed fee: USD 18,000,
+- kickoff payment: USD 9,000,
+- delivery payment: USD 9,000,
+- timeline: 12 business days after kickoff, access, and upfront payment.
+
 For the Agent Memory Reliability Sprint:
 
 - fixed fee: USD 12,000,
@@ -46,6 +53,9 @@ For the OpenSupport AgentOps Pilot:
 
 Payment can be handled by Wise, PayPal, Stripe invoice, bank transfer, or USDC
 after scope is confirmed.
+
+For CX AI procurement details, use the
+[CX AI buyer packet](./cx-ai-buyer-packet.md).
 
 ## Step 3: Send The Minimum Useful Input
 
@@ -98,5 +108,6 @@ needed for technical review.
 
 Open the relevant intake issue:
 
+- [Start CX AI Agent Reliability Sprint intake](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=cx-ai-agent-reliability-sprint.yml)
 - [Start Agent Memory Reliability Sprint intake](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=agent-memory-reliability-sprint.yml)
 - [Start OpenSupport AgentOps Pilot intake](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=opensupport-agentops-pilot.yml)
