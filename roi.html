@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>ROI Calculator - CX AI Agent Reliability Sprint</title>
+    <meta
+      name="description"
+      content="Estimate support AI risk exposure, expected monthly savings, payback period, and break-even risk reduction for a fixed-fee reliability sprint."
+    />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="topbar" aria-label="Primary">
+      <a class="brand" href="./index.html">CX Agent Reliability</a>
+      <nav aria-label="Page sections">
+        <a href="./index.html#offer">Offer</a>
+        <a href="./index.html#deliverables">Deliverables</a>
+        <a href="./privacy.html">Data</a>
+        <a href="./index.html#start">Start</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="section roi-page" aria-labelledby="roi-page-title">
+        <div class="roi-intro">
+          <p class="eyebrow">ROI calculator</p>
+          <h1 id="roi-page-title">Quantify support AI risk.</h1>
+          <p class="lead legal-lead">
+            Model one AI-assisted support workflow before broader automation.
+          </p>
+        </div>
+
+        <div class="roi-app" data-sprint-fee="18000">
+          <form class="roi-controls" aria-label="ROI inputs">
+            <label>
+              Monthly support tickets
+              <input id="tickets" type="number" min="100" step="100" value="50000" />
+            </label>
+            <label>
+              AI-handled share
+              <input id="automation" type="range" min="5" max="90" value="35" />
+              <output id="automation-value">35%</output>
+            </label>
+            <label>
+              Severe failure rate
+              <input id="failure-rate" type="range" min="0.1" max="8" step="0.1" value="1.2" />
+              <output id="failure-rate-value">1.2%</output>
+            </label>
+            <label>
+              Cost per severe failure
+              <input id="failure-cost" type="number" min="10" step="10" value="180" />
+            </label>
+            <label>
+              Risk reduction target
+              <input id="reduction" type="range" min="5" max="80" value="25" />
+              <output id="reduction-value">25%</output>
+            </label>
+          </form>
+
+          <div class="roi-results" aria-label="ROI results">
+            <article>
+              <span>AI-handled tickets</span>
+              <strong id="ai-tickets">17,500</strong>
+            </article>
+            <article>
+              <span>Severe failures / month</span>
+              <strong id="failures">210</strong>
+            </article>
+            <article>
+              <span>Risk exposure / month</span>
+              <strong id="risk-exposure">$37,800</strong>
+            </article>
+            <article>
+              <span>Expected monthly savings</span>
+              <strong id="savings">$9,450</strong>
+            </article>
+            <article>
+              <span>Estimated payback</span>
+              <strong id="payback">1.9 months</strong>
+            </article>
+            <article>
+              <span>Break-even reduction</span>
+              <strong id="break-even">47.6%</strong>
+            </article>
+          </div>
+
+          <div class="roi-memo">
+            <div class="panel-title">
+              <h2>Memo</h2>
+              <button id="copy-memo" class="button dark small-button" type="button">Copy memo</button>
+            </div>
+            <pre id="memo"></pre>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <span>Grove - Independent AI Agent Reliability Consultant</span>
+      <a href="./index.html">Offer page</a>
+      <a href="mailto:chinesegrove@gmail.com">chinesegrove@gmail.com</a>
+    </footer>
+
+    <script src="./roi.js"></script>
+  </body>
+</html>
