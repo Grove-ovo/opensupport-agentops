@@ -115,6 +115,7 @@ Repository analogues:
 
 ## Commercial Links
 
+- [Buyer deal room](./buyer-deal-room.md)
 - [Agent Memory Reliability Sprint](./agent-memory-reliability-sprint.md)
 - [OpenSupport AgentOps Pilot](./opensupport-agentops-pilot.md)
 - [Sample sprint report](./sample-memory-sprint-report.md)

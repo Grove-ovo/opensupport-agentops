@@ -2,6 +2,9 @@
 
 Use this page to evaluate whether the USD 12,000 or USD 15,000 offer is a fit.
 
+Start from the [buyer deal room](./buyer-deal-room.md) for the complete proof
+and intake path.
+
 ## Fit Checklist
 
 The sprint or pilot is a good fit when at least three are true:

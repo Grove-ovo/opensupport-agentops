@@ -53,6 +53,7 @@ This repository already includes:
 
 See the buyer-facing evidence map:
 
+- [Buyer deal room](./buyer-deal-room.md)
 - [OpenSupport AgentOps proof pack](./proof-pack.md)
 - [Buyer due diligence](./buyer-due-diligence.md)
 - [Sample sprint report](./sample-memory-sprint-report.md)
