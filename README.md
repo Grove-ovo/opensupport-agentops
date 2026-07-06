@@ -19,6 +19,7 @@ implementation path in 10 business days.
 - [Sprint details](./docs/services/agent-memory-reliability-sprint.md)
 - [Proof pack](./docs/services/proof-pack.md)
 - [Sample sprint report](./docs/services/sample-memory-sprint-report.md)
+- [Public memory teardown examples](./docs/services/public-memory-teardowns.md)
 - [Start an intake issue](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=agent-memory-reliability-sprint.yml)
 
 ## OpenSupport AgentOps Pilot
