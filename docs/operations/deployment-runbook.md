@@ -113,6 +113,44 @@ The smoke creates an archived test tenant, sends a signed Chatwoot event,
 verifies a public mock Chatwoot delivery, waits for worker aggregation, and
 loads the dashboard through Nginx.
 
+## Production HTTP Load Gate
+
+After smoke passes, run the bounded HTTP load gate against the same production
+style stack:
+
+```sh
+npm run perf:production
+```
+
+The default profile runs a small CI-safe workload: warmup requests, 20 measured
+signed Chatwoot ingress requests, bounded concurrency, authenticated operator
+read probes, and threshold checks for errors, timeouts, p95 latency,
+throughput, and mock Chatwoot delivery count. The reports are written to:
+
+```text
+tmp/production-load.json
+tmp/production-load.md
+```
+
+For a heavier local stress run, tune the CLI flags instead of editing code:
+
+```sh
+npm run perf:production -- \
+  --warmup 5 \
+  --iterations 100 \
+  --concurrency 10 \
+  --iteration-delay-ms 400 \
+  --max-p95-ms 5000 \
+  --max-error-rate 0 \
+  --min-throughput 1
+```
+
+The report is secret-safe and excludes cookies, tokens, database URLs,
+customer-like text, and provider payloads. Treat it as staging/local evidence
+for the self-hosted Compose topology, not as a public internet capacity claim.
+Use `--iteration-delay-ms 0` for a deliberate burst test; HTTP `429` results
+then indicate the configured Nginx rate limits are protecting the edge.
+
 ## Rollback
 
 1. Stop new ingress at the upstream load balancer or TLS proxy.

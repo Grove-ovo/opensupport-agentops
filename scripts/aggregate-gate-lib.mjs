@@ -17,6 +17,7 @@ export function runAggregateGate(options = {}) {
 
   validateChildrenArchived(checks, repoRoot);
   validateCIPipeline(checks, repoRoot);
+  validateProductionHttpLoad(checks, repoRoot);
   validatePreflight(checks, repoRoot);
   validateRecoveryDrill(checks, repoRoot);
   validateSupplyChainEvidence(checks, repoRoot);
@@ -149,6 +150,55 @@ function validateCIPipeline(checks, repoRoot) {
   }
 }
 
+function validateProductionHttpLoad(checks, repoRoot) {
+  const ciPath = resolve(repoRoot, '.github/workflows/ci.yml');
+  const packagePath = resolve(repoRoot, 'package.json');
+  const requiredFiles = [
+    'scripts/production-load.mjs',
+    'scripts/production-load-lib.mjs',
+    'scripts/production-load.test.mjs',
+  ];
+  const missingFiles = requiredFiles.filter(
+    (path) => !existsSync(resolve(repoRoot, path)),
+  );
+  if (!existsSync(ciPath) || !existsSync(packagePath)) {
+    blocked(checks, 'production_http_load', 'production_load_config_missing', {});
+    return;
+  }
+  const ci = readFileSync(ciPath, 'utf8');
+  const packageJson = readFileSync(packagePath, 'utf8');
+  const requiredCi = [
+    'Run production HTTP load gate',
+    'npm run perf:production',
+    'production-load.json',
+    'production-load.md',
+  ];
+  const requiredPackage = [
+    '"perf:production"',
+    'scripts/production-load.mjs',
+    'scripts/production-load.test.mjs',
+  ];
+  const missingCi = requiredCi.filter((value) => !ci.includes(value));
+  const missingPackage = requiredPackage.filter(
+    (value) => !packageJson.includes(value),
+  );
+  if (
+    missingFiles.length > 0 ||
+    missingCi.length > 0 ||
+    missingPackage.length > 0
+  ) {
+    blocked(checks, 'production_http_load', 'production_load_evidence_missing', {
+      missing_files: missingFiles.length,
+      missing_ci: missingCi.length,
+      missing_package: missingPackage.length,
+    });
+    return;
+  }
+  ready(checks, 'production_http_load', 'production_load_evidence_ready', {
+    command: 'npm run perf:production',
+  });
+}
+
 function validatePreflight(checks, repoRoot) {
   const preflightLib = resolve(repoRoot, 'scripts/deploy-preflight-lib.mjs');
   const preflightScript = resolve(repoRoot, 'scripts/deploy-preflight.mjs');
@@ -272,6 +322,10 @@ function collectRollbackTriggers() {
     {
       trigger: 'CI full-stack smoke fails',
       action: 'Block merge; do not promote to dev/main.',
+    },
+    {
+      trigger: 'Production HTTP load gate breaches thresholds',
+      action: 'Block promotion; inspect production-load evidence and service logs.',
     },
     {
       trigger: 'Unresolved critical vulnerability',

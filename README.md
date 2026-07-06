@@ -123,6 +123,8 @@ cp .env.production.example .env.production
 # Create secrets and replace placeholders as documented in the runbook.
 docker compose --env-file .env.production \
   -f infra/docker/compose.production.yml up -d --build
+npm run smoke:production
+npm run perf:production
 ```
 
 Dashboard/API: `http://localhost:8088`
@@ -157,6 +159,7 @@ Generated evidence:
 - [Application load report](./reports/load_test_report.md)
 - [Cost report](./reports/cost_report.md)
 - [Industrial test report — 2026-07-06](./reports/industrial_test_report_2026-07-06.md)
+- [Industrial deployment performance report — 2026-07-07](./reports/industrial_deployment_performance_report_2026-07-07.md)
 
 Reproduce the report set:
 
@@ -168,6 +171,13 @@ npm run reports:phase5:check
 The Phase 5 reports use deterministic reference fixtures. They validate
 architecture comparison and application-level metric semantics; they are not
 production provider, billing, HTTP, or network capacity claims.
+
+`npm run perf:production` is the production-style HTTP load gate for a running
+Compose stack. It writes secret-safe JSON/Markdown evidence to
+`tmp/production-load.json` and `tmp/production-load.md`, exercising readiness,
+OIDC-authenticated operator reads, signed Chatwoot ingress, the mock provider,
+and mock Chatwoot delivery through the public edge. Its results are local or CI
+staging evidence, not public internet capacity claims.
 
 ## Development Workflow
 

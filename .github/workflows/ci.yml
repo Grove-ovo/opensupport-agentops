@@ -125,6 +125,24 @@ jobs:
           export SMOKE_MASTER_KEY_FILE=secrets/agentops_master_key
           npm run smoke:production | tee tmp/ci-evidence/production-smoke.json
 
+      - name: Run production HTTP load gate
+        run: |
+          set -a
+          . ./.env.ci.smoke
+          set +a
+          export SMOKE_DATABASE_URL="postgresql://${AGENTOPS_POSTGRES_USER}:${AGENTOPS_POSTGRES_PASSWORD}@127.0.0.1:${AGENTOPS_POSTGRES_PORT}/${AGENTOPS_POSTGRES_DB}"
+          export SMOKE_MASTER_KEY_FILE=secrets/agentops_master_key
+          npm run perf:production -- \
+            --json tmp/ci-evidence/production-load.json \
+            --markdown tmp/ci-evidence/production-load.md \
+            --warmup 2 \
+            --iterations 20 \
+            --concurrency 4 \
+            --max-p95-ms 5000 \
+            --max-error-rate 0 \
+            --min-throughput 0.5 \
+            | tee tmp/ci-evidence/production-load-summary.json
+
       - name: Boot production observability stack
         run: |
           compose() {
@@ -175,6 +193,7 @@ jobs:
           name: full-stack-evidence-${{ github.sha }}
           path: |
             tmp/ci-evidence/*.json
+            tmp/ci-evidence/*.md
             tmp/ci-evidence/*.log
             tmp/deploy-readiness.json
             tmp/deploy-readiness.md
