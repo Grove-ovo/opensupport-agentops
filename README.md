@@ -4,6 +4,20 @@ Tenant-ready ecommerce customer support AgentOps application
 built around Chatwoot, deterministic safety gates, immutable execution
 snapshots, replay evaluation, and controlled runtime modes.
 
+## Agent Memory Reliability Sprint
+
+I use this repository as a production-style proof point for agent reliability:
+typed traces, replay evals, guarded side effects, security cases, cost reports,
+operator approvals, and rollback/runbook discipline.
+
+For teams shipping AI agents, I offer a **USD 12,000 fixed-fee Agent Memory
+Reliability Sprint** for one production-relevant workflow: memory taxonomy,
+permission/staleness threat model, 8-12 replay tests, scorecard, and a concrete
+implementation path in 10 business days.
+
+- [Sprint details](./docs/services/agent-memory-reliability-sprint.md)
+- [Start an intake issue](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=agent-memory-reliability-sprint.yml)
+
 ## Project Status
 
 The repository implements the original PRD through production-oriented Phase 6

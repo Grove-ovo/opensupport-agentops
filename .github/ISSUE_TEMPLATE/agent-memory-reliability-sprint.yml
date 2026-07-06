@@ -1,0 +1,74 @@
+name: Agent Memory Reliability Sprint
+description: Request a USD 12,000 fixed-fee sprint for one AI agent workflow.
+title: "Agent Memory Sprint: <workflow>"
+labels: ["agent-memory-sprint"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the context. This intake is for a USD 12,000 fixed-fee Agent Memory Reliability Sprint for one production-relevant AI agent workflow.
+  - type: input
+    id: company
+    attributes:
+      label: Company / project
+      description: Who is building the agent workflow?
+      placeholder: Acme AI Platform
+    validations:
+      required: true
+  - type: textarea
+    id: workflow
+    attributes:
+      label: Agent workflow
+      description: Which workflow loses the most context today?
+      placeholder: "Example: support agent across tickets, coding agent across repos, research agent across projects..."
+    validations:
+      required: true
+  - type: textarea
+    id: remember
+    attributes:
+      label: What should the agent remember?
+      description: Include sessions, users, tickets, repos, customers, projects, preferences, decisions, or mistakes.
+    validations:
+      required: true
+  - type: textarea
+    id: never_remember
+    attributes:
+      label: What must it never remember?
+      description: Secrets, PII, revoked-channel information, temporary decisions, confidential customer context, etc.
+    validations:
+      required: true
+  - type: textarea
+    id: failure_cost
+    attributes:
+      label: Cost of a memory failure
+      description: What happens if the memory is stale, wrong, over-permissive, or missing?
+    validations:
+      required: true
+  - type: dropdown
+    id: access
+    attributes:
+      label: Access available for sprint
+      options:
+        - Public docs only
+        - Private docs/screenshots
+        - Repo access
+        - Repo access plus staging workflow
+    validations:
+      required: true
+  - type: dropdown
+    id: budget
+    attributes:
+      label: Can USD 12,000 be approved this month?
+      options:
+        - "Yes"
+        - "Likely, after technical scope review"
+        - "No"
+    validations:
+      required: true
+  - type: input
+    id: contact
+    attributes:
+      label: Best contact
+      description: Email, GitHub handle, or preferred async contact route.
+    validations:
+      required: true
