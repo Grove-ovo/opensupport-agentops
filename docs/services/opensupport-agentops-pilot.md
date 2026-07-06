@@ -56,6 +56,7 @@ See the buyer-facing evidence map:
 - [Buyer deal room](./buyer-deal-room.md)
 - [Commercial services](./README.md)
 - [Outcomes and acceptance criteria](./outcomes-and-acceptance.md)
+- [First 48 hours after yes](./first-48-hours.md)
 - [OpenSupport AgentOps proof pack](./proof-pack.md)
 - [Buyer due diligence](./buyer-due-diligence.md)
 - [Sample sprint report](./sample-memory-sprint-report.md)

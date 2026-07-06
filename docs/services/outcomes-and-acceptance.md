@@ -99,6 +99,9 @@ Default delivery includes:
 See [Agent Memory Replay Test Catalog](./agent-memory-replay-catalog.md) for a
 public sample of the replay case format.
 
+See [First 48 Hours After Yes](./first-48-hours.md) for the kickoff sequence
+after a buyer agrees the scope is worth pursuing.
+
 ## Final Acceptance Checklist
 
 ```text
