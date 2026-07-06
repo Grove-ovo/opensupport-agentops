@@ -1,5 +1,7 @@
 # OpenSupport AgentOps
 
+[![Fixed-fee AI Agent Reliability Services](https://img.shields.io/badge/Fixed--fee%20AI%20Agent%20Reliability-USD%2012k--15k-0B1220?style=for-the-badge)](./docs/services/README.md)
+
 Tenant-ready ecommerce customer support AgentOps application
 built around Chatwoot, deterministic safety gates, immutable execution
 snapshots, replay evaluation, and controlled runtime modes.
@@ -16,7 +18,9 @@ permission/staleness threat model, 8-12 replay tests, scorecard, and a concrete
 implementation path in 10 business days.
 
 - [Buyer deal room](./docs/services/buyer-deal-room.md)
+- [Commercial services index](./docs/services/README.md)
 - [Sprint details](./docs/services/agent-memory-reliability-sprint.md)
+- [Outcomes and acceptance criteria](./docs/services/outcomes-and-acceptance.md)
 - [Proof pack](./docs/services/proof-pack.md)
 - [Sample sprint report](./docs/services/sample-memory-sprint-report.md)
 - [Public memory teardown examples](./docs/services/public-memory-teardowns.md)
@@ -30,7 +34,9 @@ run guarded shadow/assist mode, install replay/security evals, and produce a
 go/no-go rollout plan.
 
 - [Buyer deal room](./docs/services/buyer-deal-room.md)
+- [Commercial services index](./docs/services/README.md)
 - [Pilot details](./docs/services/opensupport-agentops-pilot.md)
+- [Outcomes and acceptance criteria](./docs/services/outcomes-and-acceptance.md)
 - [Buyer due diligence](./docs/services/buyer-due-diligence.md)
 - [Start a pilot intake issue](https://github.com/Grove-ovo/opensupport-agentops/issues/new?template=opensupport-agentops-pilot.yml)
 

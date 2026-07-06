@@ -31,7 +31,9 @@ AI transformation project.
 
 | Need | Link |
 | --- | --- |
+| Commercial service index | [Commercial services](./README.md) |
 | Repository evidence map | [OpenSupport AgentOps proof pack](./proof-pack.md) |
+| Acceptance criteria | [Outcomes and acceptance criteria](./outcomes-and-acceptance.md) |
 | Example memory sprint deliverable | [Sample sprint report](./sample-memory-sprint-report.md) |
 | Public teardown examples | [Public memory teardown examples](./public-memory-teardowns.md) |
 | Qualification and due diligence | [Buyer due diligence](./buyer-due-diligence.md) |
@@ -63,9 +65,10 @@ For the OpenSupport pilot:
 
 1. Open an intake issue.
 2. Share the selected workflow and constraints.
-3. Confirm the fixed-fee scope and payment method.
-4. Start after upfront payment and access are agreed.
-5. Receive written deliverables and acceptance evidence.
+3. Review the [outcomes and acceptance criteria](./outcomes-and-acceptance.md).
+4. Confirm the fixed-fee scope and payment method.
+5. Start after upfront payment and access are agreed.
+6. Receive written deliverables and acceptance evidence.
 
 Intake links:
 
