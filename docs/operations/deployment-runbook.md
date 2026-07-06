@@ -25,6 +25,17 @@ Replace every placeholder password and configure provider origins, prices,
 Chatwoot secrets, OIDC issuer/client/callback values, and build version. Never
 commit `.env.production` or `secrets/`.
 
+Before starting Compose, prepare secret-file ownership for the non-root
+containers. The API image runs as UID/GID `999:999`; Grafana runs as
+`472:472`. Docker Compose local file-backed secrets do not reliably remap
+ownership or mode from the Compose file, so this must happen on the host after
+preflight has validated the files:
+
+```sh
+AGENTOPS_ENV_FILE=.env.production npm run deploy:preflight
+ENV_FILE=.env.production sh scripts/ops/prepare-compose-secrets.sh
+```
+
 See [Operator Authentication](../operator_authentication.md) for identity
 claims, cookie requirements, and session-key rotation.
 See [Edge And Transport Security](../edge_transport_security.md) for public
@@ -37,6 +48,24 @@ AGENTOPS_ENV_FILE=.env.production npm run deploy:preflight
 
 docker compose --env-file .env.production \
   -f infra/docker/compose.production.yml build
+```
+
+For a constrained single-node staging host with only 1 vCPU, include the
+resource override so Docker does not reject services whose production CPU limit
+is higher than the host CPU count:
+
+```sh
+docker compose --env-file .env.production \
+  -f infra/docker/compose.production.yml \
+  -f infra/docker/compose.single-node.yml build
+```
+
+Use the same override at rollout on that host class:
+
+```sh
+docker compose --env-file .env.production \
+  -f infra/docker/compose.production.yml \
+  -f infra/docker/compose.single-node.yml up -d
 ```
 
 ## Rollout
@@ -60,6 +89,12 @@ start. Do not bypass migration health ordering.
 The committed example environment is intentionally blocked. Replace every
 placeholder and review both reports before rollout. See
 [Production Preflight](./deploy-preflight.md).
+
+Cloudflare temporary preview is not part of this rollout path. It can expose a
+short-lived shell/proxy for demonstration, but the real deployment target is a
+cloud server or equivalent self-hosted runtime running the Node API,
+PostgreSQL/pgvector, Redis, Chatwoot connectivity, worker, and observability
+services.
 
 ## Smoke
 

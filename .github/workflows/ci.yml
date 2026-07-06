@@ -95,6 +95,9 @@ jobs:
           AGENTOPS_ENV_FILE: .env.ci.preflight
         run: npm run deploy:preflight
 
+      - name: Prepare Compose secret ownership
+        run: ENV_FILE=.env.ci.smoke sh scripts/ops/prepare-compose-secrets.sh
+
       - name: Start deterministic OIDC/provider/Chatwoot mock
         run: |
           mkdir -p tmp/ci-evidence
