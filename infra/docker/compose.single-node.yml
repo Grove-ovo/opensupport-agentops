@@ -1,0 +1,64 @@
+name: opensupport-agentops
+
+# Resource override for small single-node staging hosts.
+#
+# The production compose file keeps conservative upper limits for larger hosts.
+# Docker rejects a service when its CPU limit is higher than the host CPU count,
+# so this override caps every service at <= 1 vCPU for minimal validation
+# servers such as 1 vCPU / 1 GiB RAM instances.
+
+services:
+  postgres:
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 768M
+        reservations:
+          memory: 256M
+
+  redis:
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+
+  api:
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 768M
+        reservations:
+          memory: 192M
+
+  worker:
+    deploy:
+      resources:
+        limits:
+          cpus: "0.75"
+          memory: 384M
+        reservations:
+          memory: 96M
+
+  web:
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 128M
+
+  prometheus:
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 384M
+
+  grafana:
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 384M

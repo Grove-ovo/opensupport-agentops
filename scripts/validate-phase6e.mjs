@@ -15,6 +15,7 @@ const requiredFiles = [
   'infra/observability/grafana/dashboards/agentops-overview.json',
   'scripts/production-smoke.mjs',
   'scripts/ci-compose-core-boot.sh',
+  'scripts/ops/prepare-compose-secrets.sh',
   'scripts/ops/backup.sh',
   'scripts/ops/restore.sh',
   'docs/operations/deployment-runbook.md',
@@ -45,6 +46,10 @@ const deployment = await readFile(
 );
 const ciWorkflow = await readFile('.github/workflows/ci.yml', 'utf8');
 const ciCoreBoot = await readFile('scripts/ci-compose-core-boot.sh', 'utf8');
+const prepareSecrets = await readFile(
+  'scripts/ops/prepare-compose-secrets.sh',
+  'utf8',
+);
 
 for (const service of [
   'postgres:',
@@ -78,7 +83,10 @@ assert.match(apiLog, /build_version/);
 assert.match(workerLog, /build_version/);
 assert.match(deployment, /## Rollback/);
 assert.match(deployment, /npm run smoke:production/);
+assert.match(deployment, /prepare-compose-secrets\.sh/);
 assert.doesNotMatch(ciWorkflow, /Boot complete production stack/);
+assert.match(ciWorkflow, /Prepare Compose secret ownership/);
+assert.match(ciWorkflow, /scripts\/ops\/prepare-compose-secrets\.sh/);
 assert.match(ciWorkflow, /Boot production core stack/);
 assert.match(ciWorkflow, /bash scripts\/ci-compose-core-boot\.sh/);
 assert.match(ciWorkflow, /compose\.ci-smoke\.yml/);
@@ -94,6 +102,9 @@ assert.match(ciCoreBoot, /::error title=Core boot failure::/);
 assert.match(ciCoreBoot, /up -d --build --no-deps migrate/);
 assert.match(ciCoreBoot, /up -d --build --no-deps api worker/);
 assert.match(ciCoreBoot, /up -d --build --no-deps web/);
+assert.match(prepareSecrets, /999:999/);
+assert.match(prepareSecrets, /472:472/);
+assert.match(prepareSecrets, /chmod 0400/);
 assert.match(ciWorkflow, /Boot production observability stack/);
 assert.match(
   ciWorkflow,

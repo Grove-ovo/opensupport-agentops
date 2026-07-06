@@ -24,6 +24,15 @@ jobs. The migration service must complete before API and worker start.
 Credentials remain outside images and source control. Only Nginx is publicly
 exposed by default.
 
+For local Docker Compose file-backed secrets, host file ownership matters.
+Compose does not reliably remap `uid`, `gid`, or `mode` for non-Swarm local
+secret files. Before starting API/Grafana containers, run
+`ENV_FILE=.env.production sh scripts/ops/prepare-compose-secrets.sh` after
+preflight. API secret files must be owned by `999:999` with no group/other
+permission; the Grafana admin password file must be owned by `472:472` with no
+group/other permission. Do not weaken host secret modes to world-readable to
+make containers start.
+
 The Compose network topology separates concerns:
 
 - `backend` is internal and carries database, Redis, API, worker, and metrics
@@ -44,6 +53,7 @@ Structured JSON logs include service and build metadata plus applicable
 | Migration service fails | API and worker remain unavailable |
 | PostgreSQL or Redis is unavailable | Readiness returns non-2xx |
 | Secret file is unreadable | API configuration fails before binding |
+| Secret file is host-owned by root/runner and mode `0600` | Run the secret ownership preparation script before Compose startup |
 | TypeScript build info exists without `dist` | Docker build uses `tsc -b --force` |
 | Provider or Chatwoot call fails | Persist correlated failure and downgrade/handoff |
 | Worker retries are exhausted | Move identifier-only work to the dead-letter stream |
@@ -55,8 +65,13 @@ Structured JSON logs include service and build metadata plus applicable
   while Prometheus scrapes internal service metrics.
 - Base: a production smoke creates an isolated tenant, executes one signed
   Chatwoot event, verifies delivery and dashboard visibility, then archives it.
+- Base: CI/server preflight validates secret files first, then the ownership
+  preparation script changes owner/mode for non-root containers before Compose
+  startup.
 - Bad: never bake `.env.production`, provider keys, database passwords, or
   envelope keys into an image or commit.
+- Bad: never make secret files `0644`/world-readable as a workaround for
+  non-root container access.
 - Bad: never attach API or worker only to an `internal: true` Docker network;
   real provider and Chatwoot calls require explicit outbound connectivity.
 
@@ -66,6 +81,8 @@ Structured JSON logs include service and build metadata plus applicable
 ## 6. Tests Required
 
 - Run `docker compose ... config` and build all three application images.
+- Run `sh -n scripts/ops/prepare-compose-secrets.sh` and assert CI invokes it
+  before production Compose startup.
 - Start the full production Compose stack and verify every long-running service
   is healthy plus the migration service exits successfully.
 - Run `npm run smoke:production`, inspect Prometheus targets and Grafana
@@ -88,6 +105,21 @@ environment:
 secrets:
   agentops_master_key:
     file: ${AGENTOPS_MASTER_KEY_FILE}
+```
+
+### Wrong
+
+```sh
+chmod 0644 secrets/agentops_master_key
+docker compose --env-file .env.production -f infra/docker/compose.production.yml up -d api
+```
+
+### Correct
+
+```sh
+AGENTOPS_ENV_FILE=.env.production npm run deploy:preflight
+ENV_FILE=.env.production sh scripts/ops/prepare-compose-secrets.sh
+docker compose --env-file .env.production -f infra/docker/compose.production.yml up -d api
 ```
 
 ### Wrong

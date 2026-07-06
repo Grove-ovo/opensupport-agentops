@@ -1,0 +1,3 @@
+{"file": ".trellis/spec/infra/phase-6e-production-operations.md", "reason": "Verify deployment evidence against production operations requirements."}
+{"file": ".trellis/spec/infra/phase-7f-pre-deployment-gate.md", "reason": "Ensure reports do not overclaim production completeness."}
+{"file": ".trellis/spec/infra/phase-7c-production-preflight.md", "reason": "Check preflight and secret handling evidence."}
