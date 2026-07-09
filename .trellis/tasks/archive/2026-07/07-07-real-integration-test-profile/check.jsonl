@@ -1,0 +1,5 @@
+{"file": ".trellis/spec/infra/index.md", "reason": "Quality checklist for infra and local runtime work."}
+{"file": ".trellis/spec/infra/phase-1a-database-foundation.md", "reason": "Verify local compose, migration, and docs contracts."}
+{"file": ".trellis/spec/infra/phase-6a-api-storage-runtime.md", "reason": "Verify API integration command and real PostgreSQL/Redis test coverage."}
+{"file": ".trellis/spec/infra/phase-6d-async-monitor-worker.md", "reason": "Verify worker integration profile covers Redis Streams behavior."}
+{"file": ".trellis/spec/integrations/phase-6b-chatwoot-llm-e2e.md", "reason": "Verify E2E mock provider/Chatwoot integration remains scoped correctly."}
