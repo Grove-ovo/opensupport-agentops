@@ -160,6 +160,7 @@ Generated evidence:
 - [Cost report](./reports/cost_report.md)
 - [Industrial test report — 2026-07-06](./reports/industrial_test_report_2026-07-06.md)
 - [Industrial deployment performance report — 2026-07-07](./reports/industrial_deployment_performance_report_2026-07-07.md)
+- [Real integration profile report — 2026-07-07](./reports/real_integration_profile_report_2026-07-07.md)
 
 Reproduce the report set:
 
@@ -178,6 +179,11 @@ Compose stack. It writes secret-safe JSON/Markdown evidence to
 OIDC-authenticated operator reads, signed Chatwoot ingress, the mock provider,
 and mock Chatwoot delivery through the public edge. Its results are local or CI
 staging evidence, not public internet capacity claims.
+
+`npm run test:integration:real` is the opt-in real PostgreSQL/Redis integration
+gate. It starts the local Compose services on high ports, applies migrations,
+and runs API integration, API E2E, and worker integration tests without skipped
+live-service cases.
 
 ## Development Workflow
 

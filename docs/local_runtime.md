@@ -41,7 +41,7 @@ The matching application connection strings live in `.env.example`:
 
 ```text
 DATABASE_URL=postgresql://agentops:agentops@localhost:5432/agentops
-REDIS_URL=redis://localhost:6379/0
+REDIS_URL=redis://:agentops@localhost:6379/0
 ```
 
 ## Applying Phase 1 Migrations
@@ -217,8 +217,42 @@ share the canonical dedupe key and can seed only one pipeline execution.
 
 ## Verification And Live Smoke
 
+The default `npm test` suite keeps live services optional. To run the real
+PostgreSQL/Redis integration profile, use:
+
+```bash
+npm run test:integration:real
+```
+
+This validates the Compose config, starts `infra/docker/compose.phase1.yml`
+with health checks, applies the full migration chain, then runs API
+integration, deterministic HTTP E2E, and worker integration tests with:
+
+```text
+DATABASE_URL=postgresql://agentops:agentops@127.0.0.1:55432/agentops
+REDIS_URL=redis://:agentops@127.0.0.1:56379/0
+AGENTOPS_RUN_INTEGRATION=1
+```
+
+The profile fails closed if any integration step reports skipped tests or if
+the test runner output does not include a skipped-test summary. Its final JSON
+summary includes per-step duration and skipped-test evidence for CI logs.
+
+The profile intentionally defaults to high host ports (`55432` and `56379`) so
+it does not collide with developer machines that already run PostgreSQL or
+Redis on `5432` or `6379`. Override `AGENTOPS_POSTGRES_PORT` or
+`AGENTOPS_REDIS_PORT` when a staging runner requires different bindings.
+
+By default the services remain running for local reuse. For an ephemeral CI or
+staging runner, tear them down after the tests:
+
+```bash
+npm run test:integration:real -- --down
+```
+
 The deterministic HTTP E2E starts local mock Provider and Chatwoot endpoints
-while using the real PostgreSQL and Redis services:
+while using the same real PostgreSQL and Redis services. If the services are
+already running and migrated, it can be run directly:
 
 ```bash
 npm run test:e2e

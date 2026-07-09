@@ -13,7 +13,7 @@ integration('PostgreSQL repositories and Redis coordination use real services', 
   const databaseUrl =
     process.env.DATABASE_URL ??
     'postgresql://agentops:agentops@localhost:5432/agentops';
-  const redisUrl = process.env.REDIS_URL ?? 'redis://localhost:6379/0';
+  const redisUrl = process.env.REDIS_URL ?? 'redis://:agentops@localhost:6379/0';
   const pool = createPostgresPool(databaseUrl);
   const store = new PostgresAgentOpsStore(pool);
   const redis = await NodeRedisCoordinator.connect(redisUrl);

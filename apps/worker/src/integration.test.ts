@@ -15,7 +15,7 @@ integration(
       DATABASE_URL:
         process.env.DATABASE_URL ??
         'postgresql://agentops:agentops@localhost:5432/agentops',
-      REDIS_URL: process.env.REDIS_URL ?? 'redis://localhost:6379/0',
+      REDIS_URL: process.env.REDIS_URL ?? 'redis://:agentops@localhost:6379/0',
       AGENTOPS_STREAM_KEY: `agentops:test:${suffix}`,
       AGENTOPS_STREAM_GROUP: `workers-${suffix}`,
       AGENTOPS_DEAD_LETTER_STREAM: `agentops:test:${suffix}:dead`,
@@ -24,6 +24,7 @@ integration(
       AGENTOPS_WORKER_RELAY_INTERVAL_MS: '50',
       AGENTOPS_WORKER_VISIBILITY_TIMEOUT_MS: '1000',
       AGENTOPS_WORKER_MAX_ATTEMPTS: '3',
+      AGENTOPS_WORKER_BATCH_SIZE: '500',
     });
     const runtime = await createWorkerRuntime(config);
     const tenantId = randomUUID();
@@ -122,25 +123,12 @@ integration(
     );
     assert.equal(pending.rows[0]?.count, '2');
 
-    await runtime.worker.runOnce();
-    const results = await runtime.repository.pool.query<{
-      monitor_count: string;
-      aggregate_count: string;
-      succeeded_count: string;
-    }>(
-      `SELECT
-         (SELECT count(*) FROM monitor_trace_results
-          WHERE tenant_id = $1)::text AS monitor_count,
-         (SELECT count(*) FROM operational_aggregates
-          WHERE tenant_id = $1
-            AND aggregate_name = 'dashboard_overview_24h')::text
-            AS aggregate_count,
-         (SELECT count(*) FROM async_job_executions
-          WHERE tenant_id = $1 AND status = 'succeeded')::text
-            AS succeeded_count`,
-      [tenantId],
-    );
-    assert.deepEqual(results.rows[0], {
+    const results = await waitForTenantResults(runtime, tenantId, {
+      monitor_count: '1',
+      aggregate_count: '1',
+      succeeded_count: '2',
+    });
+    assert.deepEqual(results, {
       monitor_count: '1',
       aggregate_count: '1',
       succeeded_count: '2',
@@ -215,14 +203,8 @@ integration(
        VALUES ($1, $2, 'monitor_trace', 'invalid', $3, $4)`,
       [poisonId, tenantId, randomUUID(), `poison:${suffix}`],
     );
-    await runtime.worker.runOnce();
-    await runtime.worker.runOnce();
-    await runtime.worker.runOnce();
-    const poison = await runtime.repository.pool.query<{ status: string }>(
-      `SELECT status FROM async_job_executions WHERE job_id = $1`,
-      [poisonId],
-    );
-    assert.equal(poison.rows[0]?.status, 'dead_letter');
+    const poison = await waitForJobStatus(runtime, poisonId, 'dead_letter');
+    assert.equal(poison, 'dead_letter');
     assert.equal(
       Number(await runtime.queue.client.sendCommand([
         'XLEN',
@@ -232,3 +214,62 @@ integration(
     );
   },
 );
+
+async function waitForTenantResults(
+  runtime: Awaited<ReturnType<typeof createWorkerRuntime>>,
+  tenantId: string,
+  expected: {
+    monitor_count: string;
+    aggregate_count: string;
+    succeeded_count: string;
+  },
+) {
+  let latest = {
+    monitor_count: '0',
+    aggregate_count: '0',
+    succeeded_count: '0',
+  };
+  for (let attempt = 0; attempt < 20; attempt += 1) {
+    await runtime.worker.runOnce();
+    const results = await runtime.repository.pool.query<typeof latest>(
+      `SELECT
+         (SELECT count(*) FROM monitor_trace_results
+          WHERE tenant_id = $1)::text AS monitor_count,
+         (SELECT count(*) FROM operational_aggregates
+          WHERE tenant_id = $1
+            AND aggregate_name = 'dashboard_overview_24h')::text
+            AS aggregate_count,
+         (SELECT count(*) FROM async_job_executions
+          WHERE tenant_id = $1 AND status = 'succeeded')::text
+            AS succeeded_count`,
+      [tenantId],
+    );
+    latest = results.rows[0] ?? latest;
+    if (
+      latest.monitor_count === expected.monitor_count &&
+      latest.aggregate_count === expected.aggregate_count &&
+      latest.succeeded_count === expected.succeeded_count
+    ) {
+      return latest;
+    }
+  }
+  return latest;
+}
+
+async function waitForJobStatus(
+  runtime: Awaited<ReturnType<typeof createWorkerRuntime>>,
+  jobId: string,
+  expected: string,
+) {
+  let status: string | null = null;
+  for (let attempt = 0; attempt < 10; attempt += 1) {
+    await runtime.worker.runOnce();
+    const result = await runtime.repository.pool.query<{ status: string }>(
+      `SELECT status FROM async_job_executions WHERE job_id = $1`,
+      [jobId],
+    );
+    status = result.rows[0]?.status ?? null;
+    if (status === expected) return status;
+  }
+  return status;
+}

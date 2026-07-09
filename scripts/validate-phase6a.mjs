@@ -18,6 +18,9 @@ const required = [
   'infra/migrations/0014_productization_runtime.sql',
   'infra/verification/phase6a_productization_runtime.sql',
   'scripts/migrate.mjs',
+  'scripts/real-integration-lib.mjs',
+  'scripts/run-real-integration.mjs',
+  'scripts/real-integration.test.mjs',
 ];
 
 for (const path of required) {
@@ -32,6 +35,7 @@ for (const script of [
   'db:verify:phase6a',
   'test:api',
   'test:api:integration',
+  'test:integration:real',
   'test:phase6a',
 ]) {
   if (typeof packageJson.scripts?.[script] !== 'string') {

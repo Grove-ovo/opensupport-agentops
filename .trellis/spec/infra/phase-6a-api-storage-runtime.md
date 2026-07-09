@@ -49,6 +49,7 @@ npm run db:verify:phase6a
 npm run start:api
 npm run test:api
 npm run test:api:integration
+npm run test:integration:real
 
 GET /health/live
 GET /health/ready
@@ -127,6 +128,9 @@ they never store raw webhook bodies or customer text.
 - `npm run typecheck`, `npm run lint`, and `npm test`.
 - API injection tests for liveness, readiness, validation, pagination,
   not-found responses, and metrics.
+- `npm run test:integration:real` starts real local PostgreSQL/pgvector and
+  Redis, applies migrations, and runs API integration, API E2E, and worker
+  integration tests with no skipped live-service cases.
 - `npm run test:api:integration` against real PostgreSQL and Redis, asserting:
   canonical event persistence/deduplication, multi-key Redis claims, token-safe
   lock release, migration version, and cleanup.
@@ -162,3 +166,109 @@ DROP CONSTRAINT IF EXISTS agent_traces_tenant_trace_uniq;
 
 The early migration can rebuild its owned constraint, and the later migration
 re-establishes its own foreign key.
+
+## Scenario: Real PostgreSQL/Redis Integration Profile
+
+### 1. Scope / Trigger
+
+- Trigger: adding or changing a command that orchestrates real local
+  PostgreSQL/pgvector and Redis integration tests.
+- Applies to `scripts/run-real-integration.mjs`,
+  `scripts/real-integration-lib.mjs`, `scripts/real-integration.test.mjs`,
+  `package.json`, `.env.example`, `docs/local_runtime.md`, API integration
+  tests, and worker integration tests.
+
+### 2. Signatures
+
+```text
+npm run test:integration:real
+node scripts/run-real-integration.mjs [--down] [--down-volumes] [--skip-compose-up]
+```
+
+```js
+buildRealIntegrationEnvironment(env, options)
+buildRealIntegrationPlan(options)
+runCommandPlan(steps, options)
+```
+
+### 3. Contracts
+
+- The real profile validates `infra/docker/compose.phase1.yml`, starts
+  PostgreSQL/pgvector and Redis with Compose health checks, applies the full
+  migration chain with `npm run db:migrate:node`, then runs
+  `test:api:integration`, `test:e2e`, and `test:worker:integration`.
+- The successful CLI summary includes `steps`, `step_results`, and
+  `services_left_running`. Each `step_results` item includes `id`, `status`,
+  and `duration_ms`; integration-test steps also include `skipped_tests`.
+- Default profile ports are high local ports to avoid common developer
+  collisions:
+  - `DATABASE_URL=postgresql://agentops:agentops@127.0.0.1:55432/agentops`
+  - `REDIS_URL=redis://:agentops@127.0.0.1:56379/0`
+- Existing compose env keys override credentials and ports:
+  `AGENTOPS_POSTGRES_USER`, `AGENTOPS_POSTGRES_PASSWORD`,
+  `AGENTOPS_POSTGRES_DB`, `AGENTOPS_POSTGRES_PORT`,
+  `AGENTOPS_REDIS_PASSWORD`, and `AGENTOPS_REDIS_PORT`.
+- The command sets `AGENTOPS_RUN_INTEGRATION=1`; default `npm test` remains
+  Docker-free and may keep live-service tests skipped.
+- The profile leaves services running by default for local reuse. `--down`
+  tears services down, and `--down-volumes` also removes volumes for ephemeral
+  CI/staging runs.
+- Worker integration tests must not assume the shared database has an empty
+  async outbox. They must assert tenant-scoped durable outcomes and tolerate
+  unrelated pending outbox rows from preceding API/E2E integration tests.
+
+### 4. Validation & Error Matrix
+
+| Condition | Expected behavior |
+|-----------|-------------------|
+| Compose config invalid | `real_integration_failed:compose_config` |
+| PostgreSQL or Redis fails health | `real_integration_failed:compose_up` |
+| Migration chain fails | `real_integration_failed:migrate` |
+| API integration fails | `real_integration_failed:api_integration` |
+| API E2E fails | `real_integration_failed:api_e2e` |
+| Worker integration fails | `real_integration_failed:worker_integration` |
+| Any integration step reports skipped tests | Fails the owning step with skipped test detail |
+| Any integration step lacks a TAP skipped summary | Fails the owning step closed |
+| Standard port already occupied | Default profile still uses high ports |
+| Unknown CLI flag | Stable `real_integration_failed:unknown_cli_argument` |
+
+### 5. Good/Base/Bad Cases
+
+- Good: run `npm run test:integration:real` on a developer machine that already
+  has PostgreSQL on `5432`; the profile binds Compose PostgreSQL to `55432` and
+  Redis to `56379`.
+- Base: run `npm run test:integration:real -- --skip-compose-up` when a staging
+  runner manages the services separately but uses the same env contract.
+- Bad: set only `AGENTOPS_RUN_INTEGRATION=1` and rely on implicit Redis
+  defaults; the compose Redis requires a password-bearing URL.
+- Bad: worker integration asserts global queue emptiness; real profiles may
+  run after API/E2E tests that create unrelated async outbox rows.
+
+### 6. Tests Required
+
+- Unit: command plan order, env URL construction, high-port defaults,
+  `--skip-compose-up`, teardown command construction, first-failure stopping
+  behavior, per-step machine summary shape, and zero-skipped TAP summary
+  enforcement.
+- Real integration: run `npm run test:integration:real` and verify API
+  integration, API E2E, and worker integration report zero skipped live-service
+  tests.
+- Regression: `npm run test:phase6a`, `npm run lint`, `npm run typecheck`, and
+  full `npm test`.
+
+### 7. Wrong vs Correct
+
+#### Wrong
+
+```sh
+AGENTOPS_RUN_INTEGRATION=1 npm run test:worker
+# Falls back to redis://localhost:6379/0 and assumes the database queue is empty.
+```
+
+#### Correct
+
+```sh
+npm run test:integration:real
+# Uses password-bearing Redis URL, high host ports, migrations first, and
+# tenant-scoped worker assertions.
+```

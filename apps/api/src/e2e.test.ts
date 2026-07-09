@@ -83,7 +83,7 @@ integration(
     );
     const store = new PostgresAgentOpsStore(pool);
     const redis = await NodeRedisCoordinator.connect(
-      process.env.REDIS_URL ?? 'redis://localhost:6379/0',
+      process.env.REDIS_URL ?? 'redis://:agentops@localhost:6379/0',
     );
     const repository = new ProductionE2ERepository(pool);
     const tenantId = randomUUID();
@@ -567,7 +567,7 @@ integration(
     );
     const store = new PostgresAgentOpsStore(pool);
     const redis = await NodeRedisCoordinator.connect(
-      process.env.REDIS_URL ?? 'redis://localhost:6379/0',
+      process.env.REDIS_URL ?? 'redis://:agentops@localhost:6379/0',
     );
     const repository = new ProductionE2ERepository(pool);
     const tenantId = randomUUID();
