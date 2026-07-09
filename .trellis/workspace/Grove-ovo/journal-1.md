@@ -1963,3 +1963,36 @@ Added a production-style HTTP load gate, CI evidence upload, aggregate Phase 7 r
 ### Next Steps
 
 - None - task complete
+
+
+## Session 58: Real integration profile
+
+**Date**: 2026-07-09
+**Task**: Real integration profile
+**Branch**: `dev`
+
+### Summary
+
+Added a real PostgreSQL/Redis integration profile with Compose orchestration, migration-first execution, zero-skipped live-service enforcement, machine-readable per-step evidence, docs/spec/report updates, and verified lint plus Phase 6A gates.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `f4b4ba5` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
