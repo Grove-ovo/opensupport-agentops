@@ -85,6 +85,22 @@ After implementation:
 
 ---
 
+## Pooled Resource Reuse
+
+When one layer holds a pooled client, lock, lease, or transaction while calling
+another layer:
+
+- [ ] Trace every nested storage call made before the resource is released.
+- [ ] Confirm nested calls can reuse the owned executor/client.
+- [ ] Stress above the pool size; low concurrency can hide a resource cycle.
+- [ ] Verify failure paths persist required audit/retry state before releasing
+      the lock.
+
+Holding one pool client while nested code borrows another from the same pool can
+deadlock through pool starvation even when the database lock order is correct.
+
+---
+
 ## Cross-Platform Template Consistency
 
 In Trellis, command templates (e.g., `record-session.md`) exist in **multiple platforms** with identical or near-identical content. This is a cross-layer boundary.

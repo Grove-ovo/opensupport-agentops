@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from 'node:crypto';
-import type { Pool, QueryResultRow } from 'pg';
+import type { Pool, PoolClient, QueryResultRow } from 'pg';
 import type {
   AgentPipelineRun,
   AgentTrace,
@@ -40,6 +40,8 @@ export interface DeliveryClaimInput {
   credentialRefHash: string;
   requestHash: string;
 }
+
+export type QueryExecutor = Pool | PoolClient;
 
 export interface DeliveryClaimRecord extends DeliveryClaimInput {
   status: 'pending' | 'succeeded' | 'failed';
@@ -146,8 +148,9 @@ export class ProductionE2ERepository {
 
   async getChatwootConnection(
     tenantId: string,
+    executor: QueryExecutor = this.pool,
   ): Promise<ChatwootRuntimeConnection | null> {
-    const result = await this.pool.query<ConnectionRow>(
+    const result = await executor.query<ConnectionRow>(
       `SELECT
          id, tenant_id, base_url, account_id::text, webhook_secret_ref,
          api_token_ref, metadata
@@ -544,8 +547,11 @@ export class ProductionE2ERepository {
     );
   }
 
-  async claimDelivery(input: DeliveryClaimInput): Promise<DeliveryClaimResult> {
-    const inserted = await this.pool.query<DeliveryRow>(
+  async claimDelivery(
+    input: DeliveryClaimInput,
+    executor: QueryExecutor = this.pool,
+  ): Promise<DeliveryClaimResult> {
+    const inserted = await executor.query<DeliveryRow>(
       `INSERT INTO chatwoot_delivery_attempts (
          delivery_id, tenant_id, trace_id, conversation_id, message_type,
          idempotency_key, input_hash, credential_ref_hash, request_hash
@@ -568,7 +574,7 @@ export class ProductionE2ERepository {
     if (inserted.rows[0]) {
       return { status: 'claimed', record: mapDelivery(inserted.rows[0]) };
     }
-    const existing = await this.pool.query<DeliveryRow>(
+    const existing = await executor.query<DeliveryRow>(
       `SELECT * FROM chatwoot_delivery_attempts
        WHERE tenant_id = $1 AND idempotency_key = $2`,
       [input.tenantId, input.idempotencyKey],
@@ -581,7 +587,7 @@ export class ProductionE2ERepository {
       return { status: 'duplicate', record };
     }
     if (record.status === 'failed') {
-      const retried = await this.pool.query<DeliveryRow>(
+      const retried = await executor.query<DeliveryRow>(
         `UPDATE chatwoot_delivery_attempts
          SET status = 'pending',
              code = NULL,
@@ -615,8 +621,9 @@ export class ProductionE2ERepository {
     code: string,
     providerMessageId: string | null,
     responseHash: string | null,
+    executor: QueryExecutor = this.pool,
   ): Promise<void> {
-    await this.pool.query(
+    await executor.query(
       `UPDATE chatwoot_delivery_attempts
        SET status = $2, code = $3, provider_message_id = $4,
            response_hash = $5, completed_at = now()

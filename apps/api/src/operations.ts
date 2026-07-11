@@ -35,6 +35,8 @@ interface ApprovalActionRow extends QueryResultRow {
   action_id: string;
 }
 
+type QueryExecutor = Pool | PoolClient;
+
 interface ReleaseTransitionRow extends QueryResultRow {
   transition_id: string;
 }
@@ -208,6 +210,10 @@ export class PostgresOperationsService implements OperationsService {
   async applyApprovalAction(
     command: ApprovalActionCommand,
   ): Promise<ApprovalSummaryRecord> {
+    if (command.action === 'approve' || command.action === 'edit') {
+      return this.applyDeliveryApprovalAction(command);
+    }
+
     const approval = await this.loadApproval(command.tenantId, command.approvalId);
     if (approval === null) {
       throw new OperationsError('approval_not_found', 404);
@@ -215,67 +221,24 @@ export class PostgresOperationsService implements OperationsService {
     if (approval.state !== 'pending') {
       throw new OperationsError('approval_not_pending', 409);
     }
-    const content =
-      command.action === 'edit'
-        ? command.editedReply?.trim() ?? ''
-        : approval.suggested_reply;
-    let deliveryReceiptId: string | null = null;
-    let providerMessageId: string | null = null;
-    let deliveryStatus: string | null = null;
-    if (command.action === 'approve' || command.action === 'edit') {
-      if (content.length === 0) {
-        throw new OperationsError('edited_reply_required', 400);
-      }
-      const connection = await this.repository.getChatwootConnection(command.tenantId);
-      if (connection === null) {
-        throw new OperationsError('chatwoot_connection_unavailable', 503);
-      }
-      const conversationId = await this.traceConversation(
-        command.tenantId,
-        approval.trace_id,
-      );
-      const deliveryId = randomUUID();
-      const delivery = await this.delivery.deliver(
-        approvalDeliveryCommand(
-          deliveryId,
-          approval,
-          conversationId,
-          content,
-          command.idempotencyKey,
-        ),
-        connection,
-      );
-      if (delivery.status !== 'succeeded' && delivery.status !== 'duplicate') {
-        throw new OperationsError(`chatwoot_${delivery.code}`, 502);
-      }
-      deliveryReceiptId = delivery.receipt_id;
-      providerMessageId = delivery.provider_message_id;
-      deliveryStatus = delivery.status;
-    }
-
     const inputHash = hashJson(command);
-    const result = await this.pool.query<ApprovalActionRow>(
-      `SELECT * FROM apply_approval_action(
-         $1, $2, $3, $4, 'pending', $5, 'operator', $6, $7,
-         $8, $9, $10, $11, $12, now()
-       )`,
-      [
-        randomUUID(),
-        command.approvalId,
-        command.tenantId,
+    try {
+      await this.insertApprovalAction(
+        this.pool,
+        command,
         approval.trace_id,
-        command.action,
-        command.actorId,
-        command.action === 'edit' ? content : null,
-        deliveryReceiptId,
-        providerMessageId,
-        deliveryStatus,
-        command.idempotencyKey,
+        '',
         inputHash,
-      ],
-    );
-    if (result.rows.length === 0 || !result.rows[0]?.action_id) {
-      throw new OperationsError('approval_not_pending', 409);
+        {
+          deliveryReceiptId: null,
+          providerMessageId: null,
+          deliveryStatus: null,
+        },
+      );
+    } catch (error) {
+      const mapped = approvalActionDatabaseError(error);
+      if (mapped !== null) throw mapped;
+      throw error;
     }
     if (command.action === 'escalate') {
       const connection = await this.repository.getChatwootConnection(command.tenantId);
@@ -302,6 +265,159 @@ export class PostgresOperationsService implements OperationsService {
       await this.loadApproval(command.tenantId, command.approvalId),
       'approval',
     );
+  }
+
+  private async applyDeliveryApprovalAction(
+    command: ApprovalActionCommand,
+  ): Promise<ApprovalSummaryRecord> {
+    const client = await this.pool.connect();
+    let transactionOpen = false;
+    try {
+      await client.query('BEGIN');
+      transactionOpen = true;
+      const approval = await this.loadApproval(
+        command.tenantId,
+        command.approvalId,
+        client,
+        true,
+      );
+      if (approval === null) {
+        throw new OperationsError('approval_not_found', 404);
+      }
+
+      const inputHash = hashJson(command);
+      const content =
+        command.action === 'edit'
+          ? command.editedReply?.trim() ?? ''
+          : approval.suggested_reply;
+      if (approval.state !== 'pending') {
+        await this.insertApprovalAction(
+          client,
+          command,
+          approval.trace_id,
+          content,
+          inputHash,
+          {
+            deliveryReceiptId: null,
+            providerMessageId: null,
+            deliveryStatus: null,
+          },
+        );
+        await client.query('COMMIT');
+        transactionOpen = false;
+        return required(
+          await this.loadApproval(
+            command.tenantId,
+            command.approvalId,
+            client,
+          ),
+          'approval',
+        );
+      }
+
+      if (content.length === 0) {
+        throw new OperationsError('edited_reply_required', 400);
+      }
+      const connection = await this.repository.getChatwootConnection(
+        command.tenantId,
+        client,
+      );
+      if (connection === null) {
+        throw new OperationsError('chatwoot_connection_unavailable', 503);
+      }
+      const conversationId = await this.traceConversation(
+        command.tenantId,
+        approval.trace_id,
+        client,
+      );
+      const deliveryId = randomUUID();
+      // Keep the row lock through provider I/O so competing approvals fail
+      // before any public reply side effect can start.
+      const delivery = await this.delivery.deliver(
+        approvalDeliveryCommand(
+          deliveryId,
+          approval,
+          conversationId,
+          content,
+          command.idempotencyKey,
+        ),
+        connection,
+        client,
+      );
+      if (delivery.status !== 'succeeded' && delivery.status !== 'duplicate') {
+        await client.query('COMMIT');
+        transactionOpen = false;
+        throw new OperationsError(`chatwoot_${delivery.code}`, 502);
+      }
+
+      await this.insertApprovalAction(
+        client,
+        command,
+        approval.trace_id,
+        content,
+        inputHash,
+        {
+          deliveryReceiptId: delivery.receipt_id,
+          providerMessageId: delivery.provider_message_id,
+          deliveryStatus: delivery.status,
+        },
+      );
+      await client.query('COMMIT');
+      transactionOpen = false;
+      return required(
+        await this.loadApproval(
+          command.tenantId,
+          command.approvalId,
+          client,
+        ),
+        'approval',
+      );
+    } catch (error) {
+      if (transactionOpen) await client.query('ROLLBACK');
+      const mapped = approvalActionDatabaseError(error);
+      if (mapped !== null) throw mapped;
+      throw error;
+    } finally {
+      client.release();
+    }
+  }
+
+  private async insertApprovalAction(
+    executor: QueryExecutor,
+    command: ApprovalActionCommand,
+    traceId: string,
+    content: string,
+    inputHash: string,
+    delivery: {
+      deliveryReceiptId: string | null;
+      providerMessageId: string | null;
+      deliveryStatus: string | null;
+    },
+  ): Promise<ApprovalActionRow> {
+    const result = await executor.query<ApprovalActionRow>(
+      `SELECT * FROM apply_approval_action(
+         $1, $2, $3, $4, 'pending', $5, 'operator', $6, $7,
+         $8, $9, $10, $11, $12, now()
+       )`,
+      [
+        randomUUID(),
+        command.approvalId,
+        command.tenantId,
+        traceId,
+        command.action,
+        command.actorId,
+        command.action === 'edit' ? content : null,
+        delivery.deliveryReceiptId,
+        delivery.providerMessageId,
+        delivery.deliveryStatus,
+        command.idempotencyKey,
+        inputHash,
+      ],
+    );
+    if (result.rows.length === 0 || !result.rows[0]?.action_id) {
+      throw new OperationsError('approval_not_pending', 409);
+    }
+    return result.rows[0];
   }
 
   async getRelease(
@@ -670,14 +786,17 @@ export class PostgresOperationsService implements OperationsService {
   private async loadApproval(
     tenantId: string,
     approvalId: string,
+    executor: QueryExecutor = this.pool,
+    lock = false,
   ): Promise<ApprovalSummaryRecord | null> {
-    const result = await this.pool.query<QueryResultRow>(
+    const result = await executor.query<QueryResultRow>(
       `SELECT approval_id, tenant_id, trace_id, state, suggested_reply,
               evidence_refs, tool_result_refs, risk_reason, expires_at,
               approver_action, approver_id, edited_reply,
               edit_distance::text, action_at, created_at
        FROM approval_requests
-       WHERE tenant_id = $1 AND approval_id = $2`,
+       WHERE tenant_id = $1 AND approval_id = $2
+       ${lock ? 'FOR UPDATE' : ''}`,
       [tenantId, approvalId],
     );
     return result.rows[0] ? mapApproval(result.rows[0]) : null;
@@ -686,8 +805,9 @@ export class PostgresOperationsService implements OperationsService {
   private async traceConversation(
     tenantId: string,
     traceId: string,
+    executor: QueryExecutor = this.pool,
   ): Promise<string> {
-    const result = await this.pool.query<QueryResultRow>(
+    const result = await executor.query<QueryResultRow>(
       `SELECT conversation_id FROM agent_traces
        WHERE tenant_id = $1 AND trace_id = $2`,
       [tenantId, traceId],
@@ -1173,6 +1293,21 @@ function hash(value: string): string {
 
 function hashJson(value: unknown): string {
   return hash(JSON.stringify(value));
+}
+
+function approvalActionDatabaseError(error: unknown): OperationsError | null {
+  const code = databaseErrorCode(error);
+  if (code === '40001') return new OperationsError('approval_not_pending', 409);
+  if (code === '23505') return new OperationsError('approval_action_conflict', 409);
+  return null;
+}
+
+function databaseErrorCode(error: unknown): string | null {
+  if (typeof error !== 'object' || error === null || !('code' in error)) {
+    return null;
+  }
+  const code = Reflect.get(error, 'code');
+  return typeof code === 'string' ? code : null;
 }
 
 function required<T>(value: T | null | undefined, name: string): T {

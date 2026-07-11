@@ -11,7 +11,7 @@ import { HttpLLMProviderAdapter } from './provider.js';
 import { NodeRedisCoordinator } from './redis.js';
 import { PostgresAgentOpsStore } from './repositories.js';
 import { EnvironmentSecretResolver } from './secrets.js';
-import { PostgresOperationsService } from './operations.js';
+import { OperationsError, PostgresOperationsService } from './operations.js';
 import { ProductionTicketService } from './ticket-service.js';
 
 const RUN = process.env.AGENTOPS_RUN_INTEGRATION === '1';
@@ -24,6 +24,7 @@ integration(
     const chatwootMessages: Array<Record<string, unknown>> = [];
     let providerStatus = 200;
     let chatwootStatus = 200;
+    let chatwootDelayMs = 0;
     const mock = createServer(async (request, response) => {
       const body = await readBody(request);
       if (request.url === '/v1/chat/completions') {
@@ -55,6 +56,7 @@ integration(
       }
       if (request.url?.endsWith('/messages')) {
         chatwootMessages.push(JSON.parse(body) as Record<string, unknown>);
+        await delay(chatwootDelayMs);
         response.setHeader('Content-Type', 'application/json');
         if (chatwootStatus !== 200) {
           response.statusCode = chatwootStatus;
@@ -326,17 +328,122 @@ integration(
        LIMIT 1`,
       [tenantId],
     );
-    const approved = await operations.applyApprovalAction({
-      tenantId,
-      approvalId: pendingApproval.rows[0]?.approval_id ?? '',
-      action: 'approve',
-      actorId: 'integration-operator',
-      editedReply: null,
-      idempotencyKey: `approval-${randomUUID()}`,
-    });
-    assert.equal(approved.state, 'approved');
+    const approvalId = pendingApproval.rows[0]?.approval_id ?? '';
+    chatwootDelayMs = 75;
+    const approvalKeys = Array.from(
+      { length: 12 },
+      () => `approval-${randomUUID()}`,
+    );
+    const concurrentApprovals = await Promise.allSettled([
+      ...approvalKeys.map((key) =>
+        approveWithKey(operations, tenantId, approvalId, key),
+      ),
+    ]);
+    chatwootDelayMs = 0;
+    const appliedApprovals = concurrentApprovals.filter(
+      (result): result is PromiseFulfilledResult<{
+        key: string;
+        state: string;
+      }> => result.status === 'fulfilled',
+    );
+    const blockedApprovals = concurrentApprovals.filter(
+      (result): result is PromiseRejectedResult =>
+        result.status === 'rejected',
+    );
+    assert.equal(appliedApprovals.length, 1);
+    assert.equal(appliedApprovals[0]?.value.state, 'approved');
+    assert.equal(blockedApprovals.length, approvalKeys.length - 1);
+    for (const blocked of blockedApprovals) {
+      assert.ok(blocked.reason instanceof OperationsError);
+      assert.equal(blocked.reason.code, 'approval_not_pending');
+    }
     assert.equal(chatwootMessages.length, 2);
     assert.equal(chatwootMessages[1]?.private, false);
+    const deliveryAttempts = await pool.query<{ count: string }>(
+      `SELECT count(*)::text
+       FROM chatwoot_delivery_attempts
+       WHERE tenant_id = $1 AND idempotency_key LIKE $2`,
+      [tenantId, `approval:${approvalId}:%`],
+    );
+    assert.equal(deliveryAttempts.rows[0]?.count, '1');
+    const duplicateApproval = await approveWithKey(
+      operations,
+      tenantId,
+      approvalId,
+      appliedApprovals[0]?.value.key ?? '',
+    );
+    assert.equal(duplicateApproval.state, 'approved');
+    assert.equal(chatwootMessages.length, 2);
+
+    const retryAssist = await sendEvent(app, tenantId, 206, 'agent-bot');
+    assert.equal(retryAssist.json().outcome, 'approval_pending');
+    const retryApproval = await pool.query<{ approval_id: string }>(
+      `SELECT approval_id
+       FROM approval_requests
+       WHERE tenant_id = $1 AND state = 'pending'
+       ORDER BY created_at DESC
+       LIMIT 1`,
+      [tenantId],
+    );
+    const retryApprovalId = retryApproval.rows[0]?.approval_id ?? '';
+    const retryApprovalKey = `approval-retry-${randomUUID()}`;
+    chatwootStatus = 503;
+    await assert.rejects(
+      () =>
+        approveWithKey(
+          operations,
+          tenantId,
+          retryApprovalId,
+          retryApprovalKey,
+        ),
+      (error: unknown) =>
+        error instanceof OperationsError &&
+        error.code === 'chatwoot_retryable_error',
+    );
+    chatwootStatus = 200;
+    const failedApprovalAttempt = await pool.query<{
+      approval_state: string;
+      delivery_status: string;
+      attempt_count: number;
+    }>(
+      `SELECT
+         approval.state AS approval_state,
+         delivery.status AS delivery_status,
+         delivery.attempt_count
+       FROM approval_requests approval
+       JOIN chatwoot_delivery_attempts delivery
+         ON delivery.tenant_id = approval.tenant_id
+        AND delivery.trace_id = approval.trace_id
+       WHERE approval.approval_id = $1
+         AND delivery.idempotency_key = $2`,
+      [retryApprovalId, `approval:${retryApprovalId}:${retryApprovalKey}`],
+    );
+    assert.deepEqual(failedApprovalAttempt.rows[0], {
+      approval_state: 'pending',
+      delivery_status: 'failed',
+      attempt_count: 1,
+    });
+    const retriedApproval = await approveWithKey(
+      operations,
+      tenantId,
+      retryApprovalId,
+      retryApprovalKey,
+    );
+    assert.equal(retriedApproval.state, 'approved');
+    const completedApprovalAttempt = await pool.query<{
+      status: string;
+      attempt_count: number;
+    }>(
+      `SELECT status, attempt_count
+       FROM chatwoot_delivery_attempts
+       WHERE tenant_id = $1 AND idempotency_key = $2`,
+      [tenantId, `approval:${retryApprovalId}:${retryApprovalKey}`],
+    );
+    assert.deepEqual(completedApprovalAttempt.rows[0], {
+      status: 'succeeded',
+      attempt_count: 2,
+    });
+    assert.equal(chatwootMessages.length, 4);
 
     await pool.query(
       `UPDATE chatwoot_connections
@@ -346,23 +453,23 @@ integration(
     );
     const auto = await sendEvent(app, tenantId, 202, 'agent-bot');
     assert.equal(auto.json().outcome, 'replied');
-    assert.equal(chatwootMessages.length, 3);
-    assert.equal(chatwootMessages[2]?.private, false);
+    assert.equal(chatwootMessages.length, 5);
+    assert.equal(chatwootMessages[4]?.private, false);
 
     providerStatus = 503;
     const providerFailure = await sendEvent(app, tenantId, 203, 'agent-bot');
     providerStatus = 200;
     assert.equal(providerFailure.json().outcome, 'handed_off');
-    assert.equal(chatwootMessages.length, 3);
+    assert.equal(chatwootMessages.length, 5);
 
     chatwootStatus = 503;
     const chatwootFailure = await sendEvent(app, tenantId, 204, 'agent-bot');
     chatwootStatus = 200;
     assert.equal(chatwootFailure.json().outcome, 'failed');
     assert.equal(chatwootFailure.json().reason_code, 'retryable_error');
-    assert.equal(chatwootMessages.length, 4);
+    assert.equal(chatwootMessages.length, 6);
 
-    assert.equal(providerPrompts.length, 5);
+    assert.equal(providerPrompts.length, 6);
     assert.ok(providerPrompts.every((prompt) => !prompt.includes('alice@example.com')));
     assert.ok(providerPrompts.every((prompt) => prompt.includes('[EMAIL_1]')));
     await pool.query(
@@ -382,7 +489,7 @@ integration(
       missingRuntimePolicy.json().reason_code,
       'runtime_config_unavailable',
     );
-    assert.equal(providerPrompts.length, 5);
+    assert.equal(providerPrompts.length, 6);
     const trace = await pool.query<{ trace_id: string }>(
       `SELECT trace_id
        FROM agent_traces
@@ -443,12 +550,12 @@ integration(
       [tenantId],
     );
     assert.deepEqual(counts.rows[0], {
-      traces: '5',
-      calls: '5',
-      approvals: '1',
-      deliveries: '5',
-      events: '7',
-      audits: '5',
+      traces: '6',
+      calls: '6',
+      approvals: '2',
+      deliveries: '6',
+      events: '8',
+      audits: '6',
     });
     const failedAudit = await pool.query<{
       delivery_linked: boolean;
@@ -511,6 +618,28 @@ async function sendEvent(
     },
     payload: body,
   });
+}
+
+async function approveWithKey(
+  operations: PostgresOperationsService,
+  tenantId: string,
+  approvalId: string,
+  key: string,
+): Promise<{ key: string; state: string }> {
+  const approval = await operations.applyApprovalAction({
+    tenantId,
+    approvalId,
+    action: 'approve',
+    actorId: 'integration-operator',
+    editedReply: null,
+    idempotencyKey: key,
+  });
+  return { key, state: approval.state };
+}
+
+async function delay(milliseconds: number): Promise<void> {
+  if (milliseconds <= 0) return;
+  await new Promise((resolve) => setTimeout(resolve, milliseconds));
 }
 
 function hash(value: string): string {

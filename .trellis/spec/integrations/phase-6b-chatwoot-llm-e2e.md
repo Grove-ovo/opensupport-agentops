@@ -21,7 +21,7 @@ POST /api/v1/chatwoot/webhooks/:tenantId
 
 ProductionTicketService.handle(request): Promise<ChatwootIngressResult>
 HttpLLMProviderAdapter.invoke(request): Promise<LLMProviderResponse>
-PersistentChatwootDeliveryService.deliver(command, connection)
+PersistentChatwootDeliveryService.deliver(command, connection, executor?)
 ```
 
 ```text
@@ -51,6 +51,9 @@ npm run smoke:live
 - Delivery attempts claim tenant plus idempotency key before provider I/O.
   Successful attempts remain final; one same-input caller may reclaim a failed
   attempt.
+- A caller that already owns a PostgreSQL transaction may inject its query
+  executor into delivery persistence. Claim and completion must use the same
+  executor so nested delivery work does not reacquire and starve the pool.
 
 ### 4. Validation & Error Matrix
 
@@ -67,6 +70,7 @@ npm run smoke:live
 | Provider `408`/`429`/`5xx` | `provider_retryable_error` |
 | Malformed provider success | `invalid_provider_response` |
 | Chatwoot delivery failure | ticket `failed`, persisted delivery attempt and audit link |
+| Approval delivery failure | failed attempt committed; approval remains pending and same-key retryable |
 | Reused delivery key with changed semantic input | `idempotency_conflict` |
 
 ### 5. Good/Base/Bad Cases
@@ -91,7 +95,8 @@ npm run smoke:live
 - Real PostgreSQL/Redis E2E covers dual-entry dedupe, delivery-key merge,
   unsigned configuration rejection, self-outgoing filtering, PII masking,
   Shadow/Assist/Auto, Provider failure, Chatwoot failure, missing runtime
-  policy, delivery retry claim, and audit references.
+  policy, delivery retry claim, concurrent approval delivery ownership,
+  approval failure retry, and audit references.
 - Apply the complete migration chain twice after adding a foreign key to
   `agent_traces`; early migrations must drop it before rebuilding owned unique
   constraints and the later migration must restore it.

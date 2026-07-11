@@ -12,6 +12,7 @@ import type {
 import type {
   ChatwootRuntimeConnection,
   ProductionE2ERepository,
+  QueryExecutor,
 } from './e2e-repository.js';
 
 export class PersistentChatwootDeliveryService {
@@ -25,6 +26,7 @@ export class PersistentChatwootDeliveryService {
   async deliver(
     command: ChatwootDeliveryCommand,
     connection: ChatwootRuntimeConnection,
+    executor?: QueryExecutor,
   ): Promise<ChatwootDeliveryReceipt> {
     if (connection.api_token_ref === null) {
       return failureReceipt(command, 'credential_unavailable', null);
@@ -61,17 +63,20 @@ export class PersistentChatwootDeliveryService {
       body: request.body,
       deadline_at: request.deadline_at,
     });
-    const claim = await this.repository.claimDelivery({
-      deliveryId: command.delivery_id,
-      tenantId: command.tenant_id,
-      traceId: command.trace_id,
-      conversationId: command.conversation_id,
-      messageType: command.message_type,
-      idempotencyKey: command.idempotency_key,
-      inputHash,
-      credentialRefHash,
-      requestHash,
-    });
+    const claim = await this.repository.claimDelivery(
+      {
+        deliveryId: command.delivery_id,
+        tenantId: command.tenant_id,
+        traceId: command.trace_id,
+        conversationId: command.conversation_id,
+        messageType: command.message_type,
+        idempotencyKey: command.idempotency_key,
+        inputHash,
+        credentialRefHash,
+        requestHash,
+      },
+      executor,
+    );
     if (claim.status === 'conflict') {
       return failureReceipt(command, 'idempotency_conflict', credentialRefHash);
     }
@@ -111,6 +116,7 @@ export class PersistentChatwootDeliveryService {
         effectiveCode,
         providerMessageId,
         responseHash,
+        executor,
       );
       return receipt(
         claimedCommand,
@@ -133,6 +139,7 @@ export class PersistentChatwootDeliveryService {
         'retryable_error',
         null,
         null,
+        executor,
       );
       return receipt(
         claimedCommand,
