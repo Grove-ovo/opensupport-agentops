@@ -8,8 +8,8 @@
 
 <!-- @@@auto:current-status -->
 - **Active File**: `journal-2.md`
-- **Total Sessions**: 59
-- **Last Active**: 2026-07-11
+- **Total Sessions**: 60
+- **Last Active**: 2026-07-13
 <!-- @@@/auto:current-status -->
 
 ---
@@ -19,7 +19,7 @@
 <!-- @@@auto:active-documents -->
 | File | Lines | Status |
 |------|-------|--------|
-| `journal-2.md` | ~40 | Active |
+| `journal-2.md` | ~73 | Active |
 | `journal-1.md` | ~1998 | Archived |
 <!-- @@@/auto:active-documents -->
 
@@ -30,6 +30,7 @@
 <!-- @@@auto:session-history -->
 | # | Date | Title | Commits | Branch |
 |---|------|-------|---------|--------|
+| 60 | 2026-07-13 | Deploy self-hosted auth and Chatwoot | `fae544a` | `dev` |
 | 59 | 2026-07-11 | Harden approval action concurrency | `d8319d0` | `dev` |
 | 58 | 2026-07-09 | Real integration profile | `f4b4ba5` | `dev` |
 | 57 | 2026-07-07 | Production HTTP load gate | `936c1b0` | `dev` |
