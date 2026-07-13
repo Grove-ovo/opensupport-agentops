@@ -1,7 +1,15 @@
 import assert from 'node:assert/strict';
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  statSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { delimiter, join } from 'node:path';
+import { spawnSync } from 'node:child_process';
 import { test } from 'node:test';
 import {
   buildDrillReport,
@@ -152,4 +160,56 @@ test('writeDrillReports writes JSON and Markdown files with mode 0600', () => {
   } finally {
     rmSync(directory, { recursive: true, force: true });
   }
+});
+
+test('backup script creates new dumps with mode 0600', () => {
+  const directory = mkdtempSync(join(tmpdir(), 'agentops-backup-'));
+  const binDirectory = join(directory, 'bin');
+  const backupPath = join(directory, 'agentops.dump');
+  mkdirSync(binDirectory);
+
+  try {
+    writeFileSync(
+      join(binDirectory, 'docker'),
+      '#!/bin/sh\nfor argument do command=$argument; done\nexec sh -ec "$command"\n',
+      { mode: 0o755 },
+    );
+    writeFileSync(
+      join(binDirectory, 'pg_dump'),
+      '#!/bin/sh\n: > "$BACKUP_MODE_FILE"\n',
+      { mode: 0o755 },
+    );
+
+    const result = spawnSync('sh', ['scripts/ops/backup.sh'], {
+      cwd: process.cwd(),
+      encoding: 'utf8',
+      env: {
+        ...process.env,
+        BACKUP_MODE_FILE: backupPath,
+        BACKUP_NAME: 'agentops.dump',
+        PATH: `${binDirectory}${delimiter}${process.env.PATH ?? ''}`,
+        POSTGRES_DB: 'agentops',
+        POSTGRES_USER: 'agentops',
+      },
+    });
+
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(statSync(backupPath).mode & 0o777, 0o600);
+  } finally {
+    rmSync(directory, { recursive: true, force: true });
+  }
+});
+
+test('backup script rejects unsafe backup names before invoking Docker', () => {
+  const result = spawnSync('sh', ['scripts/ops/backup.sh', '--dry-run'], {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    env: {
+      ...process.env,
+      BACKUP_NAME: '../agentops.dump',
+    },
+  });
+
+  assert.equal(result.status, 2);
+  assert.match(result.stderr, /BACKUP_NAME must contain only/);
 });

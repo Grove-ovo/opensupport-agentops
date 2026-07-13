@@ -1,0 +1,84 @@
+{
+  "realm": "agentops",
+  "enabled": true,
+  "displayName": "OpenSupport AgentOps",
+  "registrationAllowed": false,
+  "resetPasswordAllowed": true,
+  "rememberMe": true,
+  "verifyEmail": false,
+  "sslRequired": "external",
+  "roles": {
+    "realm": [
+      { "name": "operator", "description": "AgentOps operator" },
+      { "name": "admin", "description": "AgentOps administrator" }
+    ]
+  },
+  "clients": [
+    {
+      "clientId": "opensupport-agentops",
+      "name": "OpenSupport AgentOps",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": false,
+      "secret": "${KEYCLOAK_AGENTOPS_CLIENT_SECRET}",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://agentops.grove.engineer/api/v1/auth/callback"
+      ],
+      "webOrigins": ["https://agentops.grove.engineer"],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "https://agentops.grove.engineer/*"
+      },
+      "protocolMappers": [
+        {
+          "name": "agentops roles",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-realm-role-mapper",
+          "consentRequired": false,
+          "config": {
+            "claim.name": "agentops_roles",
+            "jsonType.label": "String",
+            "multivalued": "true",
+            "access.token.claim": "true",
+            "id.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        },
+        {
+          "name": "agentops tenants",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "consentRequired": false,
+          "config": {
+            "user.attribute": "agentops_tenants",
+            "claim.name": "agentops_tenants",
+            "jsonType.label": "String",
+            "multivalued": "true",
+            "access.token.claim": "true",
+            "id.token.claim": "true",
+            "userinfo.token.claim": "true"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "admin@grove.engineer",
+      "email": "admin@grove.engineer",
+      "emailVerified": true,
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${AGENTOPS_ADMIN_PASSWORD}",
+          "temporary": true
+        }
+      ],
+      "realmRoles": ["admin"]
+    }
+  ]
+}

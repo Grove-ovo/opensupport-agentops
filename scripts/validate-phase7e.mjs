@@ -43,6 +43,7 @@ for (const value of [
 }
 
 for (const value of [
+  'umask 077',
   'pg_dump -Fc',
   'Backup written to volume path',
 ]) {

@@ -1,0 +1,6 @@
+{"file":".trellis/spec/infra/phase-6e-production-operations.md","reason":"Production Compose, secret handling, observability, backup, and rollback contracts."}
+{"file":".trellis/spec/infra/phase-7a-operator-access.md","reason":"OIDC PKCE client, role, tenant claim, callback, and session requirements."}
+{"file":".trellis/spec/infra/phase-7b-edge-transport.md","reason":"Public reverse-proxy, forwarding, HTTPS, and loopback edge contracts."}
+{"file":".trellis/spec/infra/phase-7c-production-preflight.md","reason":"Production environment, startup gate, secret-file, and readiness requirements."}
+{"file":".trellis/spec/infra/phase-7e-recovery-drill.md","reason":"Custom-format backup, permissions, restore, and forward-only rollback requirements."}
+{"file":".trellis/spec/integrations/chatwoot-connector.md","reason":"Chatwoot connector boundary and secret-safe integration expectations."}

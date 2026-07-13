@@ -1,0 +1,6 @@
+{"file":".trellis/spec/infra/phase-6e-production-operations.md","reason":"Verify production Compose, secret isolation, resource limits, backup, and rollback behavior."}
+{"file":".trellis/spec/infra/phase-7a-operator-access.md","reason":"Verify Keycloak realm and OIDC client claims satisfy operator access contracts."}
+{"file":".trellis/spec/infra/phase-7b-edge-transport.md","reason":"Verify Caddy upstreams and AgentOps loopback publishing preserve the edge boundary."}
+{"file":".trellis/spec/infra/phase-7c-production-preflight.md","reason":"Verify documented AgentOps startup remains gated by production preflight."}
+{"file":".trellis/spec/infra/phase-7e-recovery-drill.md","reason":"Verify backup file permissions, dry-run behavior, and rollback documentation."}
+{"file":".trellis/spec/integrations/chatwoot-connector.md","reason":"Verify Chatwoot topology and credentials remain compatible with the integration boundary."}

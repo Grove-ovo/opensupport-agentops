@@ -1,0 +1,220 @@
+name: opensupport-platform
+
+x-platform-defaults: &platform-defaults
+  restart: unless-stopped
+  init: true
+  security_opt:
+    - no-new-privileges:true
+  logging:
+    driver: json-file
+    options:
+      max-size: 10m
+      max-file: "5"
+
+x-chatwoot-base: &chatwoot-base
+  <<: *platform-defaults
+  image: ${CHATWOOT_IMAGE:-chatwoot/chatwoot:v4.15.1}
+  environment:
+    NODE_ENV: production
+    RAILS_ENV: production
+    INSTALLATION_ENV: docker
+    POSTGRES_HOST: chatwoot-postgres
+    POSTGRES_PORT: "5432"
+    POSTGRES_DATABASE: chatwoot
+    POSTGRES_USERNAME: chatwoot
+    POSTGRES_PASSWORD: ${CHATWOOT_POSTGRES_PASSWORD:?set CHATWOOT_POSTGRES_PASSWORD}
+    REDIS_URL: redis://:${CHATWOOT_REDIS_PASSWORD:?set CHATWOOT_REDIS_PASSWORD}@chatwoot-redis:6379
+    SECRET_KEY_BASE: ${SECRET_KEY_BASE:?set SECRET_KEY_BASE}
+    FRONTEND_URL: https://chatwoot.grove.engineer
+    FORCE_SSL: "false"
+    ENABLE_ACCOUNT_SIGNUP: "false"
+    ACTIVE_STORAGE_SERVICE: local
+    RAILS_LOG_TO_STDOUT: "true"
+    LOG_LEVEL: info
+  volumes:
+    - chatwoot_storage:/app/storage
+  networks:
+    - chatwoot
+    - egress
+
+services:
+  keycloak-postgres:
+    <<: *platform-defaults
+    image: postgres:16.10-alpine
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: ${KEYCLOAK_POSTGRES_PASSWORD:?set KEYCLOAK_POSTGRES_PASSWORD}
+    volumes:
+      - keycloak_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keycloak -d keycloak"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 768M
+    networks:
+      - identity
+
+  keycloak:
+    <<: *platform-defaults
+    image: ${KEYCLOAK_IMAGE:-quay.io/keycloak/keycloak:26.7.0}
+    command: ["start", "--import-realm"]
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-postgres:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: ${KEYCLOAK_POSTGRES_PASSWORD:?set KEYCLOAK_POSTGRES_PASSWORD}
+      KC_HOSTNAME: https://auth.grove.engineer
+      KC_HTTP_ENABLED: "true"
+      KC_PROXY_HEADERS: xforwarded
+      KC_HEALTH_ENABLED: "true"
+      KC_METRICS_ENABLED: "true"
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_BOOTSTRAP_ADMIN_USERNAME:-admin}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_BOOTSTRAP_ADMIN_PASSWORD:?set KEYCLOAK_BOOTSTRAP_ADMIN_PASSWORD}
+      KEYCLOAK_AGENTOPS_CLIENT_SECRET: ${KEYCLOAK_AGENTOPS_CLIENT_SECRET:?set KEYCLOAK_AGENTOPS_CLIENT_SECRET}
+      AGENTOPS_ADMIN_PASSWORD: ${AGENTOPS_ADMIN_PASSWORD:?set AGENTOPS_ADMIN_PASSWORD}
+      JAVA_OPTS_KC_HEAP: -XX:InitialRAMPercentage=25 -XX:MaxRAMPercentage=70
+    ports:
+      - "127.0.0.1:8090:8080"
+    volumes:
+      - ../keycloak/agentops-realm.json:/opt/keycloak/data/import/agentops-realm.json:ro
+    depends_on:
+      keycloak-postgres:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "exec 3<>/dev/tcp/127.0.0.1/9000; printf 'GET /health/ready HTTP/1.1\\r\\nHost: localhost\\r\\nConnection: close\\r\\n\\r\\n' >&3; grep -q UP <&3",
+        ]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 45s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.5"
+          memory: 1536M
+    networks:
+      - identity
+      - egress
+
+  chatwoot-postgres:
+    <<: *platform-defaults
+    image: pgvector/pgvector:0.8.1-pg16
+    environment:
+      POSTGRES_DB: chatwoot
+      POSTGRES_USER: chatwoot
+      POSTGRES_PASSWORD: ${CHATWOOT_POSTGRES_PASSWORD:?set CHATWOOT_POSTGRES_PASSWORD}
+    volumes:
+      - chatwoot_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chatwoot -d chatwoot"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    deploy:
+      resources:
+        limits:
+          cpus: "1.5"
+          memory: 1G
+    networks:
+      - chatwoot
+
+  chatwoot-redis:
+    <<: *platform-defaults
+    image: redis:7.4.5-alpine
+    command:
+      - sh
+      - -ec
+      - exec redis-server --appendonly yes --requirepass "$${CHATWOOT_REDIS_PASSWORD}"
+    environment:
+      CHATWOOT_REDIS_PASSWORD: ${CHATWOOT_REDIS_PASSWORD:?set CHATWOOT_REDIS_PASSWORD}
+    volumes:
+      - chatwoot_redis:/data
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a \"$${CHATWOOT_REDIS_PASSWORD}\" ping | grep -q PONG"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+    networks:
+      - chatwoot
+
+  chatwoot-migrate:
+    <<: *chatwoot-base
+    command: ["bundle", "exec", "rails", "db:chatwoot_prepare"]
+    restart: "no"
+    depends_on:
+      chatwoot-postgres:
+        condition: service_healthy
+      chatwoot-redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "1.5"
+          memory: 1536M
+
+  chatwoot-web:
+    <<: *chatwoot-base
+    entrypoint: docker/entrypoints/rails.sh
+    command: ["bundle", "exec", "rails", "s", "-p", "3000", "-b", "0.0.0.0"]
+    ports:
+      - "127.0.0.1:4000:3000"
+    depends_on:
+      chatwoot-migrate:
+        condition: service_completed_successfully
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "ruby",
+          "-rnet/http",
+          "-e",
+          "exit(Net::HTTP.get_response(URI('http://127.0.0.1:3000/')).is_a?(Net::HTTPSuccess) ? 0 : 1)",
+        ]
+      interval: 15s
+      timeout: 10s
+      retries: 20
+      start_period: 60s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.5"
+          memory: 1536M
+
+  chatwoot-sidekiq:
+    <<: *chatwoot-base
+    command: ["bundle", "exec", "sidekiq", "-C", "config/sidekiq.yml"]
+    depends_on:
+      chatwoot-migrate:
+        condition: service_completed_successfully
+    deploy:
+      resources:
+        limits:
+          cpus: "1.5"
+          memory: 1536M
+
+volumes:
+  keycloak_postgres:
+  chatwoot_postgres:
+  chatwoot_redis:
+  chatwoot_storage:
+
+networks:
+  identity:
+    internal: true
+  chatwoot:
+    internal: true
+  egress:

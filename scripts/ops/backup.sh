@@ -6,6 +6,13 @@ env_file="${ENV_FILE:-.env.production}"
 timestamp="$(date -u +%Y%m%dT%H%M%SZ)"
 output="${BACKUP_NAME:-agentops-${timestamp}.dump}"
 
+case "$output" in
+  "" | *[!A-Za-z0-9._-]*)
+    printf 'BACKUP_NAME must contain only letters, digits, dot, underscore, or hyphen.\n' >&2
+    exit 2
+    ;;
+esac
+
 command="docker compose --env-file ${env_file} -f ${compose_file} exec -T postgres pg_dump -Fc -U \${POSTGRES_USER} -d \${POSTGRES_DB} -f /backups/${output}"
 
 if [ "${1:-}" = "--dry-run" ]; then
@@ -14,5 +21,5 @@ if [ "${1:-}" = "--dry-run" ]; then
 fi
 
 docker compose --env-file "$env_file" -f "$compose_file" exec -T postgres \
-  sh -ec "pg_dump -Fc -U \"\$POSTGRES_USER\" -d \"\$POSTGRES_DB\" -f \"/backups/${output}\""
+  sh -ec "umask 077; pg_dump -Fc -U \"\$POSTGRES_USER\" -d \"\$POSTGRES_DB\" -f \"/backups/${output}\""
 printf 'Backup written to volume path /backups/%s\n' "$output"
