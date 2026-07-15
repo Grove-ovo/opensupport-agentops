@@ -35,6 +35,10 @@ prepareTrivyIgnore(allowlistPath, outputPath)
   `security/trivy-allowlist.json` entries require `id`, `owner`, `reason`
   (>=10 chars), and a future `expires_on`; expired or malformed entries fail
   `security:allowlist` before any scan runs.
+- When a current base image removes the CRITICAL findings, delete the obsolete
+  exceptions instead of renewing them. An empty, schema-valid allowlist is the
+  preferred state; base-image changes still require fresh reports for API,
+  Worker, and Web.
 - Evidence is retained as CI artifacts and is secret-safe. Reports, compose
   state, readiness JSON, Trivy JSON, and SBOMs are uploaded; output never
   contains passwords, tokens, or secret-file contents.

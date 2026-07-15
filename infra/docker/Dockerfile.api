@@ -1,16 +1,26 @@
-FROM node:22-slim AS build
+FROM node:22-alpine AS build
 WORKDIR /app
 COPY package.json package-lock.json tsconfig.json tsconfig.base.json ./
 COPY apps ./apps
 COPY packages ./packages
 COPY scripts ./scripts
 COPY infra/migrations ./infra/migrations
-RUN npm ci && npm run build -- --force && npm prune --omit=dev
+RUN npm ci \
+  && npm run build -- --force \
+  && npm prune --omit=dev \
+  && arch="$(node -p 'process.arch')" \
+  && musl_prebuild="node_modules/sodium-native/prebuilds/linux-${arch}-musl" \
+  && if [ ! -e "$musl_prebuild" ]; then \
+    ln -s "linux-${arch}" "$musl_prebuild"; \
+  fi
 
-FROM node:22-slim AS runtime
+FROM node:22-alpine AS runtime
 ENV NODE_ENV=production
 WORKDIR /app
-RUN groupadd -r agentops && useradd -r -g agentops agentops
+RUN apk add --no-cache gcompat \
+  && delgroup ping \
+  && addgroup -S -g 999 agentops \
+  && adduser -S -D -H -u 999 -G agentops agentops
 COPY --from=build --chown=agentops:agentops /app/package.json /app/package-lock.json ./
 COPY --from=build --chown=agentops:agentops /app/node_modules ./node_modules
 COPY --from=build --chown=agentops:agentops /app/apps/api ./apps/api

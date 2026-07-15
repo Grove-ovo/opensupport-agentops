@@ -28,6 +28,16 @@ jobs. The migration service must complete before API and worker start.
 Credentials remain outside images and source control. Only Nginx is publicly
 exposed by default.
 
+API and Worker build/runtime stages use the reviewed `node:22-alpine` base and
+create `agentops` with explicit UID/GID `999:999`; changing the base family or
+numeric identity requires rebuilding all production images, running the full
+Compose smoke, and collecting fresh HIGH/CRITICAL Trivy evidence. The API's
+`@fastify/secure-session` dependency loads `sodium-native`, whose package may
+ship a glibc Linux prebuild without a musl alias. The Alpine API image therefore
+installs `gcompat` and creates the architecture-specific musl alias only when
+the package has no native musl prebuild. Do not remove that compatibility path
+without proving OIDC session startup on every release architecture.
+
 The supported single-host identity and customer-support topology runs pinned
 Keycloak and Chatwoot images in a separate Compose project. Keycloak owns a
 dedicated PostgreSQL database; Chatwoot owns dedicated PostgreSQL, Redis, and
@@ -92,6 +102,7 @@ Structured JSON logs include service and build metadata plus applicable
 | Secret file is unreadable | API configuration fails before binding |
 | Secret file is host-owned by root/runner and mode `0600` | Run the secret ownership preparation script before Compose startup |
 | TypeScript build info exists without `dist` | Docker build uses `tsc -b --force` |
+| Alpine API cannot resolve the sodium native addon | Preserve the conditional musl alias plus `gcompat`, then prove authenticated production smoke |
 | Provider or Chatwoot call fails | Persist correlated failure and downgrade/handoff |
 | Worker retries are exhausted | Move identifier-only work to the dead-letter stream |
 | Previous image is required | Roll back immutable image tags; do not reverse migrations |
@@ -104,6 +115,9 @@ Structured JSON logs include service and build metadata plus applicable
 
 - Good: one public endpoint serves the dashboard and proxies API/worker health,
   while Prometheus scrapes internal service metrics.
+- Good: replace a vulnerable runtime base with the reviewed Alpine digest,
+  preserve required native-addon compatibility, and prove both arm64 and CI
+  amd64 startup before removing expired CVE exceptions.
 - Base: a production smoke creates an isolated tenant, executes one signed
   Chatwoot event, verifies delivery and dashboard visibility, then archives it.
 - Base: CI/server preflight validates secret files first, then the ownership
@@ -122,6 +136,9 @@ Structured JSON logs include service and build metadata plus applicable
 - Bad: never keep Chatwoot's 5-second webhook default while a tenant provider
   is allowed 30 seconds, and never solve this by attaching a shared secret
   `env_file` to every Chatwoot service.
+- Bad: never renew an expired base-image CVE exception before rebuilding and
+  scanning a current alternative base; the old exception list can miss newly
+  disclosed CRITICAL findings.
 
 > **Warning**: Production migrations are forward-only. Application rollback
 > must target a version compatible with the already-applied schema.
@@ -129,6 +146,11 @@ Structured JSON logs include service and build metadata plus applicable
 ## 6. Tests Required
 
 - Run `docker compose ... config` and build all three application images.
+- Scan all three final images with current Trivy data and fail on every
+  unresolved CRITICAL finding; do not reuse evidence from a previous base
+  digest.
+- Assert API and Worker run as UID/GID `999:999`, and load the API sodium
+  native addon before treating an Alpine migration as complete.
 - Run `sh -n scripts/ops/prepare-compose-secrets.sh` and assert CI invokes it
   before production Compose startup.
 - Start the full production Compose stack and verify every long-running service
@@ -193,6 +215,23 @@ This can reuse copied `*.tsbuildinfo` while `.dockerignore` omits `dist`.
 ```dockerfile
 RUN npm ci && npm run build -- --force
 ```
+
+### Wrong
+
+```dockerfile
+FROM node:22-alpine
+# sodium-native has no linux-*-musl prebuild in the installed package.
+```
+
+### Correct
+
+```dockerfile
+RUN apk add --no-cache gcompat
+# In the build stage, add linux-${arch}-musl only when it is absent.
+```
+
+The compatibility alias is architecture-specific and must be followed by an
+actual `sodium-native` load probe; a successful image build alone is not proof.
 
 ### Wrong
 

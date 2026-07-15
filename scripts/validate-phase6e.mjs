@@ -77,6 +77,19 @@ assert.match(nginx, /location \/worker\/health\//);
 for (const dockerfile of [apiDockerfile, workerDockerfile, webDockerfile]) {
   assert.match(dockerfile, /FROM .+ AS build/);
 }
+for (const dockerfile of [apiDockerfile, workerDockerfile]) {
+  assert.equal(
+    dockerfile.match(/FROM node:22-alpine/g)?.length,
+    2,
+    'API and worker build/runtime stages must use the reviewed Alpine base',
+  );
+  assert.match(dockerfile, /addgroup -S -g 999 agentops/);
+  assert.match(dockerfile, /adduser -S -D -H -u 999 -G agentops agentops/);
+  assert.match(dockerfile, /USER agentops/);
+}
+assert.match(apiDockerfile, /apk add --no-cache gcompat/);
+assert.match(apiDockerfile, /prebuilds\/linux-\$\{arch\}-musl/);
+assert.match(apiDockerfile, /ln -s "linux-\$\{arch\}" "\$musl_prebuild"/);
 assert.match(apiLog, /JSON\.stringify/);
 assert.match(workerLog, /JSON\.stringify/);
 assert.match(apiLog, /build_version/);

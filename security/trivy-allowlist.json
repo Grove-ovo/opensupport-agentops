@@ -1,23 +1,4 @@
 {
   "schema_version": 1,
-  "entries": [
-    {
-      "id": "CVE-2023-45853",
-      "owner": "platform",
-      "reason": "Debian zlib1g in node:22-slim is marked will_not_fix with no fixed package available in the current base image; reassess base image updates before release.",
-      "expires_on": "2026-07-13"
-    },
-    {
-      "id": "CVE-2026-42496",
-      "owner": "platform",
-      "reason": "Debian perl-base in node:22-slim is marked fix_deferred with no fixed package available in the current base image; reassess base image updates before release.",
-      "expires_on": "2026-07-13"
-    },
-    {
-      "id": "CVE-2026-8376",
-      "owner": "platform",
-      "reason": "Debian perl-base in node:22-slim is reported without a fixed package in the current base image; reassess base image updates before release.",
-      "expires_on": "2026-07-13"
-    }
-  ]
+  "entries": []
 }
