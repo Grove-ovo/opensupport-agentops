@@ -71,3 +71,39 @@ Deployed AgentOps, Keycloak, and Chatwoot to grove.engineer with trusted TLS, lo
 ### Next Steps
 
 - None - task complete
+
+
+## Session 61: Production API E2E and load deployment
+
+**Date**: 2026-07-15
+**Task**: Production API E2E and load deployment
+**Branch**: `dev`
+
+### Summary
+
+Connected OpenCode Zen in production, completed real Chatwoot-to-AgentOps E2E, ran bounded provider and ingress load tests, saved secret-safe evidence, extended Chatwoot webhook timeout, and passed full quality and readiness gates.
+
+### Main Changes
+
+(Add details)
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ce0e328` | (see git log) |
+| `314c25e` | (see git log) |
+| `0f989ee` | (see git log) |
+| `e8723cb` | (see git log) |
+
+### Testing
+
+- [OK] (Add test results)
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- None - task complete
