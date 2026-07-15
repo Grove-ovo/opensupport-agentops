@@ -229,3 +229,106 @@ npm run perf:production -- \
   --markdown tmp/ci-evidence/production-load.md
 node scripts/validate-phase7.mjs
 ```
+
+## Scenario: Direct Production Provider Probe
+
+### 1. Scope / Trigger
+
+- Trigger: connecting a production tenant to a new OpenAI-compatible provider,
+  changing provider load limits, or collecting live provider latency and usage
+  evidence outside CI.
+- Applies to `scripts/provider-load.mjs`, `scripts/provider-load-lib.mjs`,
+  `scripts/provider-load.test.mjs`, and
+  `docs/operations/provider-load-probe.md`.
+- This probe measures one caller-to-provider path. It does not establish
+  application, regional, or provider-wide capacity.
+
+### 2. Signatures
+
+```text
+npm run perf:provider -- \
+  --api-key-file <private-regular-file> \
+  --base-url <https-openai-compatible-origin> \
+  --model <model-id> \
+  --json <path> \
+  --markdown <path> \
+  [--stages <requests@concurrency,...>] \
+  [--timeout-ms <integer>] \
+  [--max-tokens <integer>]
+```
+
+```js
+parseProviderLoadStages(value)
+parseProviderLoadOptions(argv, env)
+runProviderLoad(options)
+writeProviderLoadReports(report, options)
+```
+
+### 3. Contracts
+
+- The command accepts a credential path only. It must never accept the key as
+  a CLI value or environment variable.
+- The key path must be a non-symlink regular file with no group/other
+  permission. The key, authorization header, prompt, response content, raw
+  provider error, and provider URL are excluded from reports.
+- The default profile is `3@c1,6@c2,12@c4`, timeout 30 seconds, and 1500 max
+  tokens. Bounds are 10 stages, 100 requests per stage, 500 requests total,
+  concurrency 16, timeout 1-120 seconds, and max tokens 256-4096.
+- Reports contain request status, stable error code, HTTP status, latency,
+  usage counts, p50/p95/p99, throughput, stage metrics, and an explicit
+  interpretation boundary. JSON and Markdown are atomic mode-`0600` files.
+- Stop dispatching new requests when cumulative error rate exceeds 10%, after
+  three consecutive auth/rate-limit failures, or after any timeout. In-flight
+  requests may finish and remain in evidence.
+
+### 4. Validation & Error Matrix
+
+| Condition | Behavior |
+|---|---|
+| Missing key path, base URL, or model | Stable `*_required` error, exit 2 |
+| Key path is symlink, broad mode, unreadable, or malformed | Fail before provider I/O |
+| Base URL is not HTTPS or contains user info/query/fragment | `invalid_base_url` |
+| Stage or numeric bound is exceeded | Stable `invalid_*` error |
+| Provider returns `401`/`403` | `auth_failed` |
+| Provider returns `429` | `rate_limited` |
+| Request exceeds deadline | `timeout`, stop remaining dispatch |
+| Error/timeout stop threshold is reached | Report `blocked`, exit 1 |
+| Report contains a shaped or exact credential | Delete reports and fail closed |
+
+### 5. Good / Base / Bad Cases
+
+- Good: run the default profile from the production host with a dedicated
+  mode-`0600` key file and retain request-level JSON plus Markdown evidence.
+- Base: the provider rate-limits the ramp; preserve the blocked report and do
+  not increase concurrency or relax thresholds to force a pass.
+- Bad: put the API key in shell history, an environment variable, report,
+  ticket, or command argument.
+- Bad: treat a successful single-host probe as a multi-region capacity claim.
+
+### 6. Tests Required
+
+- Unit tests cover stage/default parsing, all numeric bounds, missing key
+  files, symlink and mode rejection, successful metrics, nearest-rank
+  percentiles, stop thresholds, atomic private reports, and credential scans.
+- Run `npm run test:provider-load`, `npm run lint`, and `npm run typecheck`.
+- A live run must capture pre/post host and container health, preserve provider
+  reports, and scan them against the exact key before declaring success.
+
+### 7. Wrong vs Correct
+
+#### Wrong
+
+```sh
+PROVIDER_API_KEY=sk-secret npm run perf:provider
+```
+
+#### Correct
+
+```sh
+npm run perf:provider -- \
+  --api-key-file /run/secrets/provider_api_key \
+  --base-url https://provider.example/compatible \
+  --model production-model \
+  --json tmp/provider-load.json \
+  --markdown tmp/provider-load.md
+```
