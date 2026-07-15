@@ -1,0 +1,998 @@
+{
+  "schema_version": 1,
+  "gate": "production-application-ingress-load",
+  "generated_at": "2026-07-15T01:24:09.316Z",
+  "run_id": "20260714T113621Z",
+  "status": "ready",
+  "scenario": {
+    "timeout_ms": 10000,
+    "profiles": [
+      {
+        "name": "sustained",
+        "requests": 30,
+        "concurrency": 3,
+        "delay_ms": 150,
+        "expect_429": false
+      },
+      {
+        "name": "burst",
+        "requests": 100,
+        "concurrency": 25,
+        "delay_ms": 0,
+        "expect_429": true
+      }
+    ]
+  },
+  "phases": [
+    {
+      "name": "sustained",
+      "configured_requests": 30,
+      "executed_requests": 30,
+      "configured_concurrency": 3,
+      "max_observed_concurrency": 3,
+      "stop_reason": null,
+      "metrics": {
+        "total_requests": 30,
+        "success_count": 30,
+        "rate_limited_count": 0,
+        "error_count": 0,
+        "timeout_count": 0,
+        "unexpected_error_rate": 0,
+        "duration_ms": 1875.489,
+        "throughput_rps": 15.996,
+        "latency_ms": {
+          "p50": 16.902,
+          "p95": 140.792,
+          "p99": 199.443,
+          "max": 199.443
+        }
+      },
+      "results": [
+        {
+          "index": 1,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 199.443,
+          "error_code": null
+        },
+        {
+          "index": 2,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 114.229,
+          "error_code": null
+        },
+        {
+          "index": 3,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 140.792,
+          "error_code": null
+        },
+        {
+          "index": 4,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 14.506,
+          "error_code": null
+        },
+        {
+          "index": 5,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 23.835,
+          "error_code": null
+        },
+        {
+          "index": 6,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 21.463,
+          "error_code": null
+        },
+        {
+          "index": 7,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 13.841,
+          "error_code": null
+        },
+        {
+          "index": 8,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 24.915,
+          "error_code": null
+        },
+        {
+          "index": 9,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 54.188,
+          "error_code": null
+        },
+        {
+          "index": 10,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 18.379,
+          "error_code": null
+        },
+        {
+          "index": 11,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 14.378,
+          "error_code": null
+        },
+        {
+          "index": 12,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 14.289,
+          "error_code": null
+        },
+        {
+          "index": 13,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 15.406,
+          "error_code": null
+        },
+        {
+          "index": 14,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 13.266,
+          "error_code": null
+        },
+        {
+          "index": 15,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 26.492,
+          "error_code": null
+        },
+        {
+          "index": 16,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 15.497,
+          "error_code": null
+        },
+        {
+          "index": 17,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 17.651,
+          "error_code": null
+        },
+        {
+          "index": 18,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 23.162,
+          "error_code": null
+        },
+        {
+          "index": 19,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 15.359,
+          "error_code": null
+        },
+        {
+          "index": 20,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 19.681,
+          "error_code": null
+        },
+        {
+          "index": 21,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 13.322,
+          "error_code": null
+        },
+        {
+          "index": 22,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 17.577,
+          "error_code": null
+        },
+        {
+          "index": 23,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 22.533,
+          "error_code": null
+        },
+        {
+          "index": 24,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 14.052,
+          "error_code": null
+        },
+        {
+          "index": 25,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 15.678,
+          "error_code": null
+        },
+        {
+          "index": 26,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 14.63,
+          "error_code": null
+        },
+        {
+          "index": 27,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 15.284,
+          "error_code": null
+        },
+        {
+          "index": 28,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 18.608,
+          "error_code": null
+        },
+        {
+          "index": 29,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 16.902,
+          "error_code": null
+        },
+        {
+          "index": 30,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 14.231,
+          "error_code": null
+        }
+      ]
+    },
+    {
+      "name": "burst",
+      "configured_requests": 100,
+      "executed_requests": 100,
+      "configured_concurrency": 25,
+      "max_observed_concurrency": 25,
+      "stop_reason": null,
+      "metrics": {
+        "total_requests": 100,
+        "success_count": 75,
+        "rate_limited_count": 25,
+        "error_count": 0,
+        "timeout_count": 0,
+        "unexpected_error_rate": 0,
+        "duration_ms": 601.127,
+        "throughput_rps": 166.354,
+        "latency_ms": {
+          "p50": 108.786,
+          "p95": 304.143,
+          "p99": 355.947,
+          "max": 364.874
+        }
+      },
+      "results": [
+        {
+          "index": 1,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 159.356,
+          "error_code": null
+        },
+        {
+          "index": 2,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 167.45,
+          "error_code": null
+        },
+        {
+          "index": 3,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 227.069,
+          "error_code": null
+        },
+        {
+          "index": 4,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 142.68,
+          "error_code": null
+        },
+        {
+          "index": 5,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 144.503,
+          "error_code": null
+        },
+        {
+          "index": 6,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 147.023,
+          "error_code": null
+        },
+        {
+          "index": 7,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 254.563,
+          "error_code": null
+        },
+        {
+          "index": 8,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 304.143,
+          "error_code": null
+        },
+        {
+          "index": 9,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 172.375,
+          "error_code": null
+        },
+        {
+          "index": 10,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 322.836,
+          "error_code": null
+        },
+        {
+          "index": 11,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 172.445,
+          "error_code": null
+        },
+        {
+          "index": 12,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 346.766,
+          "error_code": null
+        },
+        {
+          "index": 13,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 210.857,
+          "error_code": null
+        },
+        {
+          "index": 14,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 352.442,
+          "error_code": null
+        },
+        {
+          "index": 15,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 180.607,
+          "error_code": null
+        },
+        {
+          "index": 16,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 364.874,
+          "error_code": null
+        },
+        {
+          "index": 17,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 355.947,
+          "error_code": null
+        },
+        {
+          "index": 18,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 228.523,
+          "error_code": null
+        },
+        {
+          "index": 19,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 225.13,
+          "error_code": null
+        },
+        {
+          "index": 20,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 244.995,
+          "error_code": null
+        },
+        {
+          "index": 21,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 252.35,
+          "error_code": null
+        },
+        {
+          "index": 22,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 286.642,
+          "error_code": null
+        },
+        {
+          "index": 23,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 281.255,
+          "error_code": null
+        },
+        {
+          "index": 24,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 290.808,
+          "error_code": null
+        },
+        {
+          "index": 25,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 298.042,
+          "error_code": null
+        },
+        {
+          "index": 26,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 194.739,
+          "error_code": null
+        },
+        {
+          "index": 27,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 209.676,
+          "error_code": null
+        },
+        {
+          "index": 28,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 190.915,
+          "error_code": null
+        },
+        {
+          "index": 29,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 204.408,
+          "error_code": null
+        },
+        {
+          "index": 30,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 183.143,
+          "error_code": null
+        },
+        {
+          "index": 31,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 138.777,
+          "error_code": null
+        },
+        {
+          "index": 32,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 163.343,
+          "error_code": null
+        },
+        {
+          "index": 33,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 149.334,
+          "error_code": null
+        },
+        {
+          "index": 34,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 140.02,
+          "error_code": null
+        },
+        {
+          "index": 35,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 151.498,
+          "error_code": null
+        },
+        {
+          "index": 36,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 135.098,
+          "error_code": null
+        },
+        {
+          "index": 37,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 154.439,
+          "error_code": null
+        },
+        {
+          "index": 38,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 114.426,
+          "error_code": null
+        },
+        {
+          "index": 39,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 121.785,
+          "error_code": null
+        },
+        {
+          "index": 40,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 127.652,
+          "error_code": null
+        },
+        {
+          "index": 41,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 102.983,
+          "error_code": null
+        },
+        {
+          "index": 42,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 101.445,
+          "error_code": null
+        },
+        {
+          "index": 43,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 98.627,
+          "error_code": null
+        },
+        {
+          "index": 44,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 98.708,
+          "error_code": null
+        },
+        {
+          "index": 45,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 104.356,
+          "error_code": null
+        },
+        {
+          "index": 46,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 101.085,
+          "error_code": null
+        },
+        {
+          "index": 47,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 92.194,
+          "error_code": null
+        },
+        {
+          "index": 48,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 87.496,
+          "error_code": null
+        },
+        {
+          "index": 49,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 89.917,
+          "error_code": null
+        },
+        {
+          "index": 50,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 85.675,
+          "error_code": null
+        },
+        {
+          "index": 51,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 80.19,
+          "error_code": null
+        },
+        {
+          "index": 52,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 99.47,
+          "error_code": null
+        },
+        {
+          "index": 53,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 95.905,
+          "error_code": null
+        },
+        {
+          "index": 54,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 96.539,
+          "error_code": null
+        },
+        {
+          "index": 55,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 89.428,
+          "error_code": null
+        },
+        {
+          "index": 56,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 94.886,
+          "error_code": null
+        },
+        {
+          "index": 57,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 103.798,
+          "error_code": null
+        },
+        {
+          "index": 58,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 96.018,
+          "error_code": null
+        },
+        {
+          "index": 59,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 109.281,
+          "error_code": null
+        },
+        {
+          "index": 60,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 111.456,
+          "error_code": null
+        },
+        {
+          "index": 61,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 125.497,
+          "error_code": null
+        },
+        {
+          "index": 62,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 125.496,
+          "error_code": null
+        },
+        {
+          "index": 63,
+          "status": "rate_limited",
+          "http_status": 429,
+          "latency_ms": 116.241,
+          "error_code": "rate_limited"
+        },
+        {
+          "index": 64,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 110.338,
+          "error_code": null
+        },
+        {
+          "index": 65,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 110.405,
+          "error_code": null
+        },
+        {
+          "index": 66,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 108.786,
+          "error_code": null
+        },
+        {
+          "index": 67,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 110.341,
+          "error_code": null
+        },
+        {
+          "index": 68,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 104.681,
+          "error_code": null
+        },
+        {
+          "index": 69,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 102.292,
+          "error_code": null
+        },
+        {
+          "index": 70,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 96.561,
+          "error_code": null
+        },
+        {
+          "index": 71,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 96.355,
+          "error_code": null
+        },
+        {
+          "index": 72,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 97.714,
+          "error_code": null
+        },
+        {
+          "index": 73,
+          "status": "rate_limited",
+          "http_status": 429,
+          "latency_ms": 45.416,
+          "error_code": "rate_limited"
+        },
+        {
+          "index": 74,
+          "status": "rate_limited",
+          "http_status": 429,
+          "latency_ms": 48.775,
+          "error_code": "rate_limited"
+        },
+        {
+          "index": 75,
+          "status": "rate_limited",
+          "http_status": 429,
+          "latency_ms": 71.635,
+          "error_code": "rate_limited"
+        },
+        {
+          "index": 76,
+          "status": "rate_limited",
+          "http_status": 429,
+          "latency_ms": 123.268,
+          "error_code": "rate_limited"
+        },
+        {
+          "index": 77,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 93.215,
+          "error_code": null
+        },
+        {
+          "index": 78,
+          "status": "rate_limited",
+          "http_status": 429,
+          "latency_ms": 86.691,
+          "error_code": "rate_limited"
+        },
+        {
+          "index": 79,
+          "status": "rate_limited",
+          "http_status": 429,
+          "latency_ms": 85.889,
+          "error_code": "rate_limited"
+        },
+        {
+          "index": 80,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 85.535,
+          "error_code": null
+        },
+        {
+          "index": 81,
+          "status": "rate_limited",
+          "http_status": 429,
+          "latency_ms": 79.937,
+          "error_code": "rate_limited"
+        },
+        {
+          "index": 82,
+          "status": "rate_limited",
+          "http_status": 429,
+          "latency_ms": 73.044,
+          "error_code": "rate_limited"
+        },
+        {
+          "index": 83,
+          "status": "rate_limited",
+          "http_status": 429,
+          "latency_ms": 71.003,
+          "error_code": "rate_limited"
+        },
+        {
+          "index": 84,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 127.242,
+          "error_code": null
+        },
+        {
+          "index": 85,
+          "status": "rate_limited",
+          "http_status": 429,
+          "latency_ms": 91.893,
+          "error_code": "rate_limited"
+        },
+        {
+          "index": 86,
+          "status": "rate_limited",
+          "http_status": 429,
+          "latency_ms": 86.245,
+          "error_code": "rate_limited"
+        },
+        {
+          "index": 87,
+          "status": "rate_limited",
+          "http_status": 429,
+          "latency_ms": 82.392,
+          "error_code": "rate_limited"
+        },
+        {
+          "index": 88,
+          "status": "success",
+          "http_status": 202,
+          "latency_ms": 67.374,
+          "error_code": null
+        },
+        {
+          "index": 89,
+          "status": "rate_limited",
+          "http_status": 429,
+          "latency_ms": 41.939,
+          "error_code": "rate_limited"
+        },
+        {
+          "index": 90,
+          "status": "rate_limited",
+          "http_status": 429,
+          "latency_ms": 43.214,
+          "error_code": "rate_limited"
+        },
+        {
+          "index": 91,
+          "status": "rate_limited",
+          "http_status": 429,
+          "latency_ms": 38.279,
+          "error_code": "rate_limited"
+        },
+        {
+          "index": 92,
+          "status": "rate_limited",
+          "http_status": 429,
+          "latency_ms": 37.964,
+          "error_code": "rate_limited"
+        },
+        {
+          "index": 93,
+          "status": "rate_limited",
+          "http_status": 429,
+          "latency_ms": 36.915,
+          "error_code": "rate_limited"
+        },
+        {
+          "index": 94,
+          "status": "rate_limited",
+          "http_status": 429,
+          "latency_ms": 55.701,
+          "error_code": "rate_limited"
+        },
+        {
+          "index": 95,
+          "status": "rate_limited",
+          "http_status": 429,
+          "latency_ms": 53.738,
+          "error_code": "rate_limited"
+        },
+        {
+          "index": 96,
+          "status": "rate_limited",
+          "http_status": 429,
+          "latency_ms": 50.507,
+          "error_code": "rate_limited"
+        },
+        {
+          "index": 97,
+          "status": "rate_limited",
+          "http_status": 429,
+          "latency_ms": 49.973,
+          "error_code": "rate_limited"
+        },
+        {
+          "index": 98,
+          "status": "rate_limited",
+          "http_status": 429,
+          "latency_ms": 47.74,
+          "error_code": "rate_limited"
+        },
+        {
+          "index": 99,
+          "status": "rate_limited",
+          "http_status": 429,
+          "latency_ms": 55.472,
+          "error_code": "rate_limited"
+        },
+        {
+          "index": 100,
+          "status": "rate_limited",
+          "http_status": 429,
+          "latency_ms": 52.773,
+          "error_code": "rate_limited"
+        }
+      ]
+    }
+  ],
+  "recovery": {
+    "index": 1,
+    "status": "success",
+    "http_status": 202,
+    "latency_ms": 13.862,
+    "error_code": null
+  },
+  "interpretation": "Signed requests traversed public Caddy, Nginx, AgentOps HMAC validation, canonicalization, and PostgreSQL persistence. Deliberate non-customer messages ended as audit_only and did not measure LLM or Chatwoot delivery capacity."
+}

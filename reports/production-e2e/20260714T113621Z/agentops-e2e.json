@@ -1,0 +1,94 @@
+{
+    "trace": {
+        "route": "order",
+        "intent": "order_status",
+        "trace_id": "0397206c-f481-44d0-a2b4-27767ecdaf8d",
+        "created_at": "2026-07-14T12:07:36.178+00:00",
+        "latency_ms": 11570,
+        "model_name": "deepseek-v4-flash-free",
+        "updated_at": "2026-07-14T12:07:47.952853+00:00",
+        "final_action": "reply",
+        "input_tokens": 532,
+        "runtime_mode": "shadow",
+        "output_tokens": 489,
+        "tool_call_ids": [
+            "bc0392b3-146b-81d4-bb73-b198ac4801c5"
+        ],
+        "estimated_cost": 0.000000,
+        "failure_bucket": null,
+        "model_provider": "opencode",
+        "execution_state": "private_noted",
+        "tool_call_count": 1
+    },
+    "llm_calls": [
+        {
+            "id": "08e4a36e-9670-4233-a19a-a982335d7079",
+            "created_at": "2026-07-14T12:07:42.274+00:00",
+            "error_code": null,
+            "latency_ms": 6049,
+            "model_name": "deepseek-v4-flash-free",
+            "call_status": "succeeded",
+            "input_tokens": 236,
+            "cost_currency": "USD",
+            "output_tokens": 612,
+            "estimated_cost": 0.000000,
+            "model_provider": "opencode",
+            "budget_reason_code": "within_budget"
+        },
+        {
+            "id": "4f0287ab-a085-4d92-9c9a-1426f4ac68df",
+            "created_at": "2026-07-14T12:07:47.786+00:00",
+            "error_code": null,
+            "latency_ms": 5503,
+            "model_name": "deepseek-v4-flash-free",
+            "call_status": "succeeded",
+            "input_tokens": 532,
+            "cost_currency": "USD",
+            "output_tokens": 489,
+            "estimated_cost": 0.000000,
+            "model_provider": "opencode",
+            "budget_reason_code": "within_budget"
+        }
+    ],
+    "deliveries": [
+        {
+            "code": "ok",
+            "status": "succeeded",
+            "created_at": "2026-07-14T12:07:47.807394+00:00",
+            "delivery_id": "3e34668e-dab4-4a5a-a053-631ea639925e",
+            "completed_at": "2026-07-14T12:07:47.949547+00:00",
+            "message_type": "private_note",
+            "attempt_count": 1,
+            "provider_message_id": "6"
+        }
+    ],
+    "order_fixture": {
+        "order_id": "E2E-100",
+        "order_status": "shipped",
+        "refund_eligible": true,
+        "logistics_status": "in_transit"
+    },
+    "runtime_audit": {
+        "outcome": "private_noted",
+        "created_at": "2026-07-14T12:07:47.962474+00:00",
+        "latency_ms": 11570,
+        "delivery_id": "3e34668e-dab4-4a5a-a053-631ea639925e",
+        "execution_id": "26513389-07b6-4f3c-8161-ecc4570d4d70",
+        "estimated_cost": 0.000000,
+        "failure_reason": null
+    },
+    "canonical_event": {
+        "id": "36e42eaa-4745-4d98-a040-ba6ea97a2fa4",
+        "source": "agent_bot",
+        "decision": "pipeline_seeded",
+        "error_code": null,
+        "event_type": "message_created",
+        "message_id": "5",
+        "received_at": "2026-07-14T12:07:36.16675+00:00",
+        "processed_at": "2026-07-14T12:07:47.968116+00:00",
+        "conversation_id": "1",
+        "is_self_outgoing": false,
+        "processing_status": "completed",
+        "is_customer_message": true
+    }
+}

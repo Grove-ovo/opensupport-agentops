@@ -1,0 +1,387 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-07-15T10:08:15.431Z",
+  "status": "ready",
+  "summary": {
+    "ready": 44,
+    "warning": 0,
+    "blocked": 0
+  },
+  "checks": [
+    {
+      "id": "env_file",
+      "status": "ready",
+      "reason_code": "env_file_secure",
+      "evidence": {
+        "path": ".env.production",
+        "mode": "0600",
+        "bytes": 1994,
+        "sha256": "2b59f55f2e149670",
+        "regular_file": true,
+        "symlink": false
+      }
+    },
+    {
+      "id": "required:AGENTOPS_POSTGRES_PASSWORD",
+      "status": "ready",
+      "reason_code": "required_value_present",
+      "evidence": {
+        "key": "AGENTOPS_POSTGRES_PASSWORD"
+      }
+    },
+    {
+      "id": "required:AGENTOPS_REDIS_PASSWORD",
+      "status": "ready",
+      "reason_code": "required_value_present",
+      "evidence": {
+        "key": "AGENTOPS_REDIS_PASSWORD"
+      }
+    },
+    {
+      "id": "required:AGENTOPS_BUILD_VERSION",
+      "status": "ready",
+      "reason_code": "required_value_present",
+      "evidence": {
+        "key": "AGENTOPS_BUILD_VERSION"
+      }
+    },
+    {
+      "id": "required:AGENTOPS_MASTER_KEY_FILE",
+      "status": "ready",
+      "reason_code": "required_value_present",
+      "evidence": {
+        "key": "AGENTOPS_MASTER_KEY_FILE"
+      }
+    },
+    {
+      "id": "required:AGENTOPS_OIDC_ISSUER",
+      "status": "ready",
+      "reason_code": "required_value_present",
+      "evidence": {
+        "key": "AGENTOPS_OIDC_ISSUER"
+      }
+    },
+    {
+      "id": "required:AGENTOPS_OIDC_CLIENT_ID",
+      "status": "ready",
+      "reason_code": "required_value_present",
+      "evidence": {
+        "key": "AGENTOPS_OIDC_CLIENT_ID"
+      }
+    },
+    {
+      "id": "required:AGENTOPS_OIDC_CLIENT_SECRET_FILE",
+      "status": "ready",
+      "reason_code": "required_value_present",
+      "evidence": {
+        "key": "AGENTOPS_OIDC_CLIENT_SECRET_FILE"
+      }
+    },
+    {
+      "id": "required:AGENTOPS_OIDC_CALLBACK_URI",
+      "status": "ready",
+      "reason_code": "required_value_present",
+      "evidence": {
+        "key": "AGENTOPS_OIDC_CALLBACK_URI"
+      }
+    },
+    {
+      "id": "required:AGENTOPS_OPERATOR_SESSION_KEY_FILE",
+      "status": "ready",
+      "reason_code": "required_value_present",
+      "evidence": {
+        "key": "AGENTOPS_OPERATOR_SESSION_KEY_FILE"
+      }
+    },
+    {
+      "id": "required:AGENTOPS_PUBLIC_URL",
+      "status": "ready",
+      "reason_code": "required_value_present",
+      "evidence": {
+        "key": "AGENTOPS_PUBLIC_URL"
+      }
+    },
+    {
+      "id": "required:AGENTOPS_PUBLIC_SCHEME",
+      "status": "ready",
+      "reason_code": "required_value_present",
+      "evidence": {
+        "key": "AGENTOPS_PUBLIC_SCHEME"
+      }
+    },
+    {
+      "id": "required:AGENTOPS_HSTS_VALUE",
+      "status": "ready",
+      "reason_code": "required_value_present",
+      "evidence": {
+        "key": "AGENTOPS_HSTS_VALUE"
+      }
+    },
+    {
+      "id": "required:GRAFANA_ADMIN_USER",
+      "status": "ready",
+      "reason_code": "required_value_present",
+      "evidence": {
+        "key": "GRAFANA_ADMIN_USER"
+      }
+    },
+    {
+      "id": "required:GRAFANA_ADMIN_PASSWORD_FILE",
+      "status": "ready",
+      "reason_code": "required_value_present",
+      "evidence": {
+        "key": "GRAFANA_ADMIN_PASSWORD_FILE"
+      }
+    },
+    {
+      "id": "required:AGENTOPS_PROVIDER_BASE_URLS_JSON",
+      "status": "ready",
+      "reason_code": "required_value_present",
+      "evidence": {
+        "key": "AGENTOPS_PROVIDER_BASE_URLS_JSON"
+      }
+    },
+    {
+      "id": "required:AGENTOPS_MODEL_PRICING_JSON",
+      "status": "ready",
+      "reason_code": "required_value_present",
+      "evidence": {
+        "key": "AGENTOPS_MODEL_PRICING_JSON"
+      }
+    },
+    {
+      "id": "required:CHATWOOT_WEBHOOK_SECRET",
+      "status": "ready",
+      "reason_code": "required_value_present",
+      "evidence": {
+        "key": "CHATWOOT_WEBHOOK_SECRET"
+      }
+    },
+    {
+      "id": "required:CHATWOOT_API_TOKEN",
+      "status": "ready",
+      "reason_code": "required_value_present",
+      "evidence": {
+        "key": "CHATWOOT_API_TOKEN"
+      }
+    },
+    {
+      "id": "required:AGENTOPS_BACKUP_DIR",
+      "status": "ready",
+      "reason_code": "required_value_present",
+      "evidence": {
+        "key": "AGENTOPS_BACKUP_DIR"
+      }
+    },
+    {
+      "id": "strength:AGENTOPS_POSTGRES_PASSWORD",
+      "status": "ready",
+      "reason_code": "credential_strength_valid",
+      "evidence": {
+        "key": "AGENTOPS_POSTGRES_PASSWORD",
+        "length": 64,
+        "fingerprint": "238242e4fd38a83d"
+      }
+    },
+    {
+      "id": "strength:AGENTOPS_REDIS_PASSWORD",
+      "status": "ready",
+      "reason_code": "credential_strength_valid",
+      "evidence": {
+        "key": "AGENTOPS_REDIS_PASSWORD",
+        "length": 64,
+        "fingerprint": "74df1bd3a3eaa3be"
+      }
+    },
+    {
+      "id": "strength:CHATWOOT_WEBHOOK_SECRET",
+      "status": "ready",
+      "reason_code": "credential_strength_valid",
+      "evidence": {
+        "key": "CHATWOOT_WEBHOOK_SECRET",
+        "length": 24,
+        "fingerprint": "1aac397bbfb6c165"
+      }
+    },
+    {
+      "id": "strength:CHATWOOT_API_TOKEN",
+      "status": "ready",
+      "reason_code": "credential_strength_valid",
+      "evidence": {
+        "key": "CHATWOOT_API_TOKEN",
+        "length": 24,
+        "fingerprint": "22f7beefd354ab7b"
+      }
+    },
+    {
+      "id": "credential_uniqueness",
+      "status": "ready",
+      "reason_code": "credentials_unique",
+      "evidence": {
+        "count": 4
+      }
+    },
+    {
+      "id": "secret:master_key",
+      "status": "ready",
+      "reason_code": "secret_file_valid",
+      "evidence": {
+        "path": "secrets/agentops_master_key",
+        "mode": "0400",
+        "bytes": 54,
+        "sha256": "272089b4568fb8d7",
+        "regular_file": true,
+        "symlink": false
+      }
+    },
+    {
+      "id": "secret:oidc_client_secret",
+      "status": "ready",
+      "reason_code": "secret_file_valid",
+      "evidence": {
+        "path": "secrets/agentops_oidc_client_secret",
+        "mode": "0400",
+        "bytes": 65,
+        "sha256": "73d0e8fed9d312d2",
+        "regular_file": true,
+        "symlink": false
+      }
+    },
+    {
+      "id": "secret:operator_session_key",
+      "status": "ready",
+      "reason_code": "secret_file_valid",
+      "evidence": {
+        "path": "secrets/agentops_operator_session_key",
+        "mode": "0400",
+        "bytes": 32,
+        "sha256": "75abe981696e2800",
+        "regular_file": true,
+        "symlink": false
+      }
+    },
+    {
+      "id": "secret:grafana_admin_password",
+      "status": "ready",
+      "reason_code": "secret_file_valid",
+      "evidence": {
+        "path": "secrets/grafana_admin_password",
+        "mode": "0400",
+        "bytes": 45,
+        "sha256": "fecb8068b1a69cd5",
+        "regular_file": true,
+        "symlink": false
+      }
+    },
+    {
+      "id": "secret_uniqueness",
+      "status": "ready",
+      "reason_code": "secret_files_unique",
+      "evidence": {
+        "count": 4
+      }
+    },
+    {
+      "id": "public_url",
+      "status": "ready",
+      "reason_code": "public_url_valid",
+      "evidence": {
+        "origin_hash": "0e56bcc5c44de7a5"
+      }
+    },
+    {
+      "id": "oidc_issuer",
+      "status": "ready",
+      "reason_code": "oidc_issuer_valid",
+      "evidence": {
+        "origin_hash": "d90a91c550464cf4"
+      }
+    },
+    {
+      "id": "oidc_callback",
+      "status": "ready",
+      "reason_code": "oidc_callback_valid",
+      "evidence": {
+        "path": "/api/v1/auth/callback"
+      }
+    },
+    {
+      "id": "https_policy",
+      "status": "ready",
+      "reason_code": "https_policy_valid"
+    },
+    {
+      "id": "provider_origins",
+      "status": "ready",
+      "reason_code": "provider_origins_valid",
+      "evidence": {
+        "count": 2,
+        "config_hash": "8655293a64ad7353"
+      }
+    },
+    {
+      "id": "model_pricing",
+      "status": "ready",
+      "reason_code": "model_pricing_valid",
+      "evidence": {
+        "count": 2,
+        "config_hash": "3df0904a048f2da4"
+      }
+    },
+    {
+      "id": "build_version",
+      "status": "ready",
+      "reason_code": "build_version_immutable",
+      "evidence": {
+        "fingerprint": "4763a4c5502913ca"
+      }
+    },
+    {
+      "id": "ports",
+      "status": "ready",
+      "reason_code": "ports_valid",
+      "evidence": {
+        "count": 5
+      }
+    },
+    {
+      "id": "monitoring",
+      "status": "ready",
+      "reason_code": "monitoring_configuration_valid"
+    },
+    {
+      "id": "migration",
+      "status": "ready",
+      "reason_code": "required_migration_valid",
+      "evidence": {
+        "version": 16
+      }
+    },
+    {
+      "id": "backup_mount",
+      "status": "ready",
+      "reason_code": "backup_mount_bound"
+    },
+    {
+      "id": "backup_path",
+      "status": "ready",
+      "reason_code": "backup_path_writable",
+      "evidence": {
+        "path_hash": "0a9e5503c2df7797"
+      }
+    },
+    {
+      "id": "backup_retention",
+      "status": "ready",
+      "reason_code": "backup_retention_valid",
+      "evidence": {
+        "days": 30
+      }
+    },
+    {
+      "id": "smoke_isolation",
+      "status": "ready",
+      "reason_code": "smoke_credentials_absent"
+    }
+  ]
+}

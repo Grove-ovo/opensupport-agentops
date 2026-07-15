@@ -1,0 +1,49 @@
+{
+    "messages": [
+        {
+            "id": 3,
+            "private": false,
+            "created_at": "2026-07-14T11:57:22.257362",
+            "updated_at": "2026-07-14T11:57:28.160205",
+            "content_md5": "b88b33507a0e8851919c1c6606de088a",
+            "sender_type": "Contact",
+            "message_type": 0,
+            "content_length": 86,
+            "mentions_e2e_order": true
+        },
+        {
+            "id": 4,
+            "private": true,
+            "created_at": "2026-07-14T11:57:34.758756",
+            "updated_at": "2026-07-14T11:57:34.758756",
+            "content_md5": "99c91f27907a1080ca197796d0fe716d",
+            "sender_type": "User",
+            "message_type": 1,
+            "content_length": 35,
+            "mentions_e2e_order": true
+        },
+        {
+            "id": 5,
+            "private": false,
+            "created_at": "2026-07-14T12:07:35.84604",
+            "updated_at": "2026-07-14T12:07:41.185775",
+            "content_md5": "b88b33507a0e8851919c1c6606de088a",
+            "sender_type": "Contact",
+            "message_type": 0,
+            "content_length": 86,
+            "mentions_e2e_order": true
+        },
+        {
+            "id": 6,
+            "private": true,
+            "created_at": "2026-07-14T12:07:47.876179",
+            "updated_at": "2026-07-14T12:07:47.876179",
+            "content_md5": "0a4b406a9111e4e1e4519a02d92d937d",
+            "sender_type": "User",
+            "message_type": 1,
+            "content_length": 36,
+            "mentions_e2e_order": true
+        }
+    ],
+    "conversation_id": 1
+}

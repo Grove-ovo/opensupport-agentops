@@ -1,0 +1,15 @@
+{
+    "run_id": "20260714T113621Z",
+    "decisions": {
+        "audit_only": 106
+    },
+    "audit_only": 106,
+    "event_types": {
+        "message_created": 106
+    },
+    "self_outgoing": 0,
+    "pipeline_seeded": 0,
+    "persisted_events": 106,
+    "customer_messages": 0,
+    "distinct_messages": 106
+}

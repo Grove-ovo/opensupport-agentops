@@ -1,0 +1,13 @@
+/opensupport-agentops-api-1 0
+/opensupport-agentops-web-1 0
+/opensupport-agentops-worker-1 0
+/opensupport-agentops-postgres-1 0
+/opensupport-agentops-redis-1 0
+/opensupport-platform-keycloak-1 0
+/opensupport-platform-keycloak-postgres-1 0
+/opensupport-platform-chatwoot-web-1 0
+/opensupport-platform-chatwoot-sidekiq-1 0
+/opensupport-platform-chatwoot-postgres-1 0
+/opensupport-platform-chatwoot-redis-1 0
+/opensupport-agentops-prometheus-1 0
+/opensupport-agentops-grafana-1 0
