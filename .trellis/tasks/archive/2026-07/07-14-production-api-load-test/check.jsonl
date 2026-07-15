@@ -1,0 +1,6 @@
+{"file":".trellis/spec/infra/phase-7f-pre-deployment-gate.md","reason":"Verify load metrics, thresholds, reports, permissions, and secret-safe evidence."}
+{"file":".trellis/spec/infra/phase-6e-production-operations.md","reason":"Verify all production services remain healthy and recover after bounded load."}
+{"file":".trellis/spec/infra/phase-7c-production-preflight.md","reason":"Verify OpenCode provider origin and model pricing preserve 44/0/0 readiness."}
+{"file":".trellis/spec/integrations/phase-6b-chatwoot-llm-e2e.md","reason":"Verify real provider call, trace, tool, Shadow delivery, and persistence evidence."}
+{"file":".trellis/spec/integrations/chatwoot-connector.md","reason":"Verify signed Chatwoot ingress and delivery without duplicate side effects."}
+{"file":".trellis/spec/agent/phase-2b-llm-runtime-triage.md","reason":"Verify model output parses, usage is captured, and provider failures remain explicit."}

@@ -1,0 +1,6 @@
+{"file":".trellis/spec/infra/phase-7f-pre-deployment-gate.md","reason":"Production load profile, stop thresholds, secret-safe evidence schema, and interpretation boundary."}
+{"file":".trellis/spec/infra/phase-6e-production-operations.md","reason":"Production health, secret handling, backup, rollout, and recovery contracts."}
+{"file":".trellis/spec/infra/phase-7c-production-preflight.md","reason":"Provider origin, model pricing, secret, and readiness validation requirements."}
+{"file":".trellis/spec/integrations/phase-6b-chatwoot-llm-e2e.md","reason":"Real Chatwoot to provider to delivery E2E persistence and outcome contract."}
+{"file":".trellis/spec/integrations/chatwoot-connector.md","reason":"Webhook HMAC, canonical event, dedupe, and Chatwoot delivery requirements."}
+{"file":".trellis/spec/agent/phase-2b-llm-runtime-triage.md","reason":"Provider invocation, output parsing, fallback, token, timeout, and budget behavior."}
