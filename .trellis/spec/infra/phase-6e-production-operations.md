@@ -38,6 +38,15 @@ public ingress and maps the three HTTPS origins to loopback upstreams:
 - `auth.grove.engineer` -> `127.0.0.1:8090`
 - `chatwoot.grove.engineer` -> `127.0.0.1:4000`
 
+Chatwoot 4.15 defaults webhook delivery to 5 seconds. The platform Compose
+base environment must set
+`WEBHOOK_TIMEOUT=${CHATWOOT_WEBHOOK_TIMEOUT:-60}` for Chatwoot Web, Sidekiq,
+and migrations. Keep it above the longest AgentOps tenant provider timeout
+plus network overhead; otherwise Chatwoot can abandon a valid synchronous
+Agent Bot request before AgentOps finishes. This non-secret setting must be
+explicit and must not be implemented by sharing an `env_file` containing
+platform credentials across services.
+
 Every AgentOps Compose operation on that host must include
 `compose.caddy-loopback.yml`; database, Redis, Prometheus, Grafana, Keycloak,
 and Chatwoot upstream ports must never bind a public interface. The Keycloak
@@ -87,6 +96,7 @@ Structured JSON logs include service and build metadata plus applicable
 | Worker retries are exhausted | Move identifier-only work to the dead-letter stream |
 | Previous image is required | Roll back immutable image tags; do not reverse migrations |
 | OIDC or Chatwoot DNS is absent | Caddy certificate issuance and dependent readiness fail closed; publish DNS, then retry TLS |
+| Chatwoot webhook timeout is shorter than AgentOps provider timeout plus overhead | Recreate Chatwoot services with a larger `CHATWOOT_WEBHOOK_TIMEOUT` before live E2E |
 | AgentOps port override is omitted on a Caddy host | Deployment validation fails because the web port may bind publicly |
 | A database dump is created without container-side `umask 077` | Backup permission test fails; do not retain a group/world-readable dump |
 
@@ -109,6 +119,9 @@ Structured JSON logs include service and build metadata plus applicable
   authoritative DNS and public TLS must succeed before AgentOps starts.
 - Bad: never rely on the host shell's umask for a dump created inside a
   container.
+- Bad: never keep Chatwoot's 5-second webhook default while a tenant provider
+  is allowed 30 seconds, and never solve this by attaching a shared secret
+  `env_file` to every Chatwoot service.
 
 > **Warning**: Production migrations are forward-only. Application rollback
 > must target a version compatible with the already-applied schema.
@@ -127,6 +140,9 @@ Structured JSON logs include service and build metadata plus applicable
 - Validate the platform Compose file with `.env.platform`, verify Keycloak
   realm JSON parses, and assert all non-public services are internal or
   loopback-bound.
+- Assert the rendered Chatwoot Web, Sidekiq, and migration environments contain
+  `WEBHOOK_TIMEOUT=60` by default and honor a
+  `CHATWOOT_WEBHOOK_TIMEOUT=<seconds>` override without a shared `env_file`.
 - Resolve all three public names against the authoritative DNS servers, verify
   TLS, Keycloak discovery, Chatwoot API access, and the AgentOps OIDC redirect.
 - Execute a real backup and assert its host mode is `0600`; validate PostgreSQL
@@ -193,6 +209,22 @@ On a Caddy host this can publish port 8088 on every interface.
 docker compose --env-file .env.production \
   -f infra/docker/compose.production.yml \
   -f infra/docker/compose.caddy-loopback.yml up -d
+```
+
+### Wrong
+
+```yaml
+services:
+  chatwoot-web:
+    env_file: .env.platform
+```
+
+### Correct
+
+```yaml
+x-chatwoot-base: &chatwoot-base
+  environment:
+    WEBHOOK_TIMEOUT: ${CHATWOOT_WEBHOOK_TIMEOUT:-60}
 ```
 
 ### Wrong

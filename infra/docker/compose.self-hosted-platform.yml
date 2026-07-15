@@ -31,6 +31,7 @@ x-chatwoot-base: &chatwoot-base
     ACTIVE_STORAGE_SERVICE: local
     RAILS_LOG_TO_STDOUT: "true"
     LOG_LEVEL: info
+    WEBHOOK_TIMEOUT: ${CHATWOOT_WEBHOOK_TIMEOUT:-60}
   volumes:
     - chatwoot_storage:/app/storage
   networks:

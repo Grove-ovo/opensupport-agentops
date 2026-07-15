@@ -37,6 +37,27 @@ The generator refuses to replace either file. If credentials must be rotated,
 back up the current files and coordinate the Keycloak client update with the
 AgentOps secret before removing them.
 
+Chatwoot's webhook timeout defaults to 5 seconds, which is shorter than the
+30-second AgentOps tenant provider timeout. The platform Compose file therefore
+sets the Chatwoot container's `WEBHOOK_TIMEOUT` to 60 seconds so a valid
+provider call can finish before Chatwoot abandons the webhook request. To
+override it, add the deployment-facing variable to `.env.platform` and recreate
+the Chatwoot web and Sidekiq services:
+
+```dotenv
+CHATWOOT_WEBHOOK_TIMEOUT=90
+```
+
+```sh
+docker compose --env-file .env.platform \
+  -f infra/docker/compose.self-hosted-platform.yml up -d \
+  chatwoot-web chatwoot-sidekiq
+```
+
+Keep this value above the longest AgentOps provider timeout plus expected
+network overhead. It is not a secret and does not require adding a shared
+`env_file` to the Chatwoot services.
+
 ## Configure Caddy
 
 Add these sites to `/etc/caddy/Caddyfile` after all DNS records resolve to the
