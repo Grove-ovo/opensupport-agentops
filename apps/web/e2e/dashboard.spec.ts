@@ -108,10 +108,6 @@ test('overview and approval confirmation remain usable', async (
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'Overview' })).toBeVisible();
   await expect(page.getByText('184')).toBeVisible();
-  await page.screenshot({
-    path: testInfo.outputPath('overview.png'),
-    fullPage: true,
-  });
 
   await page.getByRole('button', { name: 'Approvals' }).first().click();
   await expect(
@@ -124,6 +120,17 @@ test('overview and approval confirmation remain usable', async (
   await expect(dialog).toContainText('public reply');
   await dialog.getByRole('button', { name: 'Approve' }).click();
   await expect(dialog).toBeHidden();
+
+  // Take the fullPage capture only after all pointer interactions: capturing
+  // beyond the mobile viewport can leave fixed-position hit-testing in a bad
+  // state on headless Linux Chromium, which made the bottom-sheet dialog
+  // unclickable in CI while the same steps always passed locally.
+  await page.getByRole('button', { name: 'Overview' }).first().click();
+  await expect(page.getByRole('heading', { name: 'Overview' })).toBeVisible();
+  await page.screenshot({
+    path: testInfo.outputPath('overview.png'),
+    fullPage: true,
+  });
 });
 
 test('mobile navigation does not overflow viewport', async (
