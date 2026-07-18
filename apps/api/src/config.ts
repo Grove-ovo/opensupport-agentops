@@ -1,5 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { parseMasterKey } from '@opensupport/model-config';
+import type { ChatwootUrlPolicy } from '@opensupport/shared';
+import { parseChatwootAllowlist } from '@opensupport/shared';
 
 export interface ApiConfig {
   host: string;
@@ -22,6 +24,7 @@ export interface ApiConfig {
   >;
   pipelineDeadlineMs: number;
   approvalTtlMs: number;
+  chatwootUrlPolicy: ChatwootUrlPolicy;
   operatorAuth: {
     issuer: string;
     clientId: string;
@@ -92,6 +95,14 @@ export function loadApiConfig(
     60_000,
     604_800_000,
     issues,
+  );
+  const chatwootRequireHttps = boolean(
+    env.AGENTOPS_CHATWOOT_REQUIRE_HTTPS ?? 'true',
+    'AGENTOPS_CHATWOOT_REQUIRE_HTTPS',
+    issues,
+  );
+  const chatwootAllowlist = parseChatwootAllowlist(
+    env.AGENTOPS_CHATWOOT_BASE_URL_ALLOWLIST,
   );
   const providerBaseUrls = jsonRecord(
     env.AGENTOPS_PROVIDER_BASE_URLS_JSON,
@@ -212,6 +223,10 @@ export function loadApiConfig(
     modelPricing,
     pipelineDeadlineMs,
     approvalTtlMs,
+    chatwootUrlPolicy: {
+      allowlist: chatwootAllowlist,
+      requireHttps: chatwootRequireHttps,
+    },
     operatorAuth: {
       issuer: operatorIssuer.replace(/\/+$/, ''),
       clientId: operatorClientId,

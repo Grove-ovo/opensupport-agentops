@@ -1,0 +1,18 @@
+{
+  "all": false,
+  "reporter": ["text-summary", "json-summary", "lcov"],
+  "reports-dir": "coverage",
+  "exclude": [
+    "**/*.test.js",
+    "**/dist/**/*.d.ts",
+    "**/node_modules/**",
+    "scripts/**",
+    "eval/**",
+    "infra/**"
+  ],
+  "check-coverage": false,
+  "lines": 70,
+  "branches": 70,
+  "functions": 70,
+  "statements": 70
+}

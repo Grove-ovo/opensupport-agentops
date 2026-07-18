@@ -173,3 +173,14 @@ export type {
   LoadScenarioResult,
 } from './load.js';
 export { isUuid } from './validation.js';
+export type {
+  ChatwootUrlEvaluation,
+  ChatwootUrlPolicy,
+  ChatwootUrlRejectionReason,
+} from './chatwoot-url.js';
+export {
+  evaluateChatwootBaseUrl,
+  isPrivateHostname,
+  parseChatwootAllowlist,
+  PERMISSIVE_CHATWOOT_URL_POLICY,
+} from './chatwoot-url.js';

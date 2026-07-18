@@ -53,6 +53,7 @@ export async function createRuntimeApp(config: ApiConfig): Promise<FastifyInstan
           secrets,
           config.masterKey,
           config.masterKeyId,
+          config.chatwootUrlPolicy,
         ),
       },
       {

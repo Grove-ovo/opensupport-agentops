@@ -128,6 +128,40 @@ test('does not permanently cache retryable provider failures', async () => {
   assert.equal(transport.requests.length, 2);
 });
 
+test('rejects delivery whose base_url violates the injected url policy', async () => {
+  const transport = new FakeTransport();
+  const pinned = new ChatwootDeliveryService(
+    transport,
+    { resolve: () => 'plaintext-token' },
+    { allowlist: ['chatwoot.example.com'], requireHttps: true },
+  );
+
+  const disallowed = await pinned.deliver(
+    command('public_reply', 'off-allowlist'),
+    { ...connection, base_url: 'https://chatwoot.evil.com' },
+    now,
+  );
+  assert.equal(disallowed.code, 'invalid_command');
+
+  const insecure = await pinned.deliver(
+    command('public_reply', 'insecure'),
+    { ...connection, base_url: 'http://chatwoot.example.com' },
+    now,
+  );
+  assert.equal(insecure.code, 'invalid_command');
+
+  // Nothing that fails policy validation is ever sent to the transport.
+  assert.equal(transport.requests.length, 0);
+
+  const allowed = await pinned.deliver(
+    command('public_reply', 'allowed'),
+    connection,
+    now,
+  );
+  assert.equal(allowed.status, 'succeeded');
+  assert.equal(transport.requests.length, 1);
+});
+
 class FakeTransport implements ChatwootTransport {
   readonly requests: ChatwootTransportRequest[] = [];
 

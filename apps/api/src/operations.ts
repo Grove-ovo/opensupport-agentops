@@ -1,11 +1,18 @@
 import { createHash, randomUUID } from 'node:crypto';
-import { isIP } from 'node:net';
 import type { Pool, PoolClient, QueryResultRow } from 'pg';
 import { createTenantModelConfig, decryptApiKey, parseMasterKey } from '@opensupport/model-config';
 import { createPolicyIngestionPlan } from '@opensupport/retrieval';
 import { RISK_RULE_DEFINITIONS } from '@opensupport/guardrails';
 import { TOOL_MANIFESTS, ToolExecutor, MockBusinessRepository } from '@opensupport/tools';
-import type { ChatwootDeliveryCommand, RuntimeMode } from '@opensupport/shared';
+import type {
+  ChatwootDeliveryCommand,
+  ChatwootUrlPolicy,
+  RuntimeMode,
+} from '@opensupport/shared';
+import {
+  evaluateChatwootBaseUrl,
+  PERMISSIVE_CHATWOOT_URL_POLICY,
+} from '@opensupport/shared';
 import {
   ChatwootConversationService,
   PersistentChatwootDeliveryService,
@@ -61,6 +68,7 @@ export class PostgresOperationsService implements OperationsService {
     secrets: EnvironmentSecretResolver,
     readonly masterKeyReference: string,
     readonly masterKeyId: string,
+    readonly chatwootUrlPolicy: ChatwootUrlPolicy = PERMISSIVE_CHATWOOT_URL_POLICY,
   ) {
     this.repository = new ProductionE2ERepository(pool);
     this.delivery = new PersistentChatwootDeliveryService(this.repository, secrets);
@@ -331,8 +339,19 @@ export class PostgresOperationsService implements OperationsService {
         client,
       );
       const deliveryId = randomUUID();
-      // Keep the row lock through provider I/O so competing approvals fail
-      // before any public reply side effect can start.
+      // DESIGN: hold the FOR UPDATE row lock (acquired by loadApproval above)
+      // across provider I/O rather than doing a CAS/optimistic flip first.
+      // Rationale: a concurrent approval blocks on this lock until we COMMIT,
+      // then re-reads state != 'pending' and returns without a second reply, so
+      // no duplicate public reply can begin. A CAS-first design would flip the
+      // row to a terminal state before delivery, opening a window where a crash
+      // between the flip and the provider call loses the reply with the row
+      // already marked done. See docs/adr/ADR-003-approval-delivery-locking.md.
+      // Residual window: if delivery succeeds (below) but the COMMIT that
+      // follows fails (e.g. network partition to Postgres), the row stays
+      // 'pending' and a retry re-delivers. That re-delivery is de-duplicated by
+      // the provider-side idempotency_key; distinct keys are the accepted risk
+      // documented in the ADR.
       const delivery = await this.delivery.deliver(
         approvalDeliveryCommand(
           deliveryId,
@@ -693,7 +712,7 @@ export class PostgresOperationsService implements OperationsService {
        WHERE id = $1`,
       [
         row.id,
-        normalizeHttpUrl(input.baseUrl),
+        normalizeHttpUrl(input.baseUrl, this.chatwootUrlPolicy),
         input.accountId,
         input.inboxId,
         input.agentBotId,
@@ -1225,38 +1244,19 @@ function validateSecretReference(value: string | null): void {
   }
 }
 
-function normalizeHttpUrl(value: string): string {
-  try {
-    const url = new URL(value.trim());
-    if (url.protocol !== 'http:' && url.protocol !== 'https:') throw new Error();
-    if (isPrivateHost(url.hostname)) throw new OperationsError('unsafe_chatwoot_url', 400);
-    return url.toString().replace(/\/$/, '');
-  } catch (error) {
-    if (error instanceof OperationsError) throw error;
-    throw new OperationsError('invalid_chatwoot_url', 400);
+function normalizeHttpUrl(value: string, policy: ChatwootUrlPolicy): string {
+  const evaluation = evaluateChatwootBaseUrl(value, policy);
+  if (evaluation.ok) return evaluation.normalized;
+  switch (evaluation.reason) {
+    case 'insecure_scheme':
+      throw new OperationsError('insecure_chatwoot_url', 400);
+    case 'private_host':
+      throw new OperationsError('unsafe_chatwoot_url', 400);
+    case 'not_in_allowlist':
+      throw new OperationsError('chatwoot_url_not_allowlisted', 400);
+    default:
+      throw new OperationsError('invalid_chatwoot_url', 400);
   }
-}
-
-function isPrivateHost(hostname: string): boolean {
-  if (hostname === 'localhost' || hostname === '0.0.0.0') return true;
-  const ip = isIP(hostname);
-  if (ip === 0) return false;
-  if (ip === 4) {
-    return (
-      hostname.startsWith('127.') ||
-      hostname.startsWith('10.') ||
-      hostname.startsWith('169.254.') ||
-      hostname.startsWith('192.168.') ||
-      /^172\.(1[6-9]|2\d|3[01])\./.test(hostname) ||
-      hostname === '0.0.0.0'
-    );
-  }
-  return (
-    hostname === '::1' ||
-    hostname.startsWith('fc') ||
-    hostname.startsWith('fd') ||
-    hostname.startsWith('fe80:')
-  );
 }
 
 function secretHint(value: unknown): string | null {

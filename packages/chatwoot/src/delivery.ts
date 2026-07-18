@@ -1,11 +1,15 @@
 import { createHash } from 'node:crypto';
-import { isIP } from 'node:net';
 import type {
   ChatwootDeliveryCode,
   ChatwootDeliveryCommand,
   ChatwootDeliveryReceipt,
+  ChatwootUrlPolicy,
 } from '@opensupport/shared';
-import { isUuid } from '@opensupport/shared';
+import {
+  evaluateChatwootBaseUrl,
+  isUuid,
+  PERMISSIVE_CHATWOOT_URL_POLICY,
+} from '@opensupport/shared';
 
 export interface ChatwootDeliveryConnection {
   tenant_id: string;
@@ -51,6 +55,7 @@ export class ChatwootDeliveryService {
   constructor(
     readonly transport: ChatwootTransport,
     readonly credentialResolver: ChatwootCredentialResolver,
+    readonly urlPolicy: ChatwootUrlPolicy = PERMISSIVE_CHATWOOT_URL_POLICY,
   ) {}
 
   async deliver(
@@ -67,7 +72,12 @@ export class ChatwootDeliveryService {
       message_type: command.message_type,
       content_hash: command.content_hash,
     });
-    const validationCode = validateCommand(command, connection, createdAt);
+    const validationCode = validateCommand(
+      command,
+      connection,
+      createdAt,
+      this.urlPolicy,
+    );
     if (validationCode !== null) {
       return receipt(command, validationCode, null, requestHash, null, createdAt);
     }
@@ -240,6 +250,7 @@ function validateCommand(
   command: ChatwootDeliveryCommand,
   connection: ChatwootDeliveryConnection,
   now: string,
+  urlPolicy: ChatwootUrlPolicy,
 ): ChatwootDeliveryCode | null {
   if (connection.tenant_id !== command.tenant_id) return 'scope_mismatch';
   if (
@@ -257,7 +268,7 @@ function validateCommand(
     !Number.isInteger(connection.account_id) ||
     connection.account_id <= 0 ||
     connection.api_token_ref.trim().length === 0 ||
-    !isSafeBaseUrl(connection.base_url)
+    !evaluateChatwootBaseUrl(connection.base_url, urlPolicy).ok
   ) {
     return 'invalid_command';
   }
@@ -326,38 +337,6 @@ function readProviderMessageId(body: unknown): string | null {
   if (typeof body !== 'object' || body === null || !('id' in body)) return null;
   const id = (body as { id?: unknown }).id;
   return typeof id === 'string' || typeof id === 'number' ? String(id) : null;
-}
-
-function isSafeBaseUrl(value: string): boolean {
-  try {
-    const url = new URL(value);
-    if (url.protocol !== 'https:' && url.protocol !== 'http:') return false;
-    return !isPrivateHost(url.hostname);
-  } catch {
-    return false;
-  }
-}
-
-function isPrivateHost(hostname: string): boolean {
-  if (hostname === 'localhost' || hostname === '0.0.0.0') return true;
-  const ip = isIP(hostname);
-  if (ip === 0) return false;
-  if (ip === 4) {
-    return (
-      hostname.startsWith('127.') ||
-      hostname.startsWith('10.') ||
-      hostname.startsWith('169.254.') ||
-      hostname.startsWith('192.168.') ||
-      /^172\.(1[6-9]|2\d|3[01])\./.test(hostname) ||
-      hostname === '0.0.0.0'
-    );
-  }
-  return (
-    hostname === '::1' ||
-    hostname.startsWith('fc') ||
-    hostname.startsWith('fd') ||
-    hostname.startsWith('fe80:')
-  );
 }
 
 function normalizeTimestamp(value: Date | string): string {

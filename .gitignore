@@ -33,3 +33,7 @@ infra/chatwoot/secret.key
 
 # Trellis local runtime state
 .trellis/.runtime/
+
+# Local Redis dump and Qoder editor state
+dump.rdb
+.qoder/
