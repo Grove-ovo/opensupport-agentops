@@ -1,0 +1,6 @@
+{"_example": "Fill with {\"file\": \"<path>\", \"reason\": \"<why>\"}. Put spec/research files only — no code paths. Run `python3 .trellis/scripts/get_context.py --mode packages` to list available specs. Delete this line once real entries are added."}
+{"file": ".trellis/spec/infra/phase-7d-ci-security-supply-chain.md", "reason": "Verify allowlist and supply-chain gates remain fail closed."}
+{"file": ".trellis/spec/infra/phase-6e-production-operations.md", "reason": "Verify runtime image and UID-based secret access remain valid."}
+{"file": ".trellis/spec/infra/phase-7f-pre-deployment-gate.md", "reason": "Verify aggregate release readiness remains intact."}
+{"file": ".trellis/spec/frontend/quality-guidelines.md", "reason": "Verify browser E2E quality if CI-only changes become necessary."}
+{"file": ".trellis/tasks/07-15-github-ci-green/research/base-image-vulnerability-review.md", "reason": "Verify implementation matches measured vulnerability evidence."}

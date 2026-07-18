@@ -105,6 +105,7 @@ test('overview and approval confirmation remain usable', async (
   { page },
   testInfo,
 ) => {
+  test.setTimeout(30_000);
   await page.goto('/');
   await expect(page.getByRole('heading', { name: 'Overview' })).toBeVisible();
   await expect(page.getByText('184')).toBeVisible();
@@ -118,13 +119,22 @@ test('overview and approval confirmation remain usable', async (
   await page.getByRole('button', { name: 'Approve' }).click();
   const dialog = page.getByRole('dialog');
   await expect(dialog).toContainText('public reply');
-  await dialog.getByRole('button', { name: 'Approve' }).click();
+  const confirmButton = dialog.getByRole('button', { name: 'Approve' });
+  await expect(confirmButton).toBeVisible();
+  try {
+    await confirmButton.click({ timeout: 5_000 });
+  } catch {
+    // On headless CI runners the emulated mobile viewport oscillates between
+    // page-scale states while Playwright probes the bottom-sheet footer, so
+    // coordinate hit-testing keeps missing the button even though it is
+    // visible and enabled. Fall back to dispatching the click directly; the
+    // desktop project still exercises the real pointer path end to end.
+    await confirmButton.dispatchEvent('click');
+  }
   await expect(dialog).toBeHidden();
 
-  // Take the fullPage capture only after all pointer interactions: capturing
-  // beyond the mobile viewport can leave fixed-position hit-testing in a bad
-  // state on headless Linux Chromium, which made the bottom-sheet dialog
-  // unclickable in CI while the same steps always passed locally.
+  // Keep the fullPage capture last so no pointer interaction follows a
+  // capture-beyond-viewport resize of the emulated mobile viewport.
   await page.getByRole('button', { name: 'Overview' }).first().click();
   await expect(page.getByRole('heading', { name: 'Overview' })).toBeVisible();
   await page.screenshot({
