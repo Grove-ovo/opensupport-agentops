@@ -52,7 +52,7 @@ fully closed on this branch.
 
 | ID | Item | Decision | Plan |
 |----|------|----------|------|
-| D-3 | No enforced test-coverage threshold | Baseline added, non-blocking | `c8` baseline wired (`.c8rc.json`, `npm run coverage`, CI `coverage` job with `continue-on-error`). Current: ~72% lines. Raise `check-coverage` to enforced in a follow-up. |
+| D-3 | Test-coverage threshold not enforced; aggregate skews optimistic | Baseline measured honestly, non-blocking | `c8` baseline wired (`.c8rc.json`). The CI `coverage` job now runs the **integration** variant (`npm run coverage:integration`) against ephemeral Postgres/Redis, so I/O-heavy critical paths (`operations.ts`, repositories, persistent delivery, worker) are actually exercised instead of skipped. Two caveats remain **by design this iteration**: `check-coverage: false` (report-only, never fails CI) and `all: false` (files never imported are excluded, so the aggregate reads optimistic). Follow-up: once the integration baseline is stable, flip `check-coverage: true` at a realistic floor and evaluate `all: true` for full-tree honesty. The authoritative SSRF write-path gate (`normalizeHttpUrl`) is now unit-covered in `apps/api/src/operations-url.test.ts` regardless of DB availability. |
 | D-4 | Phase-staged validator scaffolding (43 `validate-phaseN.mjs`, 60+ serial `test` chain) | Defer | Remediation plan in `../test_topology_debt.md` |
 
 ---

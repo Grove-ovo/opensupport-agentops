@@ -1244,7 +1244,13 @@ function validateSecretReference(value: string | null): void {
   }
 }
 
-function normalizeHttpUrl(value: string, policy: ChatwootUrlPolicy): string {
+// Exported for focused unit testing: this is the authoritative write-path
+// SSRF gate (admin-entered base_url). It maps shared policy rejections to
+// stable OperationsError codes. Keep the mapping covered by operations-url.test.ts.
+export function normalizeHttpUrl(
+  value: string,
+  policy: ChatwootUrlPolicy,
+): string {
   const evaluation = evaluateChatwootBaseUrl(value, policy);
   if (evaluation.ok) return evaluation.normalized;
   switch (evaluation.reason) {

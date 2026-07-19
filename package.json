@@ -37,6 +37,7 @@
     "test:chatwoot": "npm run build && node --test packages/chatwoot/dist/*.test.js",
     "test:shared": "npm run build && node --test packages/shared/dist/*.test.js",
     "coverage": "npm run build && c8 node --test packages/*/dist/*.test.js apps/api/dist/*.test.js apps/worker/dist/*.test.js",
+    "coverage:integration": "AGENTOPS_RUN_INTEGRATION=1 npm run coverage",
     "test:model-config": "npm run build && node --test packages/model-config/dist/*.test.js",
     "test:llm-observability": "npm run build && node --test packages/llm-observability/dist/*.test.js",
     "test:pii": "npm run build && node --test packages/pii/dist/*.test.js",
